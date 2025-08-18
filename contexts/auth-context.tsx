@@ -1,79 +1,48 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { User, AuthError } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
+import { createContext, useContext, useState } from 'react'
 
 interface AuthContextType {
-  user: User | null
+  user: any | null
   loading: boolean
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ data?: any, error: AuthError | null }>
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signInWithProvider: (provider: 'google' | 'facebook') => Promise<{ error: AuthError | null }>
-  signOut: () => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string, metadata?: any) => Promise<{ data?: any, error: any | null }>
+  signIn: (email: string, password: string) => Promise<{ error: any | null }>
+  signInWithProvider: (provider: 'google' | 'facebook') => Promise<{ error: any | null }>
+  signOut: () => Promise<{ error: any | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const supabase = createClient()
-
-  useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
-    }
-
-    getInitialSession()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  const [user, setUser] = useState<any | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const signUp = async (email: string, password: string, metadata = {}) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-        data: metadata
-      }
-    })
-    return { data, error }
+    // Mock signup for demo
+    setUser({ email, ...metadata })
+    localStorage.setItem('user', JSON.stringify({ email, ...metadata, isAuthenticated: true }))
+    return { data: { email, ...metadata }, error: null }
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-    return { error }
+    // Mock signin for demo
+    setUser({ email })
+    localStorage.setItem('user', JSON.stringify({ email, isAuthenticated: true }))
+    return { error: null }
   }
 
   const signInWithProvider = async (provider: 'google' | 'facebook') => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
-    })
-    return { error }
+    // Mock social signin for demo
+    const mockEmail = `user@${provider}.com`
+    setUser({ email: mockEmail })
+    localStorage.setItem('user', JSON.stringify({ email: mockEmail, isAuthenticated: true }))
+    return { error: null }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
+    setUser(null)
+    localStorage.removeItem('user')
+    return { error: null }
   }
 
   return (
