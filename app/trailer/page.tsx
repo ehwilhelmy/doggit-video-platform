@@ -32,7 +32,7 @@ const videosData = {
     thumbnail: "https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=1920&h=1080&fit=crop",
     duration: "15 minutes",
     instructor: "Brian",
-    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+    videoUrl: "https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk",
     trailerDuration: "2:30"
   },
   "advanced-obedience": {

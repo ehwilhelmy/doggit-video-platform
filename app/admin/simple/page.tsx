@@ -37,7 +37,7 @@ export default function SimpleAdminPanel() {
       category: "Puppy Training",
       level: "Beginner",
       thumbnail_url: "https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=800&h=600&fit=crop",
-      video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      video_url: "https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk",
       created_at: "2024-01-15T10:00:00Z",
       is_featured: true,
       view_count: 1250

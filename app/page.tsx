@@ -178,7 +178,7 @@ export default function LandingPage() {
 
   const getVideoUrl = (videoId: string) => {
     const videoUrls = {
-      "puppy-basics": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      "puppy-basics": "https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk",
       "advanced-obedience": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800", // placeholder
       "leash-training": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face" // placeholder
     }
@@ -315,7 +315,7 @@ export default function LandingPage() {
             >
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <VideoThumbnail
-                  videoUrl="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+                  videoUrl="https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk"
                   fallbackImage="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
                   videoId="puppy-basics"
                   alt="Cute puppy learning basic training"
