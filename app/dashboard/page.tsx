@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
-import { adminService } from "@/lib/admin"
 
 // Force dynamic rendering to avoid SSG issues with useSearchParams
 export const dynamic = 'force-dynamic'
