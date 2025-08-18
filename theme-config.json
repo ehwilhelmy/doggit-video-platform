@@ -1,0 +1,75 @@
+{
+  "name": "DOGGIT Theme",
+  "description": "Custom theme for DOGGIT video platform with purple accent and dark gray base",
+  "colors": {
+    "accent": "#2E005D",
+    "gray": "#05070F",
+    "accentHSL": "270 100% 18%",
+    "grayHSL": "228 39% 4%"
+  },
+  "verification": {
+    "accentTest": "The accent color #2E005D should appear as a deep purple, not navy",
+    "hslCalculation": "270° hue = pure purple, 100% saturation = vivid, 18% lightness = dark",
+    "cssVariable": "var(--primary) should resolve to hsl(270, 100%, 18%)"
+  },
+  "lightMode": {
+    "background": "#FFFFFF",
+    "foreground": "#05070F",
+    "card": "#FFFFFF",
+    "cardForeground": "#05070F",
+    "popover": "#FFFFFF",
+    "popoverForeground": "#05070F",
+    "primary": "#2E005D",
+    "primaryForeground": "#FFFFFF",
+    "secondary": "#F5F3F7",
+    "secondaryForeground": "#2E005D",
+    "muted": "#F5F3F7",
+    "mutedForeground": "#4A4E5C",
+    "accent": "#2E005D",
+    "accentForeground": "#FFFFFF",
+    "destructive": "#EF4444",
+    "destructiveForeground": "#FAFAFA",
+    "border": "#E8E9EC",
+    "input": "#E8E9EC",
+    "ring": "#2E005D"
+  },
+  "darkMode": {
+    "background": "#05070F",
+    "foreground": "#FAFAFA",
+    "card": "#0D0F1A",
+    "cardForeground": "#FAFAFA",
+    "popover": "#0D0F1A",
+    "popoverForeground": "#FAFAFA",
+    "primary": "#2E005D",
+    "primaryForeground": "#FFFFFF",
+    "secondary": "#1A1D2E",
+    "secondaryForeground": "#FAFAFA",
+    "muted": "#1A1D2E",
+    "mutedForeground": "#9CA3AF",
+    "accent": "#2E005D",
+    "accentForeground": "#FFFFFF",
+    "destructive": "#7F1D1D",
+    "destructiveForeground": "#FAFAFA",
+    "border": "#2A2E3F",
+    "input": "#2A2E3F",
+    "ring": "#4C1D95"
+  },
+  "radixTheme": {
+    "appearance": "light",
+    "accentColor": "purple",
+    "grayColor": "gray",
+    "radius": "medium",
+    "scaling": "100%"
+  },
+  "tailwindConfig": {
+    "colors": {
+      "jade-purple": "#2E005D",
+      "jade-purple-light": "#4C1D95",
+      "queen-purple": "#9B86FF",
+      "nettle-green": "#4ADE80",
+      "dark-gray": "#05070F",
+      "dark-gray-light": "#0D0F1A",
+      "dark-gray-lighter": "#1A1D2E"
+    }
+  }
+}

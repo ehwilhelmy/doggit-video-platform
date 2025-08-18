@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Heavitas Neue Font Family */
+@font-face {
+  font-family: 'Heavitas Neue';
+  src: url('/fonts/HeavitasNeue-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Heavitas Neue';
+  src: url('/fonts/HeavitasNeue-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Heavitas Neue';
+  src: url('/fonts/HeavitasNeue-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Heavitas Neue';
+  src: url('/fonts/HeavitasNeue-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer utilities {
+  .font-heavitas {
+    font-family: 'Heavitas Neue', ui-sans-serif, system-ui, sans-serif;
+    text-transform: uppercase;
+  }
+  
+  .animate-slide-down {
+    animation: slide-down 0.5s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
+  
+  @keyframes slide-down {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-up {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    /* Light Mode - Clean, professional theme */
+    --background: 0 0% 100%;              /* white */
+    --foreground: 228 39% 4%;             /* #05070F - your gray */
+    --card: 0 0% 100%;                    /* white */
+    --card-foreground: 228 39% 4%;        /* #05070F */
+    --popover: 0 0% 100%;                 /* white */
+    --popover-foreground: 228 39% 4%;     /* #05070F */
+    --primary: 271 100% 18%;              /* #2E005D - corrected purple */
+    --primary-foreground: 0 0% 100%;      /* white */
+    --secondary: 271 20% 95%;             /* light purple tint */
+    --secondary-foreground: 271 100% 18%; /* #2E005D */
+    --muted: 271 10% 96%;                 /* very light purple-gray */
+    --muted-foreground: 228 20% 40%;      /* muted dark gray */
+    --accent: 271 100% 18%;               /* #2E005D - corrected purple */
+    --accent-foreground: 0 0% 100%;       /* white */
+    --destructive: 0 84.2% 60.2%;         /* red for errors */
+    --destructive-foreground: 0 0% 98%;   /* white */
+    --border: 271 10% 91%;                /* light purple-gray border */
+    --input: 271 10% 91%;                 /* light purple-gray input */
+    --ring: 271 100% 18%;                 /* #2E005D focus ring */
+    --radius: 0.5rem;
+    --chart-1: 271 100% 18%;
+    --chart-2: 271 80% 40%;
+    --chart-3: 271 60% 60%;
+    --chart-4: 271 40% 80%;
+    --chart-5: 271 20% 90%;
+  }
+
+  .dark {
+    /* Dark Mode - Using your gray #05070F as base */
+    --background: 228 39% 4%;             /* #05070F - your gray */
+    --foreground: 0 0% 98%;               /* almost white */
+    --card: 228 30% 8%;                   /* slightly lighter than bg */
+    --card-foreground: 0 0% 98%;          /* almost white */
+    --popover: 228 30% 8%;                /* slightly lighter than bg */
+    --popover-foreground: 0 0% 98%;       /* almost white */
+    --primary: 271 100% 18%;              /* #2E005D - corrected purple */
+    --primary-foreground: 0 0% 100%;      /* white */
+    --secondary: 228 25% 15%;             /* dark gray */
+    --secondary-foreground: 0 0% 98%;     /* almost white */
+    --muted: 228 20% 15%;                 /* muted dark gray */
+    --muted-foreground: 228 10% 65%;      /* light gray */
+    --accent: 271 100% 18%;               /* #2E005D - corrected purple */
+    --accent-foreground: 0 0% 100%;       /* white */
+    --destructive: 0 62.8% 30.6%;         /* dark red */
+    --destructive-foreground: 0 0% 98%;   /* almost white */
+    --border: 228 20% 18%;                /* dark gray border */
+    --input: 228 20% 18%;                 /* dark gray input */
+    --ring: 271 100% 28%;                 /* lighter purple for visibility */
+    --chart-1: 271 100% 28%;
+    --chart-2: 271 80% 50%;
+    --chart-3: 271 60% 70%;
+    --chart-4: 271 40% 85%;
+    --chart-5: 271 20% 95%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Apply Heavitas Neue to all headline elements */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Heavitas Neue', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  
+  /* Ensure dark mode works */
+  html.dark {
+    color-scheme: dark;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Dog training slideshow animations */
+  @keyframes slideShow {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    50% { opacity: 0; }
+    75% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  .animate-slide-1 {
+    animation: slideShow 12s infinite;
+  }
+  
+  .animate-slide-2 {
+    animation: slideShow 12s infinite;
+    animation-delay: 3s;
+  }
+  
+  .animate-slide-3 {
+    animation: slideShow 12s infinite;
+    animation-delay: 6s;
+  }
+  
+  .animate-slide-4 {
+    animation: slideShow 12s infinite;
+    animation-delay: 9s;
+  }
+}

@@ -1,0 +1,67 @@
+"use client"
+
+import { useState, useEffect } from 'react'
+import { extractVideoThumbnail, getCachedThumbnail, cacheThumbnail } from '@/utils/video-thumbnail'
+
+interface VideoThumbnailProps {
+  videoUrl?: string
+  fallbackImage: string
+  videoId: string
+  alt: string
+  className?: string
+  timeOffset?: number
+}
+
+export function VideoThumbnail({ 
+  videoUrl, 
+  fallbackImage, 
+  videoId, 
+  alt, 
+  className = "",
+  timeOffset = 5 
+}: VideoThumbnailProps) {
+  const [thumbnailSrc, setThumbnailSrc] = useState(fallbackImage)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (!videoUrl) return
+
+    // Check if we have a cached thumbnail
+    const cached = getCachedThumbnail(videoId, timeOffset)
+    if (cached) {
+      setThumbnailSrc(cached)
+      return
+    }
+
+    // Extract thumbnail from video
+    setIsLoading(true)
+    extractVideoThumbnail(videoUrl, timeOffset)
+      .then((thumbnail) => {
+        setThumbnailSrc(thumbnail)
+        cacheThumbnail(videoId, timeOffset, thumbnail)
+      })
+      .catch((error) => {
+        console.warn('Failed to extract video thumbnail:', error)
+        // Keep using fallback image
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }, [videoUrl, videoId, timeOffset])
+
+  return (
+    <div className="relative w-full h-full" style={{ margin: 0, padding: 0, display: 'block', lineHeight: 0 }}>
+      <img
+        src={thumbnailSrc}
+        alt={alt}
+        className={`${className} block`}
+        style={{ margin: 0, padding: 0, display: 'block', verticalAlign: 'top' }}
+      />
+      {isLoading && (
+        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+    </div>
+  )
+}
