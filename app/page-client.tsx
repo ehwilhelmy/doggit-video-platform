@@ -219,7 +219,7 @@ function LandingPageClient() {
             {/* Main Title */}
             <div className="space-y-2">
               <h1 className="text-4xl lg:text-6xl font-bold text-white leading-none tracking-tight">
-                Expert Dog Training - UPDATED
+                Expert Dog Training - LIVE NOW
               </h1>
               <h2 className="text-3xl lg:text-5xl font-semibold text-queen-purple">
                 Live Stream
