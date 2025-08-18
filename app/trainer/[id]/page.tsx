@@ -46,7 +46,7 @@ const trainersData = {
         thumbnail_url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face",
         instructor: "Jayme Nolan",
         category: "Puppy Training",
-        video_url: "https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk",
+        video_url: "https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download",
         description: "Master essential puppy training fundamentals with proven techniques.",
         level: "Beginner"
       }

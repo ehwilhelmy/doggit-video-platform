@@ -33,7 +33,7 @@ const videosData = {
     duration: "15 min",
     instructor: "Jayme Nolan",
     instructorBio: "Jayme Nolan has been training dogs for over 15 years and specializes in puppy development and positive reinforcement techniques. She's worked with thousands of puppies and their families.",
-    videoUrl: "https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk",
+    videoUrl: "https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download",
     free: true,
     chapters: [
       { title: "Meet Your Instructor: Jayme Nolan", time: "0:00", duration: "2 min" },

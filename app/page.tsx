@@ -112,9 +112,17 @@ export default function LandingPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState<{ firstName?: string; email?: string } | null>(null)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [mounted, setMounted] = useState(false)
+
+  // Handle hydration
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Check authentication state
   useEffect(() => {
+    if (!mounted) return
+    
     const userData = localStorage.getItem("user")
     const paymentCompleted = localStorage.getItem("paymentCompleted")
     const subscriptionActive = localStorage.getItem("subscriptionActive")
@@ -124,7 +132,7 @@ export default function LandingPage() {
       setUser(parsedUser)
       setIsAuthenticated(parsedUser.isAuthenticated === true)
     }
-  }, [])
+  }, [mounted])
 
   // Countdown timer effect
   useEffect(() => {
@@ -178,11 +186,16 @@ export default function LandingPage() {
 
   const getVideoUrl = (videoId: string) => {
     const videoUrls = {
-      "puppy-basics": "https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk",
+      "puppy-basics": "https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download",
       "advanced-obedience": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800", // placeholder
       "leash-training": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face" // placeholder
     }
     return videoUrls[videoId as keyof typeof videoUrls] || videoUrls["puppy-basics"]
+  }
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return null
   }
 
   return (
@@ -315,7 +328,7 @@ export default function LandingPage() {
             >
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <VideoThumbnail
-                  videoUrl="https://drive.google.com/uc?export=download&id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk"
+                  videoUrl="https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download"
                   fallbackImage="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
                   videoId="puppy-basics"
                   alt="Cute puppy learning basic training"
