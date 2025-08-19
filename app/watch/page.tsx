@@ -33,7 +33,7 @@ const videosData = {
     duration: "15 min",
     instructor: "Jayme Nolan",
     instructorBio: "Jayme Nolan has been training dogs for over 15 years and specializes in puppy development and positive reinforcement techniques. She's worked with thousands of puppies and their families.",
-    videoUrl: "https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download",
+    videoUrl: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
     free: true,
     chapters: [
       { title: "Meet Your Instructor: Jayme Nolan", time: "0:00", duration: "2 min" },
@@ -252,10 +252,11 @@ function WatchPageContent() {
                 src={video.videoUrl}
                 playsInline
                 poster={video.thumbnail}
+                crossOrigin="anonymous"
               />
 
-              {/* Video Thumbnail Overlay (when not playing) */}
-              {!isPlaying && (
+              {/* Video Thumbnail Overlay (only show before first play) */}
+              {!isPlaying && currentTime === 0 && (
                 <div className="absolute inset-0 z-10">
                   <VideoThumbnail
                     videoUrl={video.videoUrl}
