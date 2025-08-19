@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Logo } from "@/components/logo"
 import { VideoThumbnail } from "@/components/video-thumbnail"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { 
   X, 
   Play, 
@@ -94,9 +95,11 @@ function WatchPageContent() {
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(true)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const [duration, setDuration] = useState(174) // Fallback to 2:54 (174 seconds)
   const [volume, setVolume] = useState(1)
   const [activeTab, setActiveTab] = useState<'lessons' | 'notes'>('lessons')
+  const [showRatingModal, setShowRatingModal] = useState(false)
+  const [userRating, setUserRating] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
@@ -172,13 +175,33 @@ function WatchPageContent() {
     const videoEl = videoRef.current
     if (!videoEl) return
 
-    const handlePlay = () => setIsPlaying(true)
+    const handlePlay = () => {
+      setIsPlaying(true)
+      // Fallback: set duration when video starts playing if not already set
+      if (duration === 0 && videoEl.duration) {
+        setDuration(videoEl.duration)
+        console.log("Duration set on play:", videoEl.duration)
+      }
+    }
     const handlePause = () => setIsPlaying(false)
     const handleTimeUpdate = () => {
       setCurrentTime(videoEl.currentTime)
+      // Fallback: set duration during playback if not set
+      if (duration === 0 && videoEl.duration) {
+        setDuration(videoEl.duration)
+        console.log("Duration set during timeupdate:", videoEl.duration)
+      }
+      // Check if video is near the end (within 1 second)
+      if (videoEl.duration && videoEl.currentTime >= videoEl.duration - 1) {
+        if (!showRatingModal) {
+          setShowRatingModal(true)
+          console.log("Video ended - showing rating modal")
+        }
+      }
     }
     const handleLoadedMetadata = () => {
       setDuration(videoEl.duration)
+      console.log("Duration set on loadedmetadata:", videoEl.duration)
     }
     const handleVolumeChange = () => {
       setVolume(videoEl.volume)
@@ -253,6 +276,29 @@ function WatchPageContent() {
                 playsInline
                 poster={video.thumbnail}
                 crossOrigin="anonymous"
+                preload="metadata"
+                onLoadedMetadata={() => {
+                  if (videoRef.current) {
+                    setDuration(videoRef.current.duration)
+                    console.log("Video duration loaded:", videoRef.current.duration)
+                  }
+                }}
+                onCanPlayThrough={() => {
+                  if (videoRef.current && duration === 0) {
+                    setDuration(videoRef.current.duration)
+                    console.log("Duration set on canplaythrough:", videoRef.current.duration)
+                  }
+                }}
+                onDurationChange={() => {
+                  if (videoRef.current) {
+                    setDuration(videoRef.current.duration)
+                    console.log("Duration changed:", videoRef.current.duration)
+                  }
+                }}
+                onError={(e) => {
+                  console.error("Video error:", e)
+                  console.error("Video src:", video.videoUrl)
+                }}
               />
 
               {/* Video Thumbnail Overlay (only show before first play) */}
@@ -294,12 +340,17 @@ function WatchPageContent() {
                 <div className="px-6 pb-4">
                   <div 
                     ref={progressBarRef}
-                    className="relative h-1 bg-white/20 rounded-full cursor-pointer group mb-4"
+                    className="relative h-2 bg-white/30 rounded-full cursor-pointer group mb-4 hover:h-3 transition-all"
                     onClick={handleProgressClick}
                   >
                     <div 
-                      className="absolute h-full bg-queen-purple rounded-full transition-all"
+                      className="absolute h-full bg-jade-purple rounded-full transition-all"
                       style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                    />
+                    {/* Progress indicator dot */}
+                    <div 
+                      className="absolute top-1/2 w-4 h-4 bg-jade-purple rounded-full transform -translate-y-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border-2 border-white"
+                      style={{ left: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                     />
                   </div>
                   
@@ -504,6 +555,71 @@ function WatchPageContent() {
         </div>
       </div>
       </div>
+
+      {/* Rating Modal */}
+      <Dialog open={showRatingModal} onOpenChange={setShowRatingModal}>
+        <DialogContent className="max-w-md w-full bg-zinc-900 border-zinc-700">
+          <DialogTitle className="text-xl font-bold text-white text-center">
+            Rate this Training
+          </DialogTitle>
+          
+          <div className="p-6 text-center">
+            <p className="text-gray-300 mb-6">How was your experience with "{video.title}"?</p>
+            
+            {/* Star Rating */}
+            <div className="flex justify-center gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setUserRating(star)}
+                  className="transition-colors"
+                >
+                  <Star 
+                    className={`h-8 w-8 ${
+                      star <= userRating 
+                        ? 'text-yellow-400 fill-yellow-400' 
+                        : 'text-gray-400 hover:text-yellow-300'
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+            
+            {userRating > 0 && (
+              <p className="font-medium mb-4" style={{ color: '#9B86FF' }}>
+                {userRating === 5 ? 'Excellent!' : 
+                 userRating === 4 ? 'Great!' : 
+                 userRating === 3 ? 'Good!' : 
+                 userRating === 2 ? 'Okay' : 'Could be better'}
+              </p>
+            )}
+            
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 border-zinc-600 hover:bg-zinc-800 hover:text-white bg-white"
+                style={{ color: '#9B86FF' }}
+                onClick={() => setShowRatingModal(false)}
+              >
+                Skip
+              </Button>
+              <Button
+                className="flex-1 hover:opacity-90 text-white"
+                style={{ backgroundColor: '#9B86FF' }}
+                onClick={() => {
+                  // Save rating logic here
+                  console.log('Rating submitted:', userRating)
+                  setShowRatingModal(false)
+                  // Could redirect to more videos or show thank you
+                }}
+                disabled={userRating === 0}
+              >
+                Submit Rating
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
