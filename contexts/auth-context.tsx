@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 interface AuthContextType {
   user: any | null
@@ -15,19 +15,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  // Check for existing session on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        if (userData.isAuthenticated) {
+          setUser(userData)
+        }
+      } catch (error) {
+        console.error('Error parsing stored user:', error)
+      }
+    }
+    setLoading(false)
+  }, [])
 
   const signUp = async (email: string, password: string, metadata = {}) => {
     // Mock signup for demo
-    setUser({ email, ...metadata })
-    localStorage.setItem('user', JSON.stringify({ email, ...metadata, isAuthenticated: true }))
-    return { data: { email, ...metadata }, error: null }
+    const userData = { email, ...metadata, isAuthenticated: true, created_at: new Date().toISOString() }
+    setUser(userData)
+    localStorage.setItem('user', JSON.stringify(userData))
+    return { data: userData, error: null }
   }
 
   const signIn = async (email: string, password: string) => {
     // Mock signin for demo
-    setUser({ email })
-    localStorage.setItem('user', JSON.stringify({ email, isAuthenticated: true }))
+    const userData = { email, isAuthenticated: true, created_at: new Date().toISOString() }
+    setUser(userData)
+    localStorage.setItem('user', JSON.stringify(userData))
     return { error: null }
   }
 

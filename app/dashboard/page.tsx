@@ -2,9 +2,6 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
-
-// Force dynamic rendering to avoid SSG issues with useSearchParams
-export const dynamic = 'force-dynamic'
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
