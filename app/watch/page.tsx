@@ -30,7 +30,7 @@ const videosData = {
     title: "Puppy Basics",
     description: "Master essential puppy training fundamentals with proven techniques from expert trainer Jayme Nolan. Learn the foundation skills every puppy needs for a lifetime of good behavior.",
     thumbnail: "https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=1920&h=1080&fit=crop",
-    duration: "15 min",
+    duration: "2:54",
     instructor: "Jayme Nolan",
     instructorBio: "Jayme Nolan has been training dogs for over 15 years and specializes in puppy development and positive reinforcement techniques. She's worked with thousands of puppies and their families.",
     videoUrl: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",

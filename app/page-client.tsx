@@ -10,6 +10,7 @@ import { Header } from "@/components/header"
 import { SignUpModal } from "@/components/signup-modal"
 import { SignInModal } from "@/components/signin-modal"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { 
   PlayCircle, 
@@ -109,6 +110,7 @@ function LandingPageClient() {
   const [selectedTrainingGoals, setSelectedTrainingGoals] = useState<string[]>([])
   const [showTrailerModal, setShowTrailerModal] = useState(false)
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
+  const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState<{ firstName?: string; email?: string } | null>(null)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
@@ -166,6 +168,7 @@ function LandingPageClient() {
 
   const handleVideoPreview = (videoId: string) => {
     setSelectedVideoId(videoId)
+    setShowSubscriptionPrompt(false) // Reset subscription prompt
     setShowTrailerModal(true)
   }
 
@@ -178,7 +181,7 @@ function LandingPageClient() {
 
   const getVideoUrl = (videoId: string) => {
     const videoUrls = {
-      "puppy-basics": "https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download",
+      "puppy-basics": "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
       "advanced-obedience": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800", // placeholder
       "leash-training": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face" // placeholder
     }
@@ -315,7 +318,7 @@ function LandingPageClient() {
             >
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <VideoThumbnail
-                  videoUrl="https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download"
+                  videoUrl="https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4"
                   fallbackImage="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
                   videoId="puppy-basics"
                   alt="Cute puppy learning basic training"
@@ -657,26 +660,38 @@ function LandingPageClient() {
       {/* Compact Teaser Modal with Subscribe CTA */}
       <Dialog open={showTrailerModal} onOpenChange={setShowTrailerModal}>
         <DialogContent className="max-w-2xl w-full p-0 bg-black border-0">
+          <DialogPrimitive.Title className="sr-only">Video Preview</DialogPrimitive.Title>
           <div className="relative aspect-video">
             {selectedVideoId && (
               <video
                 className="w-full h-full rounded-lg"
                 src={getVideoUrl(selectedVideoId)}
+                poster="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&h=600&fit=crop&crop=face"
                 controls
                 autoPlay
+                playsInline
+                crossOrigin="anonymous"
                 onTimeUpdate={(e) => {
                   // Stop video after 30 seconds for teaser
                   const video = e.target as HTMLVideoElement
                   if (video.currentTime >= 30) {
                     video.pause()
                     video.currentTime = 30
+                    setShowSubscriptionPrompt(true)
                   }
+                }}
+                onError={(e) => {
+                  console.error("Video error:", e)
+                }}
+                onLoadStart={() => {
+                  console.log("Video loading started for:", selectedVideoId)
                 }}
               />
             )}
             
-            {/* Compact Paywall Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end">
+            {/* Compact Paywall Overlay - Only show after 30 seconds */}
+            {showSubscriptionPrompt && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end">
               <div className="w-full p-4 text-center">
                 <div className="bg-black/90 backdrop-blur-sm rounded-lg p-4">
                   <h3 className="text-lg font-bold text-white mb-2">Want to see more?</h3>
@@ -701,7 +716,8 @@ function LandingPageClient() {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
