@@ -129,7 +129,7 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
                 onClick={handlePlayClick}
               >
                 <PlayCircle className="h-4 w-4 mr-1" />
-                {isSubscribed ? 'Play' : 'Watch Trailer'}
+{isSubscribed ? 'Watch Now' : 'Watch Trailer'}
               </Button>
               
               <Button

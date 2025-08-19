@@ -47,8 +47,6 @@ function DashboardContent() {
 
   // Check subscription status and demo mode on mount
   useEffect(() => {
-    const subscriptionActive = localStorage.getItem("subscriptionActive")
-    const paymentCompleted = localStorage.getItem("paymentCompleted")
     const demoMode = localStorage.getItem("demoMode") === "true"
     const isDemo = searchParams.get("demo") === "true" || demoMode
     const isWelcome = searchParams.get("welcome") === "true"
@@ -85,7 +83,8 @@ function DashboardContent() {
       }
     }
     
-    setIsSubscribed(subscriptionActive === "true" && paymentCompleted === "true")
+    // If user is authenticated, they have access (subscription is active)
+    setIsSubscribed(!!user)
     setIsDemoMode(isDemo)
   }, [searchParams, user])
 
