@@ -44,23 +44,13 @@ const instructors = [
   },
   {
     id: 2,
-    name: "Cameron Simpson",
-    title: "Co-founder, Co-CEO",
-    avatar: "https://storage.googleapis.com/dogg-t.appspot.com/public/homepage/founders_cameron.jpg",
-    students: "20+ years",
+    name: "Jayme Nolan",
+    title: "AKC Breeder of Merit & Behavior Specialist",
+    avatar: "/Jayme-Nolan.JPG",
+    students: "15+ years",
     rating: 4.9,
-    specialty: "Training & Showing",
-    description: "Over 20+ years experience raising, training and showing dogs. Owner of a top 5 Spinone Italiano in 2022."
-  },
-  {
-    id: 3,
-    name: "Carley Simpson",
-    title: "Co-founder, Co-CEO",
-    avatar: "https://storage.googleapis.com/dogg-t.appspot.com/public/homepage/founders_carley.jpg",
-    students: "25+ years",
-    rating: 4.9,
-    specialty: "Professional Showing",
-    description: "2000 Westminster Kennel Club Junior Showmanship 3rd Place. Over 25+ years raising, training and showing dogs."
+    specialty: "Animal Behavior & Competition",
+    description: "Degree in Animal Behavior with 15+ years running her own training and boarding business. Breeder of Merit of Vizslas, she fosters dogs, and competes in performance sports."
   }
 ]
 
@@ -212,53 +202,53 @@ function LandingPageClient() {
         
         {/* Main Content - Centered */}
         <div className="relative z-10 w-full text-center px-4 lg:px-8 py-16">
-          <div className="max-w-5xl mx-auto space-y-6">
+          <div className="max-w-5xl mx-auto space-y-6 pt-12">
             {/* Live Indicator */}
             <div className="inline-flex items-center gap-2 text-queen-purple px-6 py-3">
               <div className="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold tracking-wider">LIVE EVENT</span>
+              <span className="text-sm font-semibold tracking-wider">Coming Soon</span>
             </div>
             
             {/* Main Title */}
             <div className="space-y-2">
               <h1 className="text-4xl lg:text-6xl font-bold text-white leading-none tracking-tight">
-                Expert Dog Training - LIVE NOW
+                Expert Dog Training
               </h1>
-              <h2 className="text-3xl lg:text-5xl font-semibold text-queen-purple">
-                Live Stream
+              <h2 className="text-2xl lg:text-4xl font-semibold text-queen-purple">
+                Live Stream Event
               </h2>
             </div>
             
             {/* Subtitle */}
             <p className="text-lg lg:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Join renowned trainer <span className="text-white font-semibold">Carley Simpson</span> for an exclusive live stream.
+              Join reowned trainer <span className="text-white font-semibold">Jayme Nolan </span> for an exclusive live stream.
             </p>
             
-            {/* Event Details - No Card */}
+            {/* Event Details - White Box */}
             <div className="max-w-2xl mx-auto space-y-6">
-              <div className="text-center">
-                <h3 className="text-lg font-medium text-white mb-3">Event starts in</h3>
+              <div className="bg-white/85 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Event starts in</h3>
                 
                 {/* Compact Countdown Timer */}
                 <div className="inline-flex items-center gap-3">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">{timeLeft.days.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wide">Days</div>
+                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.days.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-600 uppercase tracking-wide">Days</div>
                   </div>
-                  <div className="text-white/40 text-2xl font-bold">:</div>
+                  <div className="text-queen-purple/40 text-2xl font-bold">:</div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wide">Hours</div>
+                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.hours.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-600 uppercase tracking-wide">Hours</div>
                   </div>
-                  <div className="text-white/40 text-2xl font-bold">:</div>
+                  <div className="text-queen-purple/40 text-2xl font-bold">:</div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wide">Min</div>
+                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.minutes.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-600 uppercase tracking-wide">Min</div>
                   </div>
-                  <div className="text-white/40 text-2xl font-bold">:</div>
+                  <div className="text-queen-purple/40 text-2xl font-bold">:</div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-white">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wide">Sec</div>
+                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.seconds.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-600 uppercase tracking-wide">Sec</div>
                   </div>
                 </div>
               </div>
@@ -277,7 +267,7 @@ function LandingPageClient() {
                 <div className="hidden sm:block w-1 h-1 bg-gray-600 rounded-full"></div>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-queen-purple" />
-                  <span className="text-sm font-medium">Carley Simpson</span>
+                  <span className="text-sm font-medium">Jayme Nolan</span>
                 </div>
               </div>
             </div>
@@ -302,11 +292,18 @@ function LandingPageClient() {
       <section className="py-16 bg-black">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-              Essential Puppy Training.
+            <Badge className="mb-4 bg-jade-purple text-white text-xs sm:text-sm px-3 sm:px-4 py-1">
+              The Puppy Pack
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
+            Puppy Training Essentials
             </h2>
-            <p className="text-lg text-gray-300">
-              Start with the basics every puppy owner needs to know.
+            <p className="text-base sm:text-lg text-gray-300 mb-3 px-4 sm:px-0">
+            Set your pup up for success with our Puppy Pack collection.
+
+            </p>
+            <p className="text-sm sm:text-base text-queen-purple font-semibold px-4 sm:px-0">
+              Coming Soon: Training for all dogs - all breeds, mixes, and ages!
             </p>
           </div>
           
@@ -331,15 +328,14 @@ function LandingPageClient() {
                 {/* Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <Badge className="mb-3 bg-jade-purple text-white">
-                    Essential
+                  Foundation
                   </Badge>
                   <h3 className="text-xl font-bold text-white mb-2">
                     PUPPY BASICS
-                    <br />
-                    WITH JAYME NOLAN
+                    
                   </h3>
                   <p className="text-gray-300 text-sm mb-4">
-                    Master essential puppy training fundamentals with proven techniques from expert trainer Jayme Nolan.
+                    Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.
                   </p>
                   
                   {/* Watch Teaser Button */}
@@ -369,8 +365,8 @@ function LandingPageClient() {
             >
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop&crop=face"
-                  alt="Advanced dog obedience training"
+                  src="https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=400&h=300&fit=crop&crop=face"
+                  alt="Puppy learning advanced training techniques"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -378,15 +374,14 @@ function LandingPageClient() {
                 {/* Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <Badge className="mb-3 bg-queen-purple text-white">
-                    Obedience
+                  Training
                   </Badge>
                   <h3 className="text-xl font-bold text-white mb-2">
-                    ADVANCED OBEDIENCE
-                    <br />
-                    WITH MIKE CHEN
+                    ADVANCED TRAINING
+                   
                   </h3>
                   <p className="text-gray-300 text-sm mb-4">
-                    Take your dog's training to the next level with advanced obedience commands.
+                    Take your dog's training to the next level with advanced training techniques.
                   </p>
                   
                   {/* Watch Teaser Button */}
@@ -429,8 +424,7 @@ function LandingPageClient() {
                   </Badge>
                   <h3 className="text-xl font-bold text-white mb-2">
                     LEASH TRAINING
-                    <br />
-                    WITH EMILY RODRIGUEZ
+                    
                   </h3>
                   <p className="text-gray-300 text-sm mb-4">
                     Learn effective leash training techniques for enjoyable walks.
@@ -471,7 +465,7 @@ function LandingPageClient() {
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {instructors.map((instructor) => (
               <div key={instructor.id} className="group">
                 <div className="relative overflow-hidden rounded-2xl bg-zinc-800/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 border border-zinc-700/50">
@@ -528,61 +522,66 @@ function LandingPageClient() {
             </p>
           </div>
           
-          <div className="max-w-2xl mx-auto">
-            {/* Special Offer Card */}
-            <Card className="relative overflow-hidden bg-gradient-to-br from-queen-purple to-jade-purple border-purple-500/20 shadow-xl">
-              <div className="absolute top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 text-sm font-bold">
-                SPECIAL OFFER - Save 90%
-              </div>
-              <CardContent className="p-8 pt-12">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-white mb-4">Get Started Today</h3>
-                  <div className="mb-6">
-                    <div className="flex items-baseline justify-center gap-2 mb-2">
-                      <span className="text-5xl font-bold text-white">$1</span>
-                      <span className="text-purple-100 text-lg">first month</span>
-                    </div>
-                    <div className="text-sm text-purple-100 mb-2">Then $10/month • Cancel anytime</div>
-                    <div className="text-xs text-purple-200">Save 90% on your first month</div>
-                  </div>
-                  
-                  <ul className="space-y-3 mb-8 text-left">
-                    <li className="flex items-center gap-3 text-white">
-                      <CheckCircle className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                      <span>Expert Training Videos</span>
-                    </li>
-                    <li className="flex items-center gap-3 text-white">
-                      <CheckCircle className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                      <span>Mobile App + Offline Access</span>
-                    </li>
-                    <li className="flex items-center gap-3 text-white">
-                      <CheckCircle className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                      <span>Community Support (50,000+ members)</span>
-                    </li>
-                    <li className="flex items-center gap-3 text-white">
-                      <CheckCircle className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                      <span>30-Day Money-Back Guarantee</span>
-                    </li>
-                  </ul>
-                  
-                  <Button 
-                    className="w-full bg-white text-purple-700 hover:bg-gray-100 py-4 text-lg font-bold shadow-lg transform hover:scale-105 transition-all"
-                    onClick={handleGetStarted}
-                  >
-                    Start Your $1 Trial
-                  </Button>
-                  
-                  <p className="text-xs text-purple-200 mt-4">
-                    Cancel anytime • No commitments • Instant access
-                  </p>
+          <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-8 items-center">
+            {/* Special Offer Card - Left Side */}
+            <div>
+              <Card className="relative overflow-hidden bg-gradient-to-br from-queen-purple to-jade-purple border-purple-500/20 shadow-xl">
+                <div className="absolute top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 text-sm font-bold">
+                  SPECIAL OFFER - Save 90%
                 </div>
-              </CardContent>
-            </Card>
+                <CardContent className="p-6 pt-10">
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-white mb-3">Get Started Today</h3>
+                    <div className="mb-4">
+                      <div className="flex items-baseline justify-center gap-2 mb-1">
+                        <span className="text-5xl font-bold text-white">$1</span>
+                        <span className="text-purple-100 text-lg">first month</span>
+                      </div>
+                      <div className="text-sm text-purple-100 mb-1">Then $10/month</div>
+                      <div className="text-xs text-purple-200">Save 90% on your first month</div>
+                    </div>
+                    
+                    <Button 
+                      className="w-full bg-white text-purple-700 hover:bg-gray-100 py-4 text-lg font-bold shadow-lg transform hover:scale-105 transition-all"
+                      onClick={handleGetStarted}
+                    >
+                      Start Your $1 Trial
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Bullet points - Right Side */}
+            <div>
+              <ul className="space-y-4 text-left">
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
+                  <span className="text-lg">Cancel anytime • No commitments • Instant access</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
+                  <span className="text-lg">Expert Training Videos</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
+                  <span className="text-lg">New Videos Released Monthly</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
+                  <span className="text-lg">Community Support (50,000+ members)</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-300">
+                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
+                  <span className="text-lg">30-Day Money-Back Guarantee</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section 
       <section className="py-16 bg-black">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
@@ -611,7 +610,7 @@ function LandingPageClient() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* Footer */}
       <footer className="bg-jade-purple py-4">

@@ -126,16 +126,10 @@ function OnboardingGoalsWebContent() {
         
         <div className="container mx-auto px-6 py-16 lg:py-24 relative">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Progress Steps */}
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="h-2 w-12 bg-queen-purple rounded-full" />
-              <div className="h-2 w-12 bg-queen-purple rounded-full" />
-              <div className="h-2 w-12 bg-queen-purple rounded-full" />
-            </div>
 
-            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4">
-              What would you like to work on with {pupName || 'your pup'}?
-            </h1>
+            <h2 className="text-4xl lg:text-6xl font-bold text-white mb-4">
+              What would you like to work on with <span className="text-purple-400">{pupName || 'your pup'}</span>?
+            </h2>
             <p className="text-xl text-gray-300 mb-12">
               Help us prioritize what content to create next. We'll notify you when new courses are available!
             </p>
@@ -161,22 +155,6 @@ function OnboardingGoalsWebContent() {
                       }
                     `}
                   >
-                    {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
-                      {selected ? (
-                        <div className="bg-queen-purple rounded-full p-1">
-                          <Check className="h-4 w-4 text-white" />
-                        </div>
-                      ) : goal.status === "available" ? (
-                        <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                          Available
-                        </span>
-                      ) : (
-                        <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                          Coming Soon
-                        </span>
-                      )}
-                    </div>
 
                     {/* Icon */}
                     <div className={`
@@ -193,9 +171,26 @@ function OnboardingGoalsWebContent() {
                     <h3 className={`font-bold text-lg mb-2 ${selected ? 'text-white' : 'text-gray-200'}`}>
                       {goal.label}
                     </h3>
-                    <p className={`text-sm ${selected ? 'text-gray-200' : 'text-gray-400'}`}>
+                    <p className={`text-sm mb-4 ${selected ? 'text-gray-200' : 'text-gray-400'}`}>
                       {goal.description}
                     </p>
+
+                    {/* Status Badge at bottom */}
+                    <div className="flex justify-center">
+                      {selected ? (
+                        <div className="bg-queen-purple rounded-full p-1">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                      ) : goal.status === "available" ? (
+                        <span className="bg-zinc-800 text-green-400 text-xs px-3 py-1 rounded-full font-medium border border-zinc-700">
+                          Available
+                        </span>
+                      ) : (
+                        <span className="bg-zinc-800 text-amber-400 text-xs px-3 py-1 rounded-full font-medium border border-zinc-700">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
 
                     {/* Hover Effect */}
                     {isHovered && !selected && (

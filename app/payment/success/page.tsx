@@ -106,7 +106,7 @@ function PaymentSuccessContent() {
       // In production, this would trigger an email service
       console.log('Welcome email would be sent to:', email)
       
-      // Redirect to web version of onboarding goals
+      // Redirect to personalized goals selection with pup name
       setTimeout(() => {
         router.push(`/onboarding/goals-web?email=${encodeURIComponent(email)}&pup=${encodeURIComponent(formData.pupName)}`)
       }, 500)
@@ -127,36 +127,47 @@ function PaymentSuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        {/* Success Checkmark Animation */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-fade-in">
-            <Check className="h-10 w-10 text-white" />
+    <div className="min-h-screen bg-black">
+      {/* Progress Bar */}
+      <div className="w-full bg-zinc-900 h-2">
+        <div className="h-full bg-gradient-to-r from-queen-purple to-jade-purple" style={{ width: '100%' }}></div>
+      </div>
+      
+      {/* Success Banner */}
+      <div className="bg-green-50 border border-green-200 text-green-800 py-3 px-6 text-center">
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+            <Check className="h-3 w-3 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Payment Successful!
-          </h1>
-          <p className="text-gray-400">
-            Let's set up your DOGGIT account
-          </p>
+          <span className="font-medium">Payment Successful!</span>
         </div>
-        
-        {/* Account Setup Form */}
-        <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800">
-          <div className="text-center mb-6">
-            <Image
-              src="/doggit-logo-mark.svg"
-              alt="DOGGIT Logo"
-              width={60}
-              height={55}
-              className="brightness-0 invert opacity-90 mx-auto mb-4"
-            />
-            <h2 className="text-xl font-semibold text-white">
-              Almost done! Let's secure your account
-            </h2>
+      </div>
+      
+      <div className="flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          {/* Header with Logo and Title */}
+          <div className="text-center mb-12">
+            {/* DOGGIT Logo Mark */}
+            <div className="w-20 h-20 mx-auto mb-6">
+              <Image
+                src="/doggit-logo-mark.svg"
+                alt="DOGGIT Logo"
+                width={80}
+                height={73}
+                className="brightness-0 invert opacity-90"
+              />
+            </div>
+            
+            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+              Almost Done! 
+            </h1>
+            <p className="text-xl text-gray-300">
+              Let's Secure Your Account
+            </p>
           </div>
           
+          {/* Account Setup Form */}
+          <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email (read-only) */}
             <div>
@@ -312,6 +323,7 @@ function PaymentSuccessContent() {
               Your information is secure and encrypted
             </p>
           </div>
+        </div>
         </div>
       </div>
     </div>

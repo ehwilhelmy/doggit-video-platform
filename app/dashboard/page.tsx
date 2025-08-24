@@ -80,8 +80,15 @@ function DashboardContent() {
       }
     }
     
-    // If user is authenticated, they have access (subscription is active)
-    setIsSubscribed(!!user)
+    // Check subscription status from localStorage or user auth
+    const subscriptionActive = localStorage.getItem("subscriptionActive") === "true"
+    const paymentCompleted = localStorage.getItem("paymentCompleted") === "true"
+    const isAuthenticatedLocal = localStorage.getItem("isAuthenticated") === "true"
+    const hasActiveSubscription = subscriptionActive || paymentCompleted
+    
+    // If user is authenticated (either through Supabase or localStorage) and has completed payment, they have access
+    const isUserAuthenticated = !!user || isAuthenticatedLocal
+    setIsSubscribed(isUserAuthenticated && hasActiveSubscription)
     setIsDemoMode(isDemo)
   }, [searchParams, user])
 
@@ -92,13 +99,14 @@ function DashboardContent() {
     setVideos([
       {
         id: "puppy-basics",
-        title: "Puppy Basics",
+        title: "PUPPY BASICS",
         duration: "2:54",
         thumbnail_url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face",
         instructor: "Jayme Nolan",
-        category: "Puppy Training",
+        category: "Foundation",
         video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
-        description: "Master essential puppy training fundamentals with proven techniques from expert trainer Jayme Nolan."
+        description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
+        tags: ["Foundation", "Puppy", "Basics"]
       },
       {
         id: "advanced-obedience",

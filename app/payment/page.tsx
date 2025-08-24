@@ -18,15 +18,32 @@ function PaymentPageContent() {
   const fromDemo = searchParams.get("from") === "demo"
   const fromModal = searchParams.get("from") === "modal"
   const videoId = searchParams.get("video")
-  const isDemoMode = fromDemo || localStorage.getItem("demoMode") === "true"
+  const [isDemoMode, setIsDemoMode] = useState(fromDemo)
   
   const [formData, setFormData] = useState({
-    email: isDemoMode ? "demo@doggit.app" : "",
-    cardNumber: isDemoMode ? "4242 4242 4242 4242" : "",
-    expiryDate: isDemoMode ? "12/28" : "",
-    cvv: isDemoMode ? "123" : "",
-    nameOnCard: isDemoMode ? "Demo User" : ""
+    email: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    nameOnCard: ""
   })
+
+  // Check demo mode after component mounts (client-side only)
+  useEffect(() => {
+    const demoModeFromStorage = typeof window !== 'undefined' ? localStorage.getItem("demoMode") === "true" : false
+    const isDemo = fromDemo || demoModeFromStorage
+    setIsDemoMode(isDemo)
+    
+    if (isDemo) {
+      setFormData({
+        email: "demo@doggit.app",
+        cardNumber: "4242 4242 4242 4242",
+        expiryDate: "12/28",
+        cvv: "123",
+        nameOnCard: "Demo User"
+      })
+    }
+  }, [fromDemo])
   const [isProcessing, setIsProcessing] = useState(false)
 
   const handleInputChange = (field: string, value: string) => {
@@ -59,6 +76,11 @@ function PaymentPageContent() {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Progress Bar */}
+      <div className="w-full bg-zinc-900 h-2">
+        <div className="h-full bg-gradient-to-r from-queen-purple to-jade-purple" style={{ width: '66%' }}></div>
+      </div>
+
       {/* Header */}
       <header className="bg-zinc-900 border-b border-zinc-800">
         <div className="container mx-auto px-6 py-4">
@@ -249,23 +271,23 @@ function PaymentPageContent() {
 
               {/* What's Included */}
               <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-sm">
-                <h4 className="font-semibold text-white mb-4 text-lg">WHAT'S INCLUDED:</h4>
+                <h4 className="font-semibold text-white mb-4 text-lg">WHAT'S INCLUDED</h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-queen-purple rounded-full"></div>
-                    <span className="text-gray-300">50+ Expert Training Videos</span>
+                    <span className="text-gray-300">Puppy Basics (3 videos)</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-queen-purple rounded-full"></div>
-                    <span className="text-gray-300">Mobile App + Offline Downloads</span>
+                    <span className="text-gray-300">Fresh Content Monthly</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-queen-purple rounded-full"></div>
-                    <span className="text-gray-300">Community Support</span>
+                    <span className="text-gray-300">Dog Psychology for Dogs of All Ages</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-queen-purple rounded-full"></div>
-                    <span className="text-gray-300">30-Day Money-Back Guarantee</span>
+                    <span className="text-gray-300">Engagement to Inspire Future Content</span>
                   </div>
                 </div>
               </div>
@@ -277,7 +299,7 @@ function PaymentPageContent() {
                   <span className="font-semibold text-lg">PROTECTED PURCHASE</span>
                 </div>
                 <p className="text-gray-300">
-                  30-day money-back guarantee • Cancel anytime • Secure checkout
+                  Cancel anytime • Secure checkout
                 </p>
               </div>
             </div>
