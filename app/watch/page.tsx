@@ -28,12 +28,12 @@ import {
 
 const videosData = {
   "puppy-basics": {
-    title: "Puppy Basics",
-    description: "Master essential puppy training fundamentals with proven techniques from expert trainer Jayme Nolan. Learn the foundation skills every puppy needs for a lifetime of good behavior.",
-    thumbnail: "https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=1920&h=1080&fit=crop",
+    title: "PUPPY BASICS",
+    description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
+    thumbnail: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&h=1080&fit=crop",
     duration: "2:54",
     instructor: "Jayme Nolan",
-    instructorBio: "Jayme Nolan has been training dogs for over 15 years and specializes in puppy development and positive reinforcement techniques. She's worked with thousands of puppies and their families.",
+    instructorBio: "Degree in Animal Behavior with 15+ years running her own training and boarding business. Breeder of Merit of Vizslas, she fosters dogs, and competes in performance sports.",
     videoUrl: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
     free: true,
     chapters: [
@@ -45,31 +45,31 @@ const videosData = {
     ]
   },
   "advanced-obedience": {
-    title: "Advanced Obedience Commands",
-    description: "Take your dog's training to the next level with advanced obedience commands and techniques for better control and communication.",
+    title: "CRATE TRAINING",
+    description: "Tap into your dog's natural instincts to create confidence and comfort in their crate.",
     thumbnail: "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=1920&h=1080&fit=crop",
     duration: "18 min",
-    instructor: "Mike Chen",
-    instructorBio: "Mike Chen is a certified dog behaviorist with 12 years of experience. He specializes in advanced training techniques and has worked with working dogs and service animals.",
-    videoUrl: "/videos/advanced-obedience.mp4",
+    instructor: "Jayme Nolan",
+    instructorBio: "Degree in Animal Behavior with 15+ years running her own training and boarding business. Breeder of Merit of Vizslas, she fosters dogs, and competes in performance sports.",
+    videoUrl: "/videos/crate-training.mp4",
     chapters: [
-      { title: "Meet Your Instructor: Mike Chen", time: "0:00", duration: "2 min" },
-      { title: "Advanced Heel Command", time: "2:30", duration: "4 min" },
-      { title: "Distance Commands", time: "6:45", duration: "5 min" },
-      { title: "Emergency Recall", time: "11:30", duration: "4 min" },
-      { title: "Practice & Troubleshooting", time: "15:45", duration: "3 min" }
+      { title: "Meet Your Instructor: Jayme Nolan", time: "0:00", duration: "2 min" },
+      { title: "Understanding Crate Psychology", time: "2:30", duration: "4 min" },
+      { title: "Creating Positive Associations", time: "6:45", duration: "5 min" },
+      { title: "Gradual Crate Introduction", time: "11:30", duration: "4 min" },
+      { title: "Troubleshooting Common Issues", time: "15:45", duration: "3 min" }
     ]
   },
   "leash-training": {
-    title: "Leash Training Techniques",
-    description: "Learn effective leash training techniques to make walks enjoyable for both you and your dog. End pulling and create positive walking experiences.",
-    thumbnail: "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=1920&h=1080&fit=crop",
+    title: "LEASH TRAINING",
+    description: "Learn effective leash training techniques for enjoyable walks.",
+    thumbnail: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1920&h=1080&fit=crop",
     duration: "15 min",
-    instructor: "Emily Rodriguez",
-    instructorBio: "Emily Rodriguez has been a professional dog trainer for 10 years, specializing in leash reactivity and walking behavior. She's helped hundreds of dogs become confident walkers.",
+    instructor: "Jayme Nolan",
+    instructorBio: "Degree in Animal Behavior with 15+ years running her own training and boarding business. Breeder of Merit of Vizslas, she fosters dogs, and competes in performance sports.",
     videoUrl: "/videos/leash-training.mp4",
     chapters: [
-      { title: "Meet Your Instructor: Emily Rodriguez", time: "0:00", duration: "2 min" },
+      { title: "Meet Your Instructor: Jayme Nolan", time: "0:00", duration: "2 min" },
       { title: "Understanding Pulling Behavior", time: "2:15", duration: "3 min" },
       { title: "Proper Equipment Setup", time: "5:30", duration: "3 min" },
       { title: "Training Techniques", time: "8:45", duration: "4 min" },
@@ -447,110 +447,18 @@ function WatchPageContent() {
             <p className="text-xs lg:text-sm text-gray-300 leading-relaxed">{video.instructorBio}</p>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex border-b border-zinc-800">
-            <button
-              onClick={() => setActiveTab('lessons')}
-              className={`flex-1 px-4 lg:px-6 py-3 text-xs lg:text-sm font-medium transition-colors ${
-                activeTab === 'lessons'
-                  ? 'text-white border-b-2 border-queen-purple bg-queen-purple/10'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              All Lessons
-            </button>
-            <button
-              onClick={() => setActiveTab('notes')}
-              className={`flex-1 px-4 lg:px-6 py-3 text-xs lg:text-sm font-medium transition-colors ${
-                activeTab === 'notes'
-                  ? 'text-white border-b-2 border-queen-purple bg-queen-purple/10'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              My Notes
-            </button>
-          </div>
-
-          {/* Tab Content */}
+          {/* Notes Section */}
           <div className="flex-1 overflow-y-auto">
-            {activeTab === 'lessons' && (
-              <div className="p-4 lg:p-6">
-                <p className="text-gray-300 text-xs lg:text-sm mb-4 lg:mb-6">
-                  Pioneering training expert {video.instructor} teaches you the fundamentals of dog training through hands-on lessons.
-                </p>
-                
-                <div className="text-xs lg:text-sm text-gray-400 mb-3 lg:mb-4">
-                  {video.chapters.length} lessons • {video.duration}
-                </div>
-
-                {/* Current Lesson Chapters */}
-                <div className="space-y-3 mb-8">
-                  {video.chapters.map((chapter, index) => (
-                    <button
-                      key={index}
-                      onClick={() => jumpToChapter(chapter.time)}
-                      className="w-full text-left p-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 transition-colors group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-16 h-12 bg-zinc-700 rounded flex items-center justify-center text-gray-400 group-hover:text-white">
-                          <PlayCircle className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-white text-sm font-medium mb-1">
-                            {index + 1}. {chapter.title}
-                          </h4>
-                          <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <span>{chapter.time}</span>
-                            <span>•</span>
-                            <span>{chapter.duration}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Other Videos */}
-                <div className="border-t border-zinc-800 pt-6">
-                  <h4 className="text-white font-medium mb-4">More Training Videos</h4>
-                  <div className="space-y-3">
-                    {allVideos.filter(v => v.id !== videoId).map((otherVideo) => (
-                      <button
-                        key={otherVideo.id}
-                        onClick={() => router.push(`/watch?v=${otherVideo.id}`)}
-                        className="w-full text-left p-3 rounded-lg bg-zinc-800/30 hover:bg-zinc-800 transition-colors group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={otherVideo.thumbnail}
-                            alt={otherVideo.title}
-                            className="w-16 h-12 object-cover rounded"
-                          />
-                          <div className="flex-1">
-                            <h5 className="text-white text-sm font-medium mb-1 group-hover:text-queen-purple">
-                              {otherVideo.title}
-                            </h5>
-                            <p className="text-xs text-gray-400">{otherVideo.instructor} • {otherVideo.duration}</p>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'notes' && (
-              <div className="p-4 lg:p-6">
-                <textarea
-                  placeholder="Take notes while you watch..."
-                  className="w-full h-64 lg:h-96 bg-zinc-800 border border-zinc-700 rounded-lg p-3 lg:p-4 text-sm lg:text-base text-white placeholder-gray-400 resize-none focus:outline-none focus:border-queen-purple"
-                />
-                <Button className="w-full mt-3 lg:mt-4 bg-queen-purple hover:bg-queen-purple/90 text-sm lg:text-base">
-                  Save Notes
-                </Button>
-              </div>
-            )}
+            <div className="p-4 lg:p-6">
+              <h4 className="text-white font-medium mb-4">My Notes</h4>
+              <textarea
+                placeholder="Take notes while you watch..."
+                className="w-full h-64 lg:h-96 bg-zinc-800 border border-zinc-700 rounded-lg p-3 lg:p-4 text-sm lg:text-base text-white placeholder-gray-400 resize-none focus:outline-none focus:border-queen-purple"
+              />
+              <Button className="w-full mt-3 lg:mt-4 bg-queen-purple hover:bg-queen-purple/90 text-sm lg:text-base">
+                Save Notes
+              </Button>
+            </div>
           </div>
         </div>
       </div>

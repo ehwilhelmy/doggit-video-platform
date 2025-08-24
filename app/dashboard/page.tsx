@@ -25,7 +25,8 @@ import {
   Star,
   PartyPopper,
   Video,
-  BookOpen
+  BookOpen,
+  Check
 } from "lucide-react"
 
 function DashboardContent() {
@@ -35,6 +36,7 @@ function DashboardContent() {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
+  const [showPreferencesConfirm, setShowPreferencesConfirm] = useState(false)
   const [userName, setUserName] = useState("")
   const [pupName, setPupName] = useState("")
   const [trainingGoals, setTrainingGoals] = useState<string[]>([])
@@ -48,6 +50,7 @@ function DashboardContent() {
     const isDemo = searchParams.get("demo") === "true" || demoMode
     const isWelcome = searchParams.get("welcome") === "true"
     const personalized = searchParams.get("personalized") === "true"
+    const fromGoals = searchParams.get("from") === "goals"
     
     // Get pup's name and training goals from localStorage
     const storedPupName = localStorage.getItem("pupName") || ""
@@ -80,6 +83,13 @@ function DashboardContent() {
       }
     }
     
+    // Show preferences confirmation if coming from goals page
+    if (fromGoals && storedGoals.length > 0) {
+      setShowPreferencesConfirm(true)
+      // Auto-hide after 10 seconds
+      setTimeout(() => setShowPreferencesConfirm(false), 10000)
+    }
+    
     // Check subscription status from localStorage or user auth
     const subscriptionActive = localStorage.getItem("subscriptionActive") === "true"
     const paymentCompleted = localStorage.getItem("paymentCompleted") === "true"
@@ -110,19 +120,19 @@ function DashboardContent() {
       },
       {
         id: "advanced-obedience",
-        title: "Advanced Obedience Commands",
+        title: "CRATE TRAINING",
         duration: "18 min",
-        thumbnail_url: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop&crop=face", 
-        instructor: "Mike Chen",
-        category: "Obedience",
-        description: "Take your dog's training to the next level with advanced obedience commands."
+        thumbnail_url: "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=400&h=300&fit=crop&crop=face", 
+        instructor: "Jayme Nolan",
+        category: "Training",
+        description: "Tap into your dog's natural instincts to create confidence and comfort in their crate."
       },
       {
         id: "leash-training",
-        title: "Leash Training Techniques", 
+        title: "LEASH TRAINING", 
         duration: "15 min",
         thumbnail_url: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face",
-        instructor: "Emily Rodriguez",
+        instructor: "Jayme Nolan",
         category: "Walking",
         description: "Learn effective leash training techniques for enjoyable walks."
       }
@@ -262,6 +272,39 @@ function DashboardContent() {
         </div>
       )}
 
+      {/* Preferences Saved Confirmation Banner */}
+      {showPreferencesConfirm && pupName && trainingGoals.length > 0 && (
+        <div className="bg-green-50 border border-green-200 text-green-800 py-4 px-6">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <Check className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">
+                  {pupName}'s training preferences saved!
+                </h3>
+                <p className="text-sm text-green-700">
+                  We've customized your experience based on your goals. You can update preferences in{' '}
+                  <button 
+                    onClick={() => router.push('/settings')}
+                    className="underline font-medium hover:text-green-900"
+                  >
+                    Settings
+                  </button>
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowPreferencesConfirm(false)}
+              className="text-green-600 hover:text-green-800 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section - Always Show */}
       <div className="relative h-[60vh] min-h-[450px] overflow-hidden bg-black">
         {/* Video Background */}
@@ -388,10 +431,10 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">Advanced Socialization</h3>
-                  <p className="text-sm text-gray-400 mb-2">Help your dog build confidence with other dogs and strangers</p>
+                  <h3 className="font-semibold text-white mb-1">CRATE TRAINING</h3>
+                  <p className="text-sm text-gray-400 mb-2">Tap into your dog's natural instincts to create confidence and comfort in their crate.</p>
                   <div className="text-xs text-gray-500">
-                    <span>Expert: Sarah Johnson</span>
+                    <span>Expert: Jayme Nolan</span>
                   </div>
                 </div>
               </div>
@@ -408,10 +451,10 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">Anxiety & Fear Management</h3>
-                  <p className="text-sm text-gray-400 mb-2">Gentle techniques to help nervous and fearful dogs</p>
+                  <h3 className="font-semibold text-white mb-1">SEPARATION ANXIETY</h3>
+                  <p className="text-sm text-gray-400 mb-2">Build calm confidence when you're away.</p>
                   <div className="text-xs text-gray-500">
-                    <span>Expert: Dr. Michael Torres</span>
+                    <span>Expert: Jayme Nolan</span>
                   </div>
                 </div>
               </div>
@@ -428,10 +471,10 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">Agility & Exercise</h3>
-                  <p className="text-sm text-gray-400 mb-2">Fun activities to keep your dog mentally and physically active</p>
+                  <h3 className="font-semibold text-white mb-1">JUMPING UP MANNERS</h3>
+                  <p className="text-sm text-gray-400 mb-2">Teach polite greetings rooted in respect.</p>
                   <div className="text-xs text-gray-500">
-                    <span>Expert: Lisa Chen</span>
+                    <span>Expert: Jayme Nolan</span>
                   </div>
                 </div>
               </div>
@@ -448,10 +491,10 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">Reactive Dog Training</h3>
-                  <p className="text-sm text-gray-400 mb-2">Address leash reactivity and aggressive behaviors</p>
+                  <h3 className="font-semibold text-white mb-1">INTRO TO DOG PSYCHOLOGY</h3>
+                  <p className="text-sm text-gray-400 mb-2">Understand your dog's mind to transform training.</p>
                   <div className="text-xs text-gray-500">
-                    <span>Expert: Amanda Rodriguez</span>
+                    <span>Expert: Jayme Nolan</span>
                   </div>
                 </div>
               </div>
@@ -459,8 +502,8 @@ function DashboardContent() {
               <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop&crop=face"
-                    alt="Coming Soon"
+                    src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face"
+                    alt="LEASH SKILLS"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -468,10 +511,10 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">Advanced House Training</h3>
-                  <p className="text-sm text-gray-400 mb-2">Solutions for persistent house training challenges</p>
+                  <h3 className="font-semibold text-white mb-1">LEASH SKILLS</h3>
+                  <p className="text-sm text-gray-400 mb-2">Create balance and control for stress-free walks.</p>
                   <div className="text-xs text-gray-500">
-                    <span>Expert: Robert Kim</span>
+                    <span>Expert: Jayme Nolan</span>
                   </div>
                 </div>
               </div>
@@ -488,10 +531,10 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">Dogs & Children</h3>
-                  <p className="text-sm text-gray-400 mb-2">Teaching dogs to be gentle and safe around kids</p>
+                  <h3 className="font-semibold text-white mb-1">RECALL TRAINING</h3>
+                  <p className="text-sm text-gray-400 mb-2">Strengthen trust so your dog always comes back.</p>
                   <div className="text-xs text-gray-500">
-                    <span>Expert: Jennifer Walsh</span>
+                    <span>Expert: Jayme Nolan</span>
                   </div>
                 </div>
               </div>

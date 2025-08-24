@@ -142,7 +142,7 @@ function PreferencesContent() {
             Select the areas you'd like to work on. We'll notify you when new courses are available and prioritize content creation based on your interests.
           </p>
           
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {trainingGoals.map((goal) => {
               const Icon = goal.icon
               const isSelected = selectedGoals.includes(goal.id)
@@ -152,52 +152,55 @@ function PreferencesContent() {
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
                   className={`
-                    relative p-4 rounded-xl border-2 transition-all duration-200 text-left
+                    relative p-6 rounded-2xl border-2 transition-all duration-300
                     ${isSelected 
-                      ? 'border-queen-purple bg-queen-purple/10' 
-                      : 'border-zinc-800 bg-zinc-900 hover:border-zinc-700'
+                      ? 'border-queen-purple bg-gradient-to-br from-queen-purple/20 to-jade-purple/20 scale-105 shadow-xl' 
+                      : 'border-zinc-800 bg-zinc-900 hover:border-zinc-700 hover:bg-zinc-800/50'
                     }
                   `}
                 >
-                  {/* Selection indicator */}
-                  <div className="absolute top-3 right-3">
+                  {/* Icon */}
+                  <div className={`
+                    w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4
+                    ${isSelected 
+                      ? 'bg-gradient-to-br from-queen-purple to-jade-purple' 
+                      : 'bg-zinc-800'
+                    }
+                  `}>
+                    <Icon className={`h-8 w-8 ${isSelected ? 'text-white' : 'text-gray-400'}`} />
+                  </div>
+
+                  {/* Content */}
+                  <h3 className={`font-bold text-lg mb-2 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+                    {goal.label}
+                  </h3>
+                  <p className={`text-sm mb-4 ${isSelected ? 'text-gray-200' : 'text-gray-400'}`}>
+                    {goal.description}
+                  </p>
+
+                  {/* Status Badge at bottom */}
+                  <div className="flex justify-center">
                     {isSelected ? (
                       <div className="bg-queen-purple rounded-full p-1">
-                        <Check className="h-3 w-3 text-white" />
+                        <Check className="h-4 w-4 text-white" />
                       </div>
                     ) : goal.status === "available" ? (
-                      <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="bg-zinc-800 text-green-400 text-xs px-3 py-1 rounded-full font-medium border border-zinc-700">
                         Available
                       </span>
                     ) : (
-                      <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="bg-zinc-800 text-amber-400 text-xs px-3 py-1 rounded-full font-medium border border-zinc-700">
                         Coming Soon
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-start gap-3 pr-20">
-                    <div className={`
-                      p-2 rounded-lg
-                      ${isSelected ? 'bg-queen-purple/20' : 'bg-zinc-800'}
-                    `}>
-                      <Icon className={`h-5 w-5 ${isSelected ? 'text-queen-purple' : 'text-gray-400'}`} />
-                    </div>
-                    
-                    <div>
-                      <h3 className={`font-semibold mb-1 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
-                        {goal.label}
-                      </h3>
-                      <p className={`text-sm ${isSelected ? 'text-gray-300' : 'text-gray-400'}`}>
-                        {goal.description}
-                      </p>
-                      {goal.estimatedRelease && (
-                        <p className="text-xs text-amber-400 mt-1">
-                          Expected: {goal.estimatedRelease}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  {/* Expected Release Date */}
+                  {goal.estimatedRelease && (
+                    <p className="text-xs text-amber-400 mt-2 text-center">
+                      Expected: {goal.estimatedRelease}
+                    </p>
+                  )}
                 </button>
               )
             })}

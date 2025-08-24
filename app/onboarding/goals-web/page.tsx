@@ -92,8 +92,8 @@ function OnboardingGoalsWebContent() {
   const handleContinue = () => {
     localStorage.setItem("trainingGoals", JSON.stringify(selectedGoals))
     
-    // Go to personalized dashboard
-    router.push('/dashboard?welcome=true&personalized=true')
+    // Go to personalized dashboard with goals confirmation
+    router.push('/dashboard?welcome=true&personalized=true&from=goals')
   }
 
   const handleSkip = () => {
@@ -201,20 +201,6 @@ function OnboardingGoalsWebContent() {
               })}
             </div>
 
-            {/* What happens next */}
-            {selectedGoals.length > 0 && (
-              <div className="bg-zinc-900/50 rounded-2xl p-6 mb-8 border border-zinc-800">
-                <h3 className="text-white font-semibold mb-3">What happens next:</h3>
-                <div className="space-y-2 text-sm text-gray-300">
-                  {selectedGoals.includes('manners') || selectedGoals.includes('explore') ? (
-                    <p>✓ Access current videos that match your interests</p>
-                  ) : null}
-                  <p>✓ Get notified when new {selectedGoals.join(' & ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()} courses are released</p>
-                  <p>✓ Help us prioritize what content to create next</p>
-                  <p>✓ Receive personalized training tips via email</p>
-                </div>
-              </div>
-            )}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

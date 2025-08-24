@@ -167,17 +167,6 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
           <div className="flex items-start justify-between mb-2">
             <div>
               <h3 className="font-semibold text-foreground mb-1">{video.title}</h3>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation()
-                  // Convert instructor name to ID format
-                  const instructorId = video.instructor.toLowerCase().replace(/\s+/g, '-')
-                  window.location.href = `/trainer/${instructorId}`
-                }}
-                className="text-sm text-muted-foreground hover:text-jade-purple transition-colors"
-              >
-                with {video.instructor}
-              </button>
             </div>
             <VideoDuration
               videoUrl={video.videoUrl || video.video_url}
