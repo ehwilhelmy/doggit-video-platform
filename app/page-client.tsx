@@ -231,24 +231,24 @@ function LandingPageClient() {
                 
                 {/* Compact Countdown Timer */}
                 <div className="inline-flex items-center gap-3">
-                  <div className="text-center">
+                  <div className="px-4 py-3 text-center">
                     <div className="text-3xl font-bold text-queen-purple">{timeLeft.days.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">Days</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Days</div>
                   </div>
-                  <div className="text-queen-purple/40 text-2xl font-bold">:</div>
-                  <div className="text-center">
+                  <div className="text-queen-purple text-2xl font-bold">:</div>
+                  <div className="px-4 py-3 text-center">
                     <div className="text-3xl font-bold text-queen-purple">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">Hours</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Hours</div>
                   </div>
-                  <div className="text-queen-purple/40 text-2xl font-bold">:</div>
-                  <div className="text-center">
+                  <div className="text-queen-purple text-2xl font-bold">:</div>
+                  <div className="px-4 py-3 text-center">
                     <div className="text-3xl font-bold text-queen-purple">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">Min</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Min</div>
                   </div>
-                  <div className="text-queen-purple/40 text-2xl font-bold">:</div>
-                  <div className="text-center">
+                  <div className="text-queen-purple text-2xl font-bold">:</div>
+                  <div className="px-4 py-3 text-center">
                     <div className="text-3xl font-bold text-queen-purple">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">Sec</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Sec</div>
                   </div>
                 </div>
               </div>
@@ -289,7 +289,7 @@ function LandingPageClient() {
       </section>
 
       {/* Essential Puppy Training Courses */}
-      <section className="py-16 bg-black">
+      <section id="training" className="py-16 bg-black">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-jade-purple text-white text-xs sm:text-sm px-3 sm:px-4 py-1">
@@ -338,15 +338,6 @@ function LandingPageClient() {
                     Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.
                   </p>
                   
-                  {/* Watch Teaser Button */}
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all group-hover:scale-105 font-semibold"
-                  >
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    Watch Teaser
-                  </Button>
                 </div>
                 
                 {/* Play Overlay */}
@@ -384,15 +375,6 @@ function LandingPageClient() {
                     Take your dog's training to the next level with advanced training techniques.
                   </p>
                   
-                  {/* Watch Teaser Button */}
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all group-hover:scale-105 font-semibold"
-                  >
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    Watch Teaser
-                  </Button>
                 </div>
                 
                 {/* Play Overlay */}
@@ -430,15 +412,6 @@ function LandingPageClient() {
                     Learn effective leash training techniques for enjoyable walks.
                   </p>
                   
-                  {/* Watch Teaser Button */}
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all group-hover:scale-105 font-semibold"
-                  >
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    Watch Teaser
-                  </Button>
                 </div>
                 
                 {/* Play Overlay */}
@@ -449,6 +422,19 @@ function LandingPageClient() {
                 </div>
               </div>
             </div>
+          </div>
+          
+          {/* Single Watch Teaser Button */}
+          <div className="text-center mt-8">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all font-semibold px-8 py-3"
+              onClick={() => handleVideoPreview("puppy-basics")}
+            >
+              <PlayCircle className="mr-2 h-5 w-5" />
+              Watch Teaser
+            </Button>
           </div>
         </div>
       </section>

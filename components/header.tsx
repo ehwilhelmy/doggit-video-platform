@@ -41,10 +41,9 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
   }, [])
 
   const navigationItems = [
+    { href: "#training", label: "Training" },
     { href: "#instructors", label: "Instructors" },
-    { href: "#classes", label: "Classes" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "#about", label: "About" }
+    { href: "#pricing", label: "Pricing" }
   ]
 
   return (
