@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Logo } from "@/components/logo"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -168,14 +168,6 @@ function DashboardContent() {
           </div>
           
           <div className="flex items-center gap-2 lg:gap-4">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-white hover:bg-white/10 hidden md:flex"
-              onClick={() => router.push('/classes')}
-            >
-              All Classes
-            </Button>
             <Bell className="h-5 w-5 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             
             {/* Avatar Dropdown */}
@@ -194,13 +186,6 @@ function DashboardContent() {
                   <p className="text-sm font-medium text-white">{userName || "User"}</p>
                   <p className="text-xs text-gray-400">{user?.email || "user@example.com"}</p>
                 </div>
-                <DropdownMenuItem 
-                  onClick={() => window.location.href = '/classes'}
-                  className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  All Classes
-                </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => window.location.href = '/settings/preferences'}
                   className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
@@ -348,6 +333,7 @@ function DashboardContent() {
                       className="flex items-center gap-2 hover:text-jade-purple transition-colors"
                     >
                       <Avatar className="h-8 w-8">
+                        <AvatarImage src="/Jayme-Nolan.JPG" alt={videos[0].instructor} />
                         <AvatarFallback className="bg-jade-purple text-white text-xs font-medium">
                           {videos[0].instructor.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -433,9 +419,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">CRATE TRAINING</h3>
                   <p className="text-sm text-gray-400 mb-2">Tap into your dog's natural instincts to create confidence and comfort in their crate.</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Expert: Jayme Nolan</span>
-                  </div>
                 </div>
               </div>
 
@@ -453,9 +436,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">SEPARATION ANXIETY</h3>
                   <p className="text-sm text-gray-400 mb-2">Build calm confidence when you're away.</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Expert: Jayme Nolan</span>
-                  </div>
                 </div>
               </div>
 
@@ -473,9 +453,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">JUMPING UP MANNERS</h3>
                   <p className="text-sm text-gray-400 mb-2">Teach polite greetings rooted in respect.</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Expert: Jayme Nolan</span>
-                  </div>
                 </div>
               </div>
 
@@ -493,9 +470,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">INTRO TO DOG PSYCHOLOGY</h3>
                   <p className="text-sm text-gray-400 mb-2">Understand your dog's mind to transform training.</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Expert: Jayme Nolan</span>
-                  </div>
                 </div>
               </div>
 
@@ -513,9 +487,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">LEASH SKILLS</h3>
                   <p className="text-sm text-gray-400 mb-2">Create balance and control for stress-free walks.</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Expert: Jayme Nolan</span>
-                  </div>
                 </div>
               </div>
 
@@ -533,9 +504,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">RECALL TRAINING</h3>
                   <p className="text-sm text-gray-400 mb-2">Strengthen trust so your dog always comes back.</p>
-                  <div className="text-xs text-gray-500">
-                    <span>Expert: Jayme Nolan</span>
-                  </div>
                 </div>
               </div>
             </div>

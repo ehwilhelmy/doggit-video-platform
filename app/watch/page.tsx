@@ -435,7 +435,7 @@ function WatchPageContent() {
           <div className="p-4 lg:p-6 border-b border-zinc-800">
             <div className="flex items-center gap-3 lg:gap-4 mb-3 lg:mb-4">
               <img
-                src={video.thumbnail}
+                src="/Jayme-Nolan.JPG"
                 alt={video.instructor}
                 className="w-12 h-12 lg:w-16 lg:h-16 rounded-full object-cover"
               />

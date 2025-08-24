@@ -129,36 +129,10 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
                 onClick={handlePlayClick}
               >
                 <PlayCircle className="h-4 w-4 mr-1" />
-{isSubscribed ? 'Watch Now' : 'Watch Trailer'}
+Watch Now
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                className="bg-black/30 hover:bg-black/50 text-white border border-white/30 transform hover:scale-110 transition-all duration-200"
-                onClick={handleAddClick}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="bg-black/30 hover:bg-black/50 text-white border border-white/30 transform hover:scale-110 transition-all duration-200"
-                onClick={handleLikeClick}
-              >
-                <ThumbsUp className="h-4 w-4" />
-              </Button>
             </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="bg-black/30 hover:bg-black/50 text-white border border-white/30 transform hover:scale-110 transition-all duration-200"
-              onClick={handleMoreInfoClick}
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
           </div>
         </div>
         
