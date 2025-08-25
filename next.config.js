@@ -12,7 +12,11 @@ const nextConfig = {
   },
   images: {
     domains: ['images.unsplash.com', 'storage.googleapis.com'],
+    unoptimized: true,
   },
+  output: 'export',
+  trailingSlash: true,
+  basePath: '',
 }
 
 module.exports = nextConfig
