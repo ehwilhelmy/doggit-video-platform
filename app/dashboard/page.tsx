@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter, useSearchParams } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { VideoPreviewCard } from "@/components/video-preview-card"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VideoDuration } from "@/components/video-duration"
+import type { Profile, VideoProgress } from "@/types/database"
 import { 
   PlayCircle,
   Clock,
@@ -32,7 +34,7 @@ import {
 function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading, signOut } = useAuth()
+  const { user, loading, signOut, isSubscribed: authSubscribed } = useAuth()
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
@@ -43,6 +45,51 @@ function DashboardContent() {
   const [videos, setVideos] = useState<any[]>([])
   const [videosLoading, setVideosLoading] = useState(true)
   const [isPersonalized, setIsPersonalized] = useState(false)
+  const [videoProgress, setVideoProgress] = useState<Record<string, VideoProgress>>({})
+  const supabase = createClient()
+
+  // Fetch user profile from Supabase
+  const fetchUserProfile = async () => {
+    if (!user) return
+    
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      
+      if (profile && !error) {
+        setUserName(profile.first_name || '')
+        setPupName(profile.pup_name || '')
+        setTrainingGoals(profile.training_goals || [])
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    }
+  }
+
+  // Fetch video progress from Supabase
+  const fetchVideoProgress = async () => {
+    if (!user) return
+    
+    try {
+      const { data: progress, error } = await supabase
+        .from('video_progress')
+        .select('*')
+        .eq('user_id', user.id)
+      
+      if (progress && !error) {
+        const progressMap: Record<string, VideoProgress> = {}
+        progress.forEach(p => {
+          progressMap[p.video_id] = p
+        })
+        setVideoProgress(progressMap)
+      }
+    } catch (error) {
+      console.error('Error fetching video progress:', error)
+    }
+  }
 
   // Check subscription status and demo mode on mount
   useEffect(() => {
@@ -52,7 +99,7 @@ function DashboardContent() {
     const personalized = searchParams.get("personalized") === "true"
     const fromGoals = searchParams.get("from") === "goals"
     
-    // Get pup's name and training goals from localStorage
+    // Get pup's name and training goals from localStorage (fallback)
     const storedPupName = localStorage.getItem("pupName") || ""
     const storedGoals = JSON.parse(localStorage.getItem("trainingGoals") || "[]")
     setPupName(storedPupName)
@@ -61,6 +108,10 @@ function DashboardContent() {
     
     // Get user data from Supabase auth
     if (user) {
+      // Fetch real profile from database
+      fetchUserProfile()
+      fetchVideoProgress()
+      
       const firstName = user.user_metadata?.firstName || ""
       const pupNameFromMeta = user.user_metadata?.pup_name || storedPupName
       setUserName(firstName)
@@ -90,17 +141,17 @@ function DashboardContent() {
       setTimeout(() => setShowPreferencesConfirm(false), 10000)
     }
     
-    // Check subscription status from localStorage or user auth
+    // Check subscription status from auth context first, then localStorage
     const subscriptionActive = localStorage.getItem("subscriptionActive") === "true"
     const paymentCompleted = localStorage.getItem("paymentCompleted") === "true"
     const isAuthenticatedLocal = localStorage.getItem("isAuthenticated") === "true"
-    const hasActiveSubscription = subscriptionActive || paymentCompleted
+    const hasActiveSubscription = authSubscribed || subscriptionActive || paymentCompleted
     
     // If user is authenticated (either through Supabase or localStorage) and has completed payment, they have access
     const isUserAuthenticated = !!user || isAuthenticatedLocal
     setIsSubscribed(isUserAuthenticated && hasActiveSubscription)
     setIsDemoMode(isDemo)
-  }, [searchParams, user])
+  }, [searchParams, user, authSubscribed])
 
   // Load videos - use hardcoded data for now
   useEffect(() => {
@@ -140,7 +191,26 @@ function DashboardContent() {
     setVideosLoading(false)
   }, [])
 
-  const handleVideoClick = (videoId: string) => {
+  const handleVideoClick = async (videoId: string) => {
+    // Track that user started watching this video
+    if (user) {
+      try {
+        await supabase
+          .from('video_progress')
+          .upsert({
+            user_id: user.id,
+            video_id: videoId,
+            watched_duration_seconds: 0,
+            last_watched_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id,video_id',
+            ignoreDuplicates: false
+          })
+      } catch (error) {
+        console.error('Error tracking video start:', error)
+      }
+    }
+    
     router.push(`/watch?v=${videoId}&from=dashboard`)
   }
 
@@ -392,6 +462,7 @@ function DashboardContent() {
                 video={video}
                 onVideoClick={handleVideoClick}
                 isSubscribed={isSubscribed}
+                progress={videoProgress[video.id]}
               />
             ))}
           </div>

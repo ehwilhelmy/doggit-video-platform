@@ -4,9 +4,14 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Logo } from "@/components/logo"
-import { ArrowLeft, Check, Target, Heart, GraduationCap, Shield, Brain, Search, Bell, Mail } from "lucide-react"
+import { ArrowLeft, Check, Target, Heart, GraduationCap, Shield, Brain, Search, Bell, Mail, Save, User } from "lucide-react"
+import type { Profile } from "@/types/database"
 
 const trainingGoals = [
   {
@@ -59,19 +64,65 @@ const trainingGoals = [
 
 function PreferencesContent() {
   const router = useRouter()
+  const { user } = useAuth()
   const [selectedGoals, setSelectedGoals] = useState<string[]>([])
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
   const [pupName, setPupName] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [phone, setPhone] = useState("")
   const [hasChanges, setHasChanges] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const supabase = createClient()
 
   useEffect(() => {
-    // Load current preferences
-    const storedGoals = JSON.parse(localStorage.getItem("trainingGoals") || "[]")
-    const storedPupName = localStorage.getItem("pupName") || ""
-    setSelectedGoals(storedGoals)
-    setPupName(storedPupName)
-  }, [])
+    // Load profile from Supabase if user is logged in
+    const loadProfile = async () => {
+      if (!user) {
+        // Fallback to localStorage if no user
+        const storedGoals = JSON.parse(localStorage.getItem("trainingGoals") || "[]")
+        const storedPupName = localStorage.getItem("pupName") || ""
+        setSelectedGoals(storedGoals)
+        setPupName(storedPupName)
+        setLoading(false)
+        return
+      }
+
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (profile && !error) {
+          setFirstName(profile.first_name || '')
+          setLastName(profile.last_name || '')
+          setPupName(profile.pup_name || '')
+          setPhone(profile.phone || '')
+          setSelectedGoals(profile.training_goals || [])
+        }
+        
+        // Also load from localStorage as fallback
+        const storedGoals = JSON.parse(localStorage.getItem("trainingGoals") || "[]")
+        const storedPupName = localStorage.getItem("pupName") || ""
+        if (storedGoals.length > 0 && !profile?.training_goals) {
+          setSelectedGoals(storedGoals)
+        }
+        if (storedPupName && !profile?.pup_name) {
+          setPupName(storedPupName)
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      }
+      
+      setLoading(false)
+    }
+
+    loadProfile()
+  }, [user])
 
   const toggleGoal = (goalId: string) => {
     const newGoals = selectedGoals.includes(goalId)
@@ -82,12 +133,47 @@ function PreferencesContent() {
     setHasChanges(true)
   }
 
-  const handleSave = () => {
-    localStorage.setItem("trainingGoals", JSON.stringify(selectedGoals))
-    setHasChanges(false)
-    
-    // Show success message (could be a toast)
-    router.push("/dashboard?preferences=updated")
+  const handleSave = async () => {
+    if (!user) {
+      // Fallback to localStorage if no user
+      localStorage.setItem("trainingGoals", JSON.stringify(selectedGoals))
+      localStorage.setItem("pupName", pupName)
+      setHasChanges(false)
+      router.push("/dashboard?preferences=updated")
+      return
+    }
+
+    setSaving(true)
+
+    try {
+      // Update profile in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          first_name: firstName,
+          last_name: lastName,
+          pup_name: pupName,
+          phone: phone,
+          training_goals: selectedGoals
+        }, {
+          onConflict: 'id'
+        })
+
+      if (error) {
+        console.error('Error saving profile:', error)
+        // Fallback to localStorage
+        localStorage.setItem("trainingGoals", JSON.stringify(selectedGoals))
+        localStorage.setItem("pupName", pupName)
+      }
+
+      setHasChanges(false)
+      router.push("/dashboard?preferences=updated")
+    } catch (error) {
+      console.error('Error saving profile:', error)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleBack = () => {
@@ -117,9 +203,11 @@ function PreferencesContent() {
             {hasChanges && (
               <Button
                 onClick={handleSave}
-                className="bg-queen-purple hover:bg-queen-purple/90 text-white"
+                disabled={saving}
+                className="bg-queen-purple hover:bg-queen-purple/90 text-white disabled:opacity-50"
               >
-                Save Changes
+                <Save className="h-4 w-4 mr-2" />
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             )}
           </div>
@@ -129,11 +217,79 @@ function PreferencesContent() {
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Training Preferences</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Profile & Preferences</h1>
           <p className="text-gray-400">
-            Manage your training goals and notification preferences for {pupName || 'your pup'}
+            Manage your profile information and training goals for {pupName || 'your pup'}
           </p>
         </div>
+
+        {/* Profile Information Section */}
+        {user && (
+          <div className="mb-8 p-6 bg-zinc-900 rounded-lg border border-zinc-800">
+            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Profile Information
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName" className="text-gray-300">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => {
+                    setFirstName(e.target.value)
+                    setHasChanges(true)
+                  }}
+                  className="bg-zinc-800 border-zinc-700 text-white mt-1"
+                  placeholder="Your first name"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="lastName" className="text-gray-300">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => {
+                    setLastName(e.target.value)
+                    setHasChanges(true)
+                  }}
+                  className="bg-zinc-800 border-zinc-700 text-white mt-1"
+                  placeholder="Your last name"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="pupName" className="text-gray-300">Pup's Name</Label>
+                <Input
+                  id="pupName"
+                  value={pupName}
+                  onChange={(e) => {
+                    setPupName(e.target.value)
+                    setHasChanges(true)
+                  }}
+                  className="bg-zinc-800 border-zinc-700 text-white mt-1"
+                  placeholder="Your dog's name"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="phone" className="text-gray-300">Phone (Optional)</Label>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value)
+                    setHasChanges(true)
+                  }}
+                  className="bg-zinc-800 border-zinc-700 text-white mt-1"
+                  placeholder="Your phone number"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Training Goals Section */}
         <div className="mb-8">

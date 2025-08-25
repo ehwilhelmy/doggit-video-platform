@@ -31,14 +31,21 @@ interface Video {
   tags?: string[]
 }
 
+interface VideoProgress {
+  progress_percentage?: number
+  completed?: boolean
+  last_watched_at?: string
+}
+
 interface VideoPreviewCardProps {
   video: Video
   onVideoClick: (videoId: string) => void
   isSubscribed: boolean
   compact?: boolean
+  progress?: VideoProgress
 }
 
-export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = false }: VideoPreviewCardProps) {
+export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = false, progress }: VideoPreviewCardProps) {
   const router = useRouter()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -117,6 +124,25 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
             timeOffset={video.id === 'puppy-basics' ? 40 : 3}
           />
           
+          {/* Progress Bar */}
+          {progress && progress.progress_percentage && progress.progress_percentage > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/50">
+              <div 
+                className="h-full bg-queen-purple transition-all duration-300"
+                style={{ width: `${Math.min(progress.progress_percentage, 100)}%` }}
+              />
+            </div>
+          )}
+          
+          {/* Completion Badge */}
+          {progress?.completed && (
+            <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
+              <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+
           {/* Video Controls Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
@@ -129,7 +155,7 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
                 onClick={handlePlayClick}
               >
                 <PlayCircle className="h-4 w-4 mr-1" />
-Watch Now
+                {progress?.progress_percentage && progress.progress_percentage > 5 ? 'Continue' : 'Watch Now'}
               </Button>
               
             </div>
