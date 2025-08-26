@@ -12,10 +12,12 @@ const nextConfig = {
   },
   images: {
     domains: ['images.unsplash.com', 'storage.googleapis.com'],
-    unoptimized: true,
+    // Keep unoptimized false for Node.js deployment
+    unoptimized: false,
   },
-  output: 'export',
-  trailingSlash: true,
+  // Comment out for Node.js deployment, uncomment for static export
+  // output: 'export',
+  // trailingSlash: true,
   basePath: '',
 }
 
