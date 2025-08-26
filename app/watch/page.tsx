@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Logo } from "@/components/logo"
 import { VideoThumbnail } from "@/components/video-thumbnail"
+import { VimeoPlayer } from "@/components/vimeo-player"
+import { vimeoVideos } from "@/lib/vimeo-config"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { 
   X, 
@@ -28,6 +30,7 @@ import {
 
 const videosData = {
   "puppy-basics": {
+    id: "puppy-basics",
     title: "PUPPY BASICS",
     description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
     thumbnail: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&h=1080&fit=crop",
@@ -269,37 +272,56 @@ function WatchPageContent() {
               className="relative w-full h-full bg-black overflow-hidden"
               onMouseMove={resetControlsTimeout}
             >
-              <video
-                ref={videoRef}
-                className="w-full h-full object-contain"
-                src={video.videoUrl}
-                playsInline
-                poster={video.thumbnail}
-                crossOrigin="anonymous"
-                preload="metadata"
-                onLoadedMetadata={() => {
-                  if (videoRef.current) {
-                    setDuration(videoRef.current.duration)
-                    console.log("Video duration loaded:", videoRef.current.duration)
-                  }
-                }}
-                onCanPlayThrough={() => {
-                  if (videoRef.current && duration === 0) {
-                    setDuration(videoRef.current.duration)
-                    console.log("Duration set on canplaythrough:", videoRef.current.duration)
-                  }
-                }}
-                onDurationChange={() => {
-                  if (videoRef.current) {
-                    setDuration(videoRef.current.duration)
-                    console.log("Duration changed:", videoRef.current.duration)
-                  }
-                }}
-                onError={(e) => {
-                  console.error("Video error:", e)
-                  console.error("Video src:", video.videoUrl)
-                }}
-              />
+              {/* Use Vimeo player for puppy-basics, fallback to video element for others */}
+              {video.id === 'puppy-basics' && vimeoVideos['puppy-basics'] ? (
+                <VimeoPlayer
+                  videoId={vimeoVideos['puppy-basics'].id}
+                  title={video.title}
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onTimeUpdate={(seconds, duration) => {
+                    setCurrentTime(seconds)
+                    setDuration(duration)
+                  }}
+                  onEnded={() => {
+                    setIsPlaying(false)
+                    setShowRatingModal(true)
+                  }}
+                  className="w-full h-full"
+                />
+              ) : (
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-contain"
+                  src={video.videoUrl}
+                  playsInline
+                  poster={video.thumbnail}
+                  crossOrigin="anonymous"
+                  preload="metadata"
+                  onLoadedMetadata={() => {
+                    if (videoRef.current) {
+                      setDuration(videoRef.current.duration)
+                      console.log("Video duration loaded:", videoRef.current.duration)
+                    }
+                  }}
+                  onCanPlayThrough={() => {
+                    if (videoRef.current && duration === 0) {
+                      setDuration(videoRef.current.duration)
+                      console.log("Duration set on canplaythrough:", videoRef.current.duration)
+                    }
+                  }}
+                  onDurationChange={() => {
+                    if (videoRef.current) {
+                      setDuration(videoRef.current.duration)
+                      console.log("Duration changed:", videoRef.current.duration)
+                    }
+                  }}
+                  onError={(e) => {
+                    console.error("Video error:", e)
+                    console.error("Video src:", video.videoUrl)
+                  }}
+                />
+              )}
 
               {/* Video Thumbnail Overlay (only show before first play) */}
               {!isPlaying && currentTime === 0 && (
