@@ -52,6 +52,10 @@ function DashboardContent() {
   const fetchUserProfile = async () => {
     if (!user) return
     
+    // Debug: Log user object to see what we have
+    console.log('Current user:', user)
+    console.log('User email:', user.email)
+    
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -253,8 +257,8 @@ function DashboardContent() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 bg-zinc-800 border-zinc-700" align="end">
                 <div className="px-3 py-2 border-b border-zinc-700">
-                  <p className="text-sm font-medium text-white">{userName || "User"}</p>
-                  <p className="text-xs text-gray-400">{user?.email || "user@example.com"}</p>
+                  <p className="text-sm font-medium text-white">{userName || pupName || "User"}</p>
+                  <p className="text-xs text-gray-400">{user?.email || session?.user?.email || "user@example.com"}</p>
                 </div>
                 <DropdownMenuItem 
                   onClick={() => window.location.href = '/settings/preferences'}
