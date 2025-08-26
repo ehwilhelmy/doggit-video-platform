@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,6 +15,7 @@ import Image from "next/image"
 function PaymentSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { signUp } = useAuth()
   
   const email = searchParams.get("email") || ""
   const isDemoMode = searchParams.get("demo") === "true"
@@ -82,37 +84,49 @@ function PaymentSuccessContent() {
     setIsCreatingAccount(true)
     
     try {
-      // Simulate account creation delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Create user in Supabase with metadata
+      const { data, error } = await signUp(email, formData.password, {
+        pup_name: formData.pupName,
+        subscription_status: 'active',
+        subscription_start: new Date().toISOString()
+      })
       
-      // For demo purposes, store account info in localStorage
-      // In production, this would integrate with your auth service
-      const accountData = {
-        email: email,
-        pupName: formData.pupName,
-        subscriptionStatus: 'active',
-        subscriptionStart: new Date().toISOString(),
-        createdAt: new Date().toISOString()
+      if (error) {
+        console.error('Supabase signup error:', error)
+        setErrors({ ...errors, password: error.message || "Failed to create account. Please try again." })
+        setIsCreatingAccount(false)
+        return
       }
       
-      // Store account data
-      localStorage.setItem('accountData', JSON.stringify(accountData))
-      localStorage.setItem('pupName', formData.pupName)
-      localStorage.setItem('userEmail', email)
-      localStorage.setItem('subscriptionActive', 'true')
-      localStorage.setItem('paymentCompleted', 'true')
-      localStorage.setItem('isAuthenticated', 'true')
-      
-      // In production, this would trigger an email service
-      console.log('Welcome email would be sent to:', email)
-      
-      // Redirect to personalized goals selection with pup name
-      setTimeout(() => {
-        router.push(`/onboarding/goals-web?email=${encodeURIComponent(email)}&pup=${encodeURIComponent(formData.pupName)}`)
-      }, 500)
+      if (data.user) {
+        // Store additional data in localStorage for backwards compatibility
+        const accountData = {
+          email: email,
+          pupName: formData.pupName,
+          subscriptionStatus: 'active',
+          subscriptionStart: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          userId: data.user.id
+        }
+        
+        localStorage.setItem('accountData', JSON.stringify(accountData))
+        localStorage.setItem('pupName', formData.pupName)
+        localStorage.setItem('userEmail', email)
+        localStorage.setItem('subscriptionActive', 'true')
+        localStorage.setItem('paymentCompleted', 'true')
+        localStorage.setItem('isAuthenticated', 'true')
+        
+        console.log('User created successfully:', data.user.id)
+        console.log('Welcome email would be sent to:', email)
+        
+        // Redirect to personalized goals selection with pup name
+        setTimeout(() => {
+          router.push(`/onboarding/goals-web?email=${encodeURIComponent(email)}&pup=${encodeURIComponent(formData.pupName)}`)
+        }, 500)
+      }
       
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error creating account:', error)
       setErrors({ ...errors, password: "Failed to create account. Please try again." })
       setIsCreatingAccount(false)
     }
