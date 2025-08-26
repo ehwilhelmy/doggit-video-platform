@@ -113,6 +113,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error checking subscription:', error)
+      // For admin account erica@doggit.app, grant access
+      const currentUser = await supabase.auth.getUser()
+      if (currentUser.data.user?.email === 'erica@doggit.app') {
+        setIsSubscribed(true)
+      } else {
+        // Fallback to localStorage for other users
+        const paymentCompleted = localStorage.getItem('paymentCompleted')
+        setIsSubscribed(paymentCompleted === 'true')
+      }
     }
   }
 
