@@ -103,21 +103,15 @@ function PaymentSuccessContent() {
         console.log('User created successfully:', data.user.id)
         console.log('Welcome email would be sent to:', email)
         
-        // If user was created but needs email confirmation, sign them in automatically
+        // If user was created but needs email confirmation, handle it
         if (!data.session) {
-          console.log('No session after signup, attempting to sign in...')
-          const supabase = createClient()
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: formData.password
-          })
+          console.log('No session after signup - user needs email confirmation')
           
-          if (signInError) {
-            console.error('Error signing in after signup:', signInError)
-            // Continue with localStorage fallback for now
-          } else {
-            console.log('Successfully signed in after signup')
-          }
+          // For now, proceed with localStorage auth until email is confirmed
+          // In a production app, you might want to show an email confirmation screen
+          console.log('User will need to confirm email to get full Supabase session')
+        } else {
+          console.log('User signed up and session created successfully')
         }
         
         // Store additional data in localStorage for backwards compatibility (will be cleaned up by auth context)
