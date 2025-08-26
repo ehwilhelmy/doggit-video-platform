@@ -272,10 +272,10 @@ function WatchPageContent() {
               className="relative w-full h-full bg-black overflow-hidden"
               onMouseMove={resetControlsTimeout}
             >
-              {/* Use Vimeo player for puppy-basics, fallback to video element for others */}
-              {video.id === 'puppy-basics' && vimeoVideos['puppy-basics'] ? (
+              {/* Use Vimeo player if video exists in vimeoVideos config, fallback to video element for others */}
+              {vimeoVideos[videoId as keyof typeof vimeoVideos] ? (
                 <VimeoPlayer
-                  videoId={vimeoVideos['puppy-basics'].id}
+                  videoId={vimeoVideos[videoId as keyof typeof vimeoVideos].id}
                   title={video.title}
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
