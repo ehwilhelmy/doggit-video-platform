@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -95,28 +96,21 @@ const classes = [
 
 function LandingPageClient() {
   const router = useRouter()
+  const { user: supabaseUser, loading } = useAuth()
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
   const [selectedTrainingGoals, setSelectedTrainingGoals] = useState<string[]>([])
   const [showTrailerModal, setShowTrailerModal] = useState(false)
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<{ firstName?: string; email?: string } | null>(null)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-
-  // Check authentication state
-  useEffect(() => {
-    const userData = localStorage.getItem("user")
-    const paymentCompleted = localStorage.getItem("paymentCompleted")
-    const subscriptionActive = localStorage.getItem("subscriptionActive")
-    
-    if (userData) {
-      const parsedUser = JSON.parse(userData)
-      setUser(parsedUser)
-      setIsAuthenticated(parsedUser.isAuthenticated === true)
-    }
-  }, [])
+  
+  // Use Supabase auth state
+  const isAuthenticated = !!supabaseUser && !loading
+  const user = supabaseUser ? { 
+    firstName: supabaseUser.user_metadata?.first_name || supabaseUser.user_metadata?.pup_name,
+    email: supabaseUser.email 
+  } : null
 
   // Countdown timer effect
   useEffect(() => {
