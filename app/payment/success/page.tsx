@@ -88,6 +88,7 @@ function PaymentSuccessContent() {
       // Create user in Supabase with metadata
       const { data, error } = await signUp(email, formData.password, {
         pup_name: formData.pupName,
+        first_name: formData.pupName, // Use pup name as first name for now
         subscription_status: 'active',
         subscription_start: new Date().toISOString()
       })
