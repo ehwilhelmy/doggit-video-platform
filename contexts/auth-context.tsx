@@ -31,6 +31,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session from Supabase
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
+      console.log('Initial session:', session)
+      console.log('Initial user:', session?.user)
+      console.log('Initial user email:', session?.user?.email)
+      
       setSession(session)
       setUser(session?.user ?? null)
       
@@ -62,6 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('Auth state change:', _event)
+      console.log('Session user:', session?.user)
+      console.log('User email from session:', session?.user?.email)
+      
       setSession(session)
       setUser(session?.user ?? null)
       
