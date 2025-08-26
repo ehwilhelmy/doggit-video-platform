@@ -258,7 +258,7 @@ function DashboardContent() {
               <DropdownMenuContent className="w-56 bg-zinc-800 border-zinc-700" align="end">
                 <div className="px-3 py-2 border-b border-zinc-700">
                   <p className="text-sm font-medium text-white">{userName || pupName || "User"}</p>
-                  <p className="text-xs text-gray-400">{user?.email || session?.user?.email || "user@example.com"}</p>
+                  <p className="text-xs text-gray-400">{user?.email || "user@example.com"}</p>
                 </div>
                 <DropdownMenuItem 
                   onClick={() => window.location.href = '/settings/preferences'}
