@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,27 +13,49 @@ import { Header } from "@/components/header"
 
 export default function AuthPage() {
   const router = useRouter()
+  const { signIn, signUp } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate login
-    setTimeout(() => {
-      router.push("/dashboard")
-    }, 1000)
+    setError("")
+    
+    try {
+      const { error } = await signIn(email, password)
+      if (error) {
+        setError(error.message)
+      } else {
+        router.push("/dashboard")
+      }
+    } catch (err) {
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate signup and redirect to Stripe
-    setTimeout(() => {
-      console.log("Redirecting to Stripe checkout...")
-      router.push("/dashboard")
-    }, 1000)
+    setError("")
+    
+    try {
+      const { data, error } = await signUp(email, password)
+      if (error) {
+        setError(error.message)
+      } else if (data.user) {
+        // User created successfully, redirect to dashboard
+        router.push("/dashboard")
+      }
+    } catch (err) {
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -70,6 +93,11 @@ export default function AuthPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {error && (
+                <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-800">
+                  {error}
+                </div>
+              )}
               <Tabs defaultValue="login" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-purple-50">
                   <TabsTrigger value="login">Sign In</TabsTrigger>
