@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
+import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -99,7 +100,27 @@ function PaymentSuccessContent() {
       }
       
       if (data.user) {
-        // Store additional data in localStorage for backwards compatibility
+        console.log('User created successfully:', data.user.id)
+        console.log('Welcome email would be sent to:', email)
+        
+        // If user was created but needs email confirmation, sign them in automatically
+        if (!data.session) {
+          console.log('No session after signup, attempting to sign in...')
+          const supabase = createClient()
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: formData.password
+          })
+          
+          if (signInError) {
+            console.error('Error signing in after signup:', signInError)
+            // Continue with localStorage fallback for now
+          } else {
+            console.log('Successfully signed in after signup')
+          }
+        }
+        
+        // Store additional data in localStorage for backwards compatibility (will be cleaned up by auth context)
         const accountData = {
           email: email,
           pupName: formData.pupName,
@@ -115,9 +136,6 @@ function PaymentSuccessContent() {
         localStorage.setItem('subscriptionActive', 'true')
         localStorage.setItem('paymentCompleted', 'true')
         localStorage.setItem('isAuthenticated', 'true')
-        
-        console.log('User created successfully:', data.user.id)
-        console.log('Welcome email would be sent to:', email)
         
         // Redirect to personalized goals selection with pup name
         setTimeout(() => {
