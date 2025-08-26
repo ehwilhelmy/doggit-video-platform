@@ -24,6 +24,7 @@ export function VimeoPlayer({
   onTimeUpdate,
   className = ""
 }: VimeoPlayerProps) {
+  console.log('VimeoPlayer rendering with videoId:', videoId)
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<any>(null)
 
@@ -60,52 +61,26 @@ export function VimeoPlayer({
   }, [videoId, onReady, onPlay, onPause, onEnded, onTimeUpdate])
 
   return (
-    <>
-      <Script 
-        src="https://player.vimeo.com/api/player.js" 
-        strategy="lazyOnload"
-        onLoad={() => {
-          // Re-trigger effect when script loads
-          if (containerRef.current) {
-            const iframe = containerRef.current.querySelector('iframe')
-            if (iframe && window.Vimeo) {
-              playerRef.current = new window.Vimeo.Player(iframe)
-              
-              if (onReady) playerRef.current.on('loaded', onReady)
-              if (onPlay) playerRef.current.on('play', onPlay)
-              if (onPause) playerRef.current.on('pause', onPause)
-              if (onEnded) playerRef.current.on('ended', onEnded)
-              
-              if (onTimeUpdate) {
-                playerRef.current.on('timeupdate', (data: any) => {
-                  onTimeUpdate(data.seconds, data.duration)
-                })
-              }
-            }
-          }
+    <div 
+      ref={containerRef}
+      className={`relative w-full ${className}`}
+      style={{ paddingTop: '56.25%' }} // 16:9 aspect ratio
+    >
+      <iframe
+        src={`https://player.vimeo.com/video/${videoId}?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0`}
+        frameBorder="0"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
         }}
+        title={title}
       />
-      <div 
-        ref={containerRef}
-        className={`relative w-full ${className}`}
-        style={{ paddingTop: '56.25%' }} // 16:9 aspect ratio
-      >
-        <iframe
-          src={`https://player.vimeo.com/video/${videoId}?badge=0&autopause=0&player_id=0&app_id=58479`}
-          frameBorder="0"
-          allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%'
-          }}
-          title={title}
-        />
-      </div>
-    </>
+    </div>
   )
 }
 

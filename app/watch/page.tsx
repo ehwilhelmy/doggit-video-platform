@@ -94,6 +94,11 @@ function WatchPageContent() {
   const from = searchParams.get("from") || "welcome"
   
   const video = videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"]
+  
+  // Debug logging
+  console.log('Video ID:', videoId)
+  console.log('Vimeo videos config:', vimeoVideos)
+  console.log('Should use Vimeo?', !!vimeoVideos[videoId as keyof typeof vimeoVideos])
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(true)
@@ -323,8 +328,8 @@ function WatchPageContent() {
                 />
               )}
 
-              {/* Video Thumbnail Overlay (only show before first play) */}
-              {!isPlaying && currentTime === 0 && (
+              {/* Video Thumbnail Overlay (only show before first play and only for non-Vimeo videos) */}
+              {!isPlaying && currentTime === 0 && !vimeoVideos[videoId as keyof typeof vimeoVideos] && (
                 <div className="absolute inset-0 z-10">
                   <VideoThumbnail
                     videoUrl={video.videoUrl}
@@ -337,8 +342,8 @@ function WatchPageContent() {
                 </div>
               )}
 
-              {/* Center Play Button */}
-              {!isPlaying && (
+              {/* Center Play Button (only for non-Vimeo videos) */}
+              {!isPlaying && !vimeoVideos[videoId as keyof typeof vimeoVideos] && (
                 <div className="absolute inset-0 flex items-center justify-center z-40">
                   <button
                     onClick={togglePlay}
@@ -349,15 +354,18 @@ function WatchPageContent() {
                 </div>
               )}
 
-              {/* Video Controls Overlay */}
-              <div 
-                className="absolute inset-0 z-30"
-                onMouseMove={resetControlsTimeout}
-                onClick={togglePlay}
-              />
+              {/* Video Controls Overlay (only for non-Vimeo videos) */}
+              {!vimeoVideos[videoId as keyof typeof vimeoVideos] && (
+                <div 
+                  className="absolute inset-0 z-30"
+                  onMouseMove={resetControlsTimeout}
+                  onClick={togglePlay}
+                />
+              )}
 
-              {/* Bottom Controls */}
-              <div className={`absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 ${showControls || !isPlaying ? 'opacity-100' : 'opacity-0'}`}>
+              {/* Bottom Controls (only for non-Vimeo videos) */}
+              {!vimeoVideos[videoId as keyof typeof vimeoVideos] && (
+                <div className={`absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 ${showControls || !isPlaying ? 'opacity-100' : 'opacity-0'}`}>
                 {/* Progress Bar */}
                 <div className="px-6 pb-4">
                   <div 
@@ -426,6 +434,7 @@ function WatchPageContent() {
                   </div>
                 </div>
               </div>
+              )}
             </div>
           </div>
 
