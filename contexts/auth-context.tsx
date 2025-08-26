@@ -43,17 +43,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         checkSubscriptionStatus(session.user.id)
       }
       
-      // Also check localStorage for backwards compatibility
-      const storedUser = localStorage.getItem('user')
-      if (!session && storedUser) {
-        try {
-          const userData = JSON.parse(storedUser)
-          if (userData.isAuthenticated) {
-            // Migrate to Supabase auth if needed
-            console.log('Found legacy auth data, consider migrating to Supabase')
+      // Clear any legacy localStorage auth data if we have a real Supabase session
+      if (session?.user) {
+        // Clear old localStorage auth data
+        localStorage.removeItem('user')
+        localStorage.removeItem('accountData')
+        localStorage.removeItem('isAuthenticated')
+        console.log('Cleared legacy auth data, using Supabase session')
+      } else {
+        // Only check localStorage if no Supabase session exists
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser)
+            if (userData.isAuthenticated) {
+              console.log('Found legacy auth data, but no Supabase session - clearing legacy data')
+              localStorage.removeItem('user')
+              localStorage.removeItem('accountData') 
+              localStorage.removeItem('isAuthenticated')
+            }
+          } catch (error) {
+            console.error('Error parsing stored user:', error)
           }
-        } catch (error) {
-          console.error('Error parsing stored user:', error)
         }
       }
       
