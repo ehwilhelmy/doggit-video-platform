@@ -13,6 +13,12 @@ import { SignInModal } from "@/components/signin-modal"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { VideoThumbnail } from "@/components/video-thumbnail"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { 
   PlayCircle, 
   Star, 
@@ -29,7 +35,8 @@ import {
   Lock,
   BookOpen,
   Smartphone,
-  Download
+  Download,
+  ChevronDown
 } from "lucide-react"
 
 const instructors = [
@@ -150,6 +157,70 @@ function LandingPageClient() {
     window.location.href = '/membership'
   }
 
+  const handleAddToCalendar = () => {
+    // Event details
+    const eventTitle = "DOGGIT Expert Dog Training Live Stream"
+    const eventDescription = "Join renowned trainers Jayme Nolan and Jo Simpson for an exclusive live stream event on expert dog training techniques.\n\nWHERE TO WATCH:\nFacebook Live Stream\nhttps://www.facebook.com/share/1BWVzVa4VN/?mibextid=wwXIfr\n\nWhen: September 6, 2025 at 2:00 PM PST\nWhat: Expert Dog Training Techniques\nWho: Jayme Nolan & Jo Simpson"
+    const eventLocation = "Online - DOGGIT Platform"
+    const startDate = new Date('2025-09-06T14:00:00-07:00') // Sept 6, 2025, 2:00 PM PST
+    const endDate = new Date('2025-09-06T16:00:00-07:00') // 2 hour event
+    
+    // Format dates for calendar links
+    const formatDateForICS = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+    }
+    
+    // Generate Google Calendar link
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${formatDateForICS(startDate)}/${formatDateForICS(endDate)}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(eventLocation)}`
+    
+    // Open in new tab
+    window.open(googleCalendarUrl, '_blank')
+  }
+
+  const downloadICSFile = () => {
+    // Event details
+    const eventTitle = "DOGGIT Expert Dog Training Live Stream"
+    const eventDescription = "Join renowned trainers Jayme Nolan and Jo Simpson for an exclusive live stream event on expert dog training techniques.\\n\\n📍 WHERE TO WATCH:\\nFacebook Live Stream\\nhttps://www.facebook.com/share/1BWVzVa4VN/?mibextid=wwXIfr\\n\\n⏰ When: September 6, 2025 at 2:00 PM PST\\n🎯 What: Expert Dog Training Techniques\\n👥 Who: Jayme Nolan & Jo Simpson"
+    const eventLocation = "Online - DOGGIT Platform"
+    const startDate = new Date('2025-09-06T14:00:00-07:00')
+    const endDate = new Date('2025-09-06T16:00:00-07:00')
+    
+    // Format date for ICS file
+    const formatDateForICS = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+    }
+    
+    // Create ICS file content
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//DOGGIT//Expert Dog Training//EN
+BEGIN:VEVENT
+UID:${Date.now()}@doggit.app
+DTSTAMP:${formatDateForICS(new Date())}
+DTSTART:${formatDateForICS(startDate)}
+DTEND:${formatDateForICS(endDate)}
+SUMMARY:${eventTitle}
+DESCRIPTION:${eventDescription}
+LOCATION:${eventLocation}
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:DOGGIT Live Stream starts in 1 hour!
+END:VALARM
+END:VEVENT
+END:VCALENDAR`
+    
+    // Create and download the file
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = 'doggit-live-stream.ics'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const handleVideoPreview = (videoId: string) => {
     setSelectedVideoId(videoId)
     setShowSubscriptionPrompt(false) // Reset subscription prompt
@@ -158,8 +229,6 @@ function LandingPageClient() {
 
   const handleSignOut = () => {
     localStorage.clear()
-    setIsAuthenticated(false)
-    setUser(null)
     router.push('/')
   }
 
@@ -215,33 +284,31 @@ function LandingPageClient() {
             
             {/* Subtitle */}
             <p className="text-lg lg:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Join reowned trainer <span className="text-white font-semibold">Jayme Nolan </span> for an exclusive live stream.
+              Join renowned trainers <span className="text-white font-semibold">Jayme Nolan</span> and <span className="text-white font-semibold">Jo Simpson</span> for an exclusive live stream.
             </p>
             
             {/* Event Details - White Box */}
             <div className="max-w-2xl mx-auto space-y-6">
-              <div className="bg-white/85 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Event starts in</h3>
-                
+              <div className="bg-white backdrop-blur-sm rounded-2xl p-6 shadow-xl">
                 {/* Compact Countdown Timer */}
-                <div className="inline-flex items-center gap-3">
+                <div className="inline-flex items-center gap-3 w-full justify-center">
                   <div className="px-4 py-3 text-center">
-                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.days.toString().padStart(2, '0')}</div>
+                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.days.toString().padStart(2, '0')}</div>
                     <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Days</div>
                   </div>
-                  <div className="text-queen-purple text-2xl font-bold">:</div>
+                  <div className="text-queen-purple text-3xl font-bold">:</div>
                   <div className="px-4 py-3 text-center">
-                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.hours.toString().padStart(2, '0')}</div>
+                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.hours.toString().padStart(2, '0')}</div>
                     <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Hours</div>
                   </div>
-                  <div className="text-queen-purple text-2xl font-bold">:</div>
+                  <div className="text-queen-purple text-3xl font-bold">:</div>
                   <div className="px-4 py-3 text-center">
-                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.minutes.toString().padStart(2, '0')}</div>
+                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.minutes.toString().padStart(2, '0')}</div>
                     <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Min</div>
                   </div>
-                  <div className="text-queen-purple text-2xl font-bold">:</div>
+                  <div className="text-queen-purple text-3xl font-bold">:</div>
                   <div className="px-4 py-3 text-center">
-                    <div className="text-3xl font-bold text-queen-purple">{timeLeft.seconds.toString().padStart(2, '0')}</div>
+                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.seconds.toString().padStart(2, '0')}</div>
                     <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Sec</div>
                   </div>
                 </div>
@@ -258,24 +325,50 @@ function LandingPageClient() {
                   <Clock className="w-4 h-4 text-queen-purple" />
                   <span className="text-sm font-medium">2:00 PM PST</span>
                 </div>
-                <div className="hidden sm:block w-1 h-1 bg-gray-600 rounded-full"></div>
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-queen-purple" />
-                  <span className="text-sm font-medium">Jayme Nolan</span>
-                </div>
+               
               </div>
             </div>
             
             {/* CTA Button */}
             <div className="flex justify-center">
-              <Button 
-                size="lg" 
-                className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
-                onClick={handleGetStarted}
-              >
-                <Calendar className="w-5 h-5 mr-2" />
-                Add to Calendar
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    size="lg" 
+                    className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
+                  >
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Save the Date
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuItem onClick={handleAddToCalendar} className="cursor-pointer">
+                    <img 
+                      src="https://www.google.com/favicon.ico" 
+                      alt="Google" 
+                      className="w-4 h-4 mr-2"
+                    />
+                    Google Calendar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Apple Calendar (.ics)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
+                    <img 
+                      src="https://www.microsoft.com/favicon.ico" 
+                      alt="Outlook" 
+                      className="w-4 h-4 mr-2"
+                    />
+                    Outlook Calendar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download .ics file
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -303,10 +396,7 @@ function LandingPageClient() {
           
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Puppy Basics */}
-            <div 
-              className="relative group cursor-pointer"
-              onClick={() => handleVideoPreview("puppy-basics")}
-            >
+            <div className="relative group">
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <VideoThumbnail
                   videoUrl="https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4"
@@ -334,20 +424,11 @@ function LandingPageClient() {
                   
                 </div>
                 
-                {/* Play Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <PlayCircle className="w-10 h-10 text-white" />
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Advanced Obedience Commands */}
-            <div 
-              className="relative group cursor-pointer"
-              onClick={() => handleVideoPreview("advanced-obedience")}
-            >
+            <div className="relative group">
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=400&h=300&fit=crop&crop=face"
@@ -371,20 +452,11 @@ function LandingPageClient() {
                   
                 </div>
                 
-                {/* Play Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <PlayCircle className="w-10 h-10 text-white" />
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Leash Training Techniques */}
-            <div 
-              className="relative group cursor-pointer"
-              onClick={() => handleVideoPreview("leash-training")}
-            >
+            <div className="relative group">
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face"
@@ -408,12 +480,6 @@ function LandingPageClient() {
                   
                 </div>
                 
-                {/* Play Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <PlayCircle className="w-10 h-10 text-white" />
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -509,10 +575,10 @@ function LandingPageClient() {
                 <div className="absolute top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 text-sm font-bold">
                   SPECIAL OFFER - Save 90%
                 </div>
-                <CardContent className="p-6 pt-10">
+                <CardContent className="p-6 pt-10 pb-4">
                   <div className="text-center">
                     <h3 className="text-xl font-bold text-white mb-3">Get Started Today</h3>
-                    <div className="mb-4">
+                    <div className="mb-6">
                       <div className="flex items-baseline justify-center gap-2 mb-1">
                         <span className="text-5xl font-bold text-white">$1</span>
                         <span className="text-purple-100 text-lg">first month</span>
@@ -525,7 +591,7 @@ function LandingPageClient() {
                       className="w-full bg-white text-purple-700 hover:bg-gray-100 py-4 text-lg font-bold shadow-lg transform hover:scale-105 transition-all"
                       onClick={handleGetStarted}
                     >
-                      Start Your $1 Trial
+                      Subscribe Now
                     </Button>
                   </div>
                 </CardContent>

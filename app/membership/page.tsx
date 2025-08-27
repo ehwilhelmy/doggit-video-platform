@@ -122,29 +122,29 @@ function MembershipPageContent() {
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">Community Support</span>
-                    <p className="text-gray-400 text-sm mt-1">Learn alongside other dog owners with guidance from our expert trainers.</p>
+                    <span className="text-white text-lg font-medium">Expert Training Videos</span>
+                    <p className="text-gray-400 text-sm mt-1">Access our complete library of professional dog training courses.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">Expert Puppy Training Videos</span>
-                    <p className="text-gray-400 text-sm mt-1">Complete courses to set the foundational success with your pup.</p>
+                    <span className="text-white text-lg font-medium">New Videos Released Monthly</span>
+                    <p className="text-gray-400 text-sm mt-1">Fresh content added regularly to expand your training knowledge.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">Expert Behavioral Training Videos</span>
-                    <p className="text-gray-400 text-sm mt-1">Understand and connect with your dog.</p>
+                    <span className="text-white text-lg font-medium">Community Support (50,000+ members)</span>
+                    <p className="text-gray-400 text-sm mt-1">Learn alongside thousands of dog owners with guidance from expert trainers.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">Proven Results</span>
-                    <p className="text-gray-400 text-sm mt-1">Backed by behavioral psychology, our method sets the standard for success.</p>
+                    <span className="text-white text-lg font-medium">30-Day Money-Back Guarantee</span>
+                    <p className="text-gray-400 text-sm mt-1">Try risk-free. Not satisfied? Get a full refund within 30 days.</p>
                   </div>
                 </div>
               </div>
