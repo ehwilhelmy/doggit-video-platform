@@ -296,7 +296,7 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
                 <button
                   onClick={() => {
                     onOpenChange(false)
-                    onSwitchToSignUp?.()
+                    window.location.href = '/membership'
                   }}
                   className="text-jade-purple font-medium hover:underline"
                 >
