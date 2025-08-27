@@ -7,7 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { X, Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react"
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react"
 import Image from "next/image"
 
 // SVG icons for Google and Facebook
@@ -135,13 +135,6 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
       <DialogContent className="max-w-md p-0 overflow-hidden bg-white dark:bg-gray-900">
         {/* Header */}
         <div className="relative bg-gradient-to-r from-jade-purple to-queen-purple p-6">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute right-4 top-4 p-2 hover:bg-white/10 rounded-full transition-colors"
-          >
-            <X className="h-5 w-5 text-white" />
-          </button>
-          
           <div className="text-center text-white">
             <Image
               src="/doggit-logo-mark.svg"
