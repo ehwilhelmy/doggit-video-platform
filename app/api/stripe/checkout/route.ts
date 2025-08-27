@@ -39,13 +39,51 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // Default price - create product and price if needed
+    let finalPriceId = priceId
+    
+    if (!finalPriceId || finalPriceId === 'price_default') {
+      // Create or retrieve default product and price
+      const products = await stripe.products.list({ limit: 10 })
+      let product = products.data.find(p => p.name === 'DOGGIT Training Subscription')
+      
+      if (!product) {
+        product = await stripe.products.create({
+          name: 'DOGGIT Training Subscription',
+          description: 'Monthly subscription to DOGGIT dog training platform'
+        })
+      }
+      
+      const prices = await stripe.prices.list({ 
+        product: product.id,
+        limit: 10 
+      })
+      let price = prices.data.find(p => 
+        p.recurring?.interval === 'month' && 
+        p.unit_amount === 999 // $9.99
+      )
+      
+      if (!price) {
+        price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: 999, // $9.99 in cents
+          currency: 'usd',
+          recurring: {
+            interval: 'month'
+          }
+        })
+      }
+      
+      finalPriceId = price.id
+    }
+    
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId || 'price_1QoSpvAtFqZr1zSUpXzgOGmS', // Default to monthly price
+          price: finalPriceId,
           quantity: 1
         }
       ],

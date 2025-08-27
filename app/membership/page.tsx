@@ -27,7 +27,7 @@ function MembershipPageContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: 'price_1QoSpvAtFqZr1zSUpXzgOGmS', // Monthly subscription price
+          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_default', // Monthly subscription price
           successUrl: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${window.location.origin}/membership`
         })
