@@ -300,7 +300,7 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
                   }}
                   className="text-jade-purple font-medium hover:underline"
                 >
-                  Sign up for free
+                  Subscribe to create an account
                 </button>
               </p>
             </div>
