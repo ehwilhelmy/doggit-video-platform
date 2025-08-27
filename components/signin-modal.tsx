@@ -199,43 +199,6 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
           ) : (
             // Sign In Form
             <>
-              {/* Social Auth Buttons */}
-              <div className="space-y-3 mb-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-3 py-5"
-                  onClick={() => handleSocialAuth("google")}
-                  disabled={isLoading}
-                >
-                  <GoogleIcon />
-                  <span>Continue with Google</span>
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-3 py-5"
-                  onClick={() => handleSocialAuth("facebook")}
-                  disabled={isLoading}
-                >
-                  <FacebookIcon />
-                  <span>Continue with Facebook</span>
-                </Button>
-              </div>
-
-              {/* Divider */}
-              <div className="relative mb-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white dark:bg-gray-900 text-gray-500">
-                    Or continue with email
-                  </span>
-                </div>
-              </div>
-
               {/* Email/Password Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

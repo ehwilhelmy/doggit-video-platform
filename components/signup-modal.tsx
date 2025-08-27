@@ -198,51 +198,6 @@ export function SignUpModal({ open, onOpenChange, selectedTrainingGoals = [], on
                 )}
               </DialogHeader>
 
-              {/* Social Auth Buttons */}
-              <div className="space-y-3 mb-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-3 py-3 transition-all duration-200 hover:shadow-md"
-                  onClick={() => handleSocialSignUp("google")}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                  ) : (
-                    <GoogleIcon />
-                  )}
-                  <span>{isSubmitting ? "Signing up..." : "Sign up with Google"}</span>
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-3 py-3 transition-all duration-200 hover:shadow-md"
-                  onClick={() => handleSocialSignUp("facebook")}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                  ) : (
-                    <FacebookIcon />
-                  )}
-                  <span>{isSubmitting ? "Signing up..." : "Sign up with Facebook"}</span>
-                </Button>
-              </div>
-
-              {/* Divider */}
-              <div className="relative mb-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white dark:bg-gray-900 text-gray-500">
-                    Or sign up with email
-                  </span>
-                </div>
-              </div>
-
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
