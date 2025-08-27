@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia'
+  apiVersion: '2025-07-30.basil'
 })
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -32,9 +32,10 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
         
         // Get the subscription
-        const subscription = await stripe.subscriptions.retrieve(
+        const subscriptionResponse = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
+        const subscription = subscriptionResponse
         
         // Update user's subscription in database
         const userId = session.client_reference_id || session.metadata?.supabase_user_id
