@@ -147,12 +147,11 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
             <h2 className="text-2xl font-bold mt-4">
               {showForgotPassword ? "Reset Password" : "Welcome Back"}
             </h2>
-            <p className="text-sm opacity-90 mt-2">
-              {showForgotPassword 
-                ? "Enter your email to receive a reset link"
-                : "Sign in to continue to your training"
-              }
-            </p>
+            {showForgotPassword && (
+              <p className="text-sm opacity-90 mt-2">
+                Enter your email to receive a reset link
+              </p>
+            )}
           </div>
         </div>
 
