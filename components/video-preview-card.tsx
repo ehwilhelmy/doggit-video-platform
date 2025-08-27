@@ -77,13 +77,9 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     
-    if (isSubscribed) {
-      // Play full video
-      router.push(`/watch?v=${video.id}&from=dashboard`)
-    } else {
-      // Play trailer with subscription CTA
-      router.push(`/trailer?v=${video.id}&from=dashboard`)
-    }
+    // Always go to watch page - if user is in dashboard, they should have access
+    // The watch page will handle any access control if needed
+    router.push(`/watch?v=${video.id}&from=dashboard`)
   }
 
   const handleAddClick = (e: React.MouseEvent) => {
