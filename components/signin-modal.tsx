@@ -7,8 +7,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Logo } from "@/components/logo"
 import { X, Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react"
+import Image from "next/image"
 
 // SVG icons for Google and Facebook
 const GoogleIcon = () => (
@@ -143,7 +143,13 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
           </button>
           
           <div className="text-center text-white">
-            <Logo size="md" variant="white" />
+            <Image
+              src="/doggit-logo-mark.svg"
+              alt="DOGGIT"
+              width={48}
+              height={48}
+              className="mx-auto brightness-0 invert"
+            />
             <h2 className="text-2xl font-bold mt-4">
               {showForgotPassword ? "Reset Password" : "Welcome Back"}
             </h2>
