@@ -12,13 +12,43 @@ import Image from "next/image"
 function MembershipPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isLoading, setIsLoading] = useState(false)
   
   const fromModal = searchParams.get("from") === "modal"
   const videoId = searchParams.get("v")
 
-  const handleSubscribe = () => {
-    // Go directly to payment with the same parameters
-    router.push(`/payment?from=${fromModal ? 'modal' : 'membership'}&video=${videoId || 'puppy-basics'}`)
+  const handleSubscribe = async () => {
+    setIsLoading(true)
+    try {
+      // Call our Stripe checkout API
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: 'price_1QoSpvAtFqZr1zSUpXzgOGmS', // Monthly subscription price
+          successUrl: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}/membership`
+        })
+      })
+      
+      const data = await response.json()
+      
+      if (data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url
+      } else {
+        // Fallback to old payment flow if Stripe isn't set up
+        router.push(`/payment?from=${fromModal ? 'modal' : 'membership'}&video=${videoId || 'puppy-basics'}`)
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      // Fallback to old payment flow
+      router.push(`/payment?from=${fromModal ? 'modal' : 'membership'}&video=${videoId || 'puppy-basics'}`)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleBack = () => {
@@ -107,9 +137,10 @@ function MembershipPageContent() {
               {/* CTA Button */}
               <Button
                 onClick={handleSubscribe}
-                className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white py-4 text-xl font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                disabled={isLoading}
+                className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white py-4 text-xl font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Continue to Checkout
+                {isLoading ? 'Redirecting to checkout...' : 'Continue to Checkout'}
               </Button>
             </div>
 
