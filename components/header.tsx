@@ -110,7 +110,7 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                 onClick={() => window.location.href = '/membership'}
                 data-signup-trigger
               >
-                Watch Now
+                Subscribe Now
               </Button>
             </div>
           )}
@@ -127,7 +127,7 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                   : "text-gray-600 hover:text-jade-purple"}
                 onClick={() => window.location.href = '/dashboard'}
               >
-                Watch Now
+                Go to Dashboard
               </Button>
               
               <DropdownMenu>
@@ -209,7 +209,7 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                   }}
                   data-signup-trigger
                 >
-                  Watch Now
+                  Subscribe Now
                 </Button>
               </div>
             )}
