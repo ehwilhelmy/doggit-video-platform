@@ -424,21 +424,12 @@ function DashboardContent() {
                   </div>
                   
                   <div className="flex gap-4 pt-4">
-                    {isSubscribed ? (
-                      <Button 
-                        className="bg-jade-purple text-white hover:bg-jade-purple/90 px-8 py-3 text-lg font-semibold transform hover:scale-105 transition-all duration-200 shadow-xl"
-                        onClick={() => router.push(`/watch?v=${videos[0].id}&from=dashboard`)}
-                      >
-                        Watch Now
-                      </Button>
-                    ) : (
-                      <Button 
-                        className="bg-jade-purple text-white hover:bg-jade-purple/90 px-8 py-3 text-lg font-semibold transform hover:scale-105 transition-all duration-200 shadow-xl"
-                        onClick={() => router.push(`/trailer?v=${videos[0].id}&from=dashboard`)}
-                      >
-                        Watch Trailer
-                      </Button>
-                    )}
+                    <Button 
+                      className="bg-jade-purple text-white hover:bg-jade-purple/90 px-8 py-3 text-lg font-semibold transform hover:scale-105 transition-all duration-200 shadow-xl"
+                      onClick={() => router.push(`/watch?v=${videos[0].id}&from=dashboard`)}
+                    >
+                      Watch Now
+                    </Button>
                   </div>
                 </>
               )}
