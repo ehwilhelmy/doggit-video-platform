@@ -8,11 +8,23 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    // Add debugging
+    console.log('Stripe checkout API called')
+    
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('STRIPE_SECRET_KEY not found')
+      return NextResponse.json(
+        { error: 'Stripe configuration missing' },
+        { status: 500 }
+      )
+    }
     
     const body = await request.json()
     const { priceId, successUrl, cancelUrl } = body
+    console.log('Request body:', { priceId, successUrl, cancelUrl })
+    
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
     
     // Create or retrieve Stripe customer
     let customerId: string | undefined

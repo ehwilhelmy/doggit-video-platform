@@ -44,6 +44,7 @@ function MembershipPageContent() {
       }
     } catch (error) {
       console.error('Error creating checkout session:', error)
+      console.log('Falling back to old payment flow due to error:', error)
       // Fallback to old payment flow
       router.push(`/payment?from=${fromModal ? 'modal' : 'membership'}&video=${videoId || 'puppy-basics'}`)
     } finally {
