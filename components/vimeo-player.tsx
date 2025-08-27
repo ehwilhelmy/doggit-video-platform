@@ -1,68 +1,18 @@
 "use client"
 
-import { useEffect, useRef } from 'react'
-import Script from 'next/script'
-
 interface VimeoPlayerProps {
   videoId: string
   title?: string
-  onReady?: () => void
-  onPlay?: () => void
-  onPause?: () => void
-  onEnded?: () => void
-  onTimeUpdate?: (seconds: number, duration: number) => void
   className?: string
 }
 
 export function VimeoPlayer({ 
   videoId, 
   title = "Video",
-  onReady,
-  onPlay,
-  onPause,
-  onEnded,
-  onTimeUpdate,
   className = ""
 }: VimeoPlayerProps) {
-  console.log('VimeoPlayer rendering with videoId:', videoId)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const playerRef = useRef<any>(null)
-
-  useEffect(() => {
-    // Initialize Vimeo Player when script loads
-    if (window.Vimeo && containerRef.current) {
-      const iframe = containerRef.current.querySelector('iframe')
-      if (iframe) {
-        playerRef.current = new window.Vimeo.Player(iframe)
-        
-        // Set up event listeners
-        if (onReady) playerRef.current.on('loaded', onReady)
-        if (onPlay) playerRef.current.on('play', onPlay)
-        if (onPause) playerRef.current.on('pause', onPause)
-        if (onEnded) playerRef.current.on('ended', onEnded)
-        
-        if (onTimeUpdate) {
-          playerRef.current.on('timeupdate', (data: any) => {
-            onTimeUpdate(data.seconds, data.duration)
-          })
-        }
-      }
-    }
-
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.off('loaded')
-        playerRef.current.off('play')
-        playerRef.current.off('pause')
-        playerRef.current.off('ended')
-        playerRef.current.off('timeupdate')
-      }
-    }
-  }, [videoId, onReady, onPlay, onPause, onEnded, onTimeUpdate])
-
   return (
     <div 
-      ref={containerRef}
       className={`relative w-full ${className}`}
       style={{ paddingTop: '56.25%' }} // 16:9 aspect ratio
     >
@@ -82,11 +32,4 @@ export function VimeoPlayer({
       />
     </div>
   )
-}
-
-// Add window type declaration
-declare global {
-  interface Window {
-    Vimeo: any
-  }
 }

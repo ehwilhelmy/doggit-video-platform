@@ -94,11 +94,6 @@ function WatchPageContent() {
   const from = searchParams.get("from") || "welcome"
   
   const video = videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"]
-  
-  // Debug logging
-  console.log('Video ID:', videoId)
-  console.log('Vimeo videos config:', vimeoVideos)
-  console.log('Should use Vimeo?', !!vimeoVideos[videoId as keyof typeof vimeoVideos])
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(true)
@@ -188,7 +183,6 @@ function WatchPageContent() {
       // Fallback: set duration when video starts playing if not already set
       if (duration === 0 && videoEl.duration) {
         setDuration(videoEl.duration)
-        console.log("Duration set on play:", videoEl.duration)
       }
     }
     const handlePause = () => setIsPlaying(false)
@@ -197,19 +191,16 @@ function WatchPageContent() {
       // Fallback: set duration during playback if not set
       if (duration === 0 && videoEl.duration) {
         setDuration(videoEl.duration)
-        console.log("Duration set during timeupdate:", videoEl.duration)
       }
       // Check if video is near the end (within 1 second)
       if (videoEl.duration && videoEl.currentTime >= videoEl.duration - 1) {
         if (!showRatingModal) {
           setShowRatingModal(true)
-          console.log("Video ended - showing rating modal")
         }
       }
     }
     const handleLoadedMetadata = () => {
       setDuration(videoEl.duration)
-      console.log("Duration set on loadedmetadata:", videoEl.duration)
     }
     const handleVolumeChange = () => {
       setVolume(videoEl.volume)
@@ -282,16 +273,6 @@ function WatchPageContent() {
                 <VimeoPlayer
                   videoId={vimeoVideos[videoId as keyof typeof vimeoVideos].id}
                   title={video.title}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  onTimeUpdate={(seconds, duration) => {
-                    setCurrentTime(seconds)
-                    setDuration(duration)
-                  }}
-                  onEnded={() => {
-                    setIsPlaying(false)
-                    setShowRatingModal(true)
-                  }}
                   className="w-full h-full"
                 />
               ) : (
@@ -306,19 +287,16 @@ function WatchPageContent() {
                   onLoadedMetadata={() => {
                     if (videoRef.current) {
                       setDuration(videoRef.current.duration)
-                      console.log("Video duration loaded:", videoRef.current.duration)
-                    }
+                      }
                   }}
                   onCanPlayThrough={() => {
                     if (videoRef.current && duration === 0) {
                       setDuration(videoRef.current.duration)
-                      console.log("Duration set on canplaythrough:", videoRef.current.duration)
                     }
                   }}
                   onDurationChange={() => {
                     if (videoRef.current) {
                       setDuration(videoRef.current.duration)
-                      console.log("Duration changed:", videoRef.current.duration)
                     }
                   }}
                   onError={(e) => {

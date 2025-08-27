@@ -53,8 +53,6 @@ function DashboardContent() {
     if (!user) return
     
     // Debug: Log user object to see what we have
-    console.log('Current user:', user)
-    console.log('User email:', user.email)
     
     try {
       const { data: profile, error } = await supabase
