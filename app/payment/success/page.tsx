@@ -18,10 +18,12 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams()
   const { signUp } = useAuth()
   
-  const email = searchParams.get("email") || ""
+  const emailFromUrl = searchParams.get("email") || ""
+  const sessionId = searchParams.get("session_id") || ""
   const isDemoMode = searchParams.get("demo") === "true"
   
   const [formData, setFormData] = useState({
+    email: emailFromUrl,
     pupName: "",
     password: "",
     confirmPassword: ""
@@ -30,6 +32,7 @@ function PaymentSuccessContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [errors, setErrors] = useState({
+    email: "",
     pupName: "",
     password: "",
     confirmPassword: ""
@@ -52,9 +55,16 @@ function PaymentSuccessContent() {
   
   const validateForm = () => {
     const newErrors = {
+      email: "",
       pupName: "",
       password: "",
       confirmPassword: ""
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = "Please enter your email"
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email"
     }
     
     if (!formData.pupName.trim()) {
@@ -74,7 +84,7 @@ function PaymentSuccessContent() {
     }
     
     setErrors(newErrors)
-    return !newErrors.pupName && !newErrors.password && !newErrors.confirmPassword
+    return !newErrors.email && !newErrors.pupName && !newErrors.password && !newErrors.confirmPassword
   }
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,7 +96,7 @@ function PaymentSuccessContent() {
     
     try {
       // Create user in Supabase with metadata
-      const { data, error } = await signUp(email, formData.password, {
+      const { data, error } = await signUp(formData.email, formData.password, {
         pup_name: formData.pupName,
         first_name: formData.pupName, // Use pup name as first name for now
         subscription_status: 'active',
@@ -102,7 +112,7 @@ function PaymentSuccessContent() {
       
       if (data.user) {
         console.log('User created successfully:', data.user.id)
-        console.log('Welcome email would be sent to:', email)
+        console.log('Welcome email would be sent to:', formData.email)
         
         // If user was created but needs email confirmation, handle it
         if (!data.session) {
@@ -117,7 +127,7 @@ function PaymentSuccessContent() {
         
         // Store additional data in localStorage for backwards compatibility (will be cleaned up by auth context)
         const accountData = {
-          email: email,
+          email: formData.email,
           pupName: formData.pupName,
           subscriptionStatus: 'active',
           subscriptionStart: new Date().toISOString(),
@@ -127,14 +137,14 @@ function PaymentSuccessContent() {
         
         localStorage.setItem('accountData', JSON.stringify(accountData))
         localStorage.setItem('pupName', formData.pupName)
-        localStorage.setItem('userEmail', email)
+        localStorage.setItem('userEmail', formData.email)
         localStorage.setItem('subscriptionActive', 'true')
         localStorage.setItem('paymentCompleted', 'true')
         localStorage.setItem('isAuthenticated', 'true')
         
         // Redirect to personalized goals selection with pup name
         setTimeout(() => {
-          router.push(`/onboarding/goals-web?email=${encodeURIComponent(email)}&pup=${encodeURIComponent(formData.pupName)}`)
+          router.push(`/onboarding/goals-web?email=${encodeURIComponent(formData.email)}&pup=${encodeURIComponent(formData.pupName)}`)
         }, 500)
       }
       
@@ -196,17 +206,21 @@ function PaymentSuccessContent() {
           {/* Account Setup Form */}
           <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email (read-only) */}
+            {/* Email */}
             <div>
               <Label htmlFor="email" className="text-gray-300 text-sm">Your email</Label>
               <Input
                 id="email"
                 type="email"
-                value={email}
-                className="mt-1 bg-zinc-800/50 border-zinc-700 text-gray-400 cursor-not-allowed"
-                disabled
-                readOnly
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="Enter your email"
+                className="mt-1 bg-zinc-800/50 border-zinc-700 text-white focus:border-jade-purple"
+                required
               />
+              {errors.email && (
+                <p className="mt-1 text-red-500 text-xs">{errors.email}</p>
+              )}
             </div>
             
             {/* Pup's Name */}
