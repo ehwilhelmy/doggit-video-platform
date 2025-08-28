@@ -288,27 +288,27 @@ END:VCALENDAR`
             
             {/* Event Details - White Box */}
             <div className="max-w-2xl mx-auto space-y-6">
-              <div className="bg-white backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+              <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl">
                 {/* Compact Countdown Timer */}
-                <div className="inline-flex items-center gap-3 w-full justify-center">
-                  <div className="px-4 py-3 text-center">
-                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.days.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Days</div>
+                <div className="flex items-center gap-1 sm:gap-3 w-full justify-center overflow-hidden">
+                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.days.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Days</div>
                   </div>
-                  <div className="text-queen-purple text-3xl font-bold">:</div>
-                  <div className="px-4 py-3 text-center">
-                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Hours</div>
+                  <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
+                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.hours.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Hours</div>
                   </div>
-                  <div className="text-queen-purple text-3xl font-bold">:</div>
-                  <div className="px-4 py-3 text-center">
-                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Min</div>
+                  <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
+                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.minutes.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Min</div>
                   </div>
-                  <div className="text-queen-purple text-3xl font-bold">:</div>
-                  <div className="px-4 py-3 text-center">
-                    <div className="text-5xl font-bold text-queen-purple">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium">Sec</div>
+                  <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
+                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.seconds.toString().padStart(2, '0')}</div>
+                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Sec</div>
                   </div>
                 </div>
               </div>
