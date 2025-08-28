@@ -274,6 +274,7 @@ function WatchPageContent() {
                   videoId={vimeoVideos[videoId as keyof typeof vimeoVideos].id}
                   title={video.title}
                   className="w-full h-full"
+                  thumbnail={vimeoVideos[videoId as keyof typeof vimeoVideos].thumbnail}
                 />
               ) : (
                 <video

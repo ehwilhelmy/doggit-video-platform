@@ -5,7 +5,7 @@ export const vimeoVideos = {
     id: '1113072634',
     title: 'DOGG!T Puppy Basics',
     duration: 174, // 2:54 in seconds
-    thumbnail: 'https://i.vimeocdn.com/video/1113072634_295x166.webp',
+    thumbnail: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face',
     description: 'Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.',
     category: 'Puppy Training'
   }
