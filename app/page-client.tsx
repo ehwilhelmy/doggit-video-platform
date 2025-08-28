@@ -399,7 +399,7 @@ END:VCALENDAR`
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <VideoThumbnail
                   videoUrl="https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4"
-                  fallbackImage="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
+                  fallbackImage="https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/1%20Puppy%20Basics.png"
                   videoId="puppy-basics"
                   alt="Cute puppy learning basic training"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

@@ -164,12 +164,7 @@ function DashboardContent() {
         id: "puppy-basics",
         title: "PUPPY BASICS",
         duration: "2:54",
-        // Since the video is private, we need to use a static thumbnail that matches
-        // You can either:
-        // 1. Upload the puppy image to your Supabase storage
-        // 2. Use a public URL of the same frame
-        // For now, using the vumbnail service which should work
-        thumbnail_url: `https://vumbnail.com/1113072634.jpg`,
+        thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/1%20Puppy%20Basics.png",
         instructor: "Jayme Nolan",
         category: "Foundation",
         video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",

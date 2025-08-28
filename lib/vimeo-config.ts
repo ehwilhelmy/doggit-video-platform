@@ -5,8 +5,8 @@ export const vimeoVideos = {
     id: '1113072634',
     title: 'DOGG!T Puppy Basics',
     duration: 174, // 2:54 in seconds
-    // Using Vimeo's CDN thumbnail directly - will show whatever is set in Vimeo
-    thumbnail: `https://vumbnail.com/1113072634.jpg`,
+    // Using static thumbnail since video is private
+    thumbnail: `https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/1%20Puppy%20Basics.png`,
     // Alternative: Use Vimeo's i.vimeocdn.com if you know the video ID from their CDN
     // thumbnail: 'https://i.vimeocdn.com/video/[VIDEO_THUMBNAIL_ID]_640x360.jpg',
     description: 'Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.',
