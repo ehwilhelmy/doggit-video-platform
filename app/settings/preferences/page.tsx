@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Logo } from "@/components/logo"
-import { ArrowLeft, Check, Target, Heart, GraduationCap, Shield, Brain, Search, Bell, Mail, Save, User } from "lucide-react"
+import { ArrowLeft, Check, Target, Heart, GraduationCap, Shield, Brain, Search, Save, User } from "lucide-react"
 import type { Profile } from "@/types/database"
 
 const trainingGoals = [
@@ -66,8 +66,6 @@ function PreferencesContent() {
   const router = useRouter()
   const { user } = useAuth()
   const [selectedGoals, setSelectedGoals] = useState<string[]>([])
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const [pushNotifications, setPushNotifications] = useState(true)
   const [pupName, setPupName] = useState("")
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -363,62 +361,6 @@ function PreferencesContent() {
           </div>
         </div>
 
-        {/* Notification Preferences */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">Notification Preferences</h2>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-gray-400" />
-                <div>
-                  <h3 className="font-medium text-white">Email Notifications</h3>
-                  <p className="text-sm text-gray-400">Get notified when new courses matching your goals are released</p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setEmailNotifications(!emailNotifications)
-                  setHasChanges(true)
-                }}
-                className={`
-                  relative w-12 h-6 rounded-full transition-colors
-                  ${emailNotifications ? 'bg-queen-purple' : 'bg-zinc-700'}
-                `}
-              >
-                <div className={`
-                  absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform
-                  ${emailNotifications ? 'translate-x-6' : 'translate-x-0.5'}
-                `} />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-              <div className="flex items-center gap-3">
-                <Bell className="h-5 w-5 text-gray-400" />
-                <div>
-                  <h3 className="font-medium text-white">Push Notifications</h3>
-                  <p className="text-sm text-gray-400">Get browser notifications for training reminders and updates</p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setPushNotifications(!pushNotifications)
-                  setHasChanges(true)
-                }}
-                className={`
-                  relative w-12 h-6 rounded-full transition-colors
-                  ${pushNotifications ? 'bg-queen-purple' : 'bg-zinc-700'}
-                `}
-              >
-                <div className={`
-                  absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform
-                  ${pushNotifications ? 'translate-x-6' : 'translate-x-0.5'}
-                `} />
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Impact Summary */}
         {selectedGoals.length > 0 && (
