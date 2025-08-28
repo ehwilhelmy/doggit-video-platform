@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VideoDuration } from "@/components/video-duration"
-import { VideoRatingDisplay } from "@/components/video-rating-display"
 import { 
   PlayCircle, 
   Clock,
@@ -178,18 +177,12 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
             {video.free && (
               <Badge className="text-xs bg-green-500 text-white">FREE</Badge>
             )}
-            <VideoRatingDisplay videoId={video.id} size="sm" />
+            {video.tags && video.tags.slice(0, 3).map((tag, index) => (
+              <Badge key={index} variant="outline" className="text-xs border-zinc-600 text-gray-400">
+                {tag}
+              </Badge>
+            ))}
           </div>
-          
-          {video.tags && video.tags.length > 0 && (
-            <div className="flex items-center gap-2 mb-3 flex-wrap">
-              {video.tags.slice(0, 3).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs border-zinc-600 text-gray-400">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
           
           {video.description && (
             <p className="text-sm text-muted-foreground line-clamp-2">

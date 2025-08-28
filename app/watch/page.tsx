@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Logo } from "@/components/logo"
 import { VideoThumbnail } from "@/components/video-thumbnail"
-import { VimeoPlayerWithRating } from "@/components/vimeo-player-with-rating"
+import { VimeoPlayer } from "@/components/vimeo-player"
 import { vimeoVideos } from "@/lib/vimeo-config"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { 
@@ -270,13 +270,10 @@ function WatchPageContent() {
             >
               {/* Use Vimeo player if video exists in vimeoVideos config, fallback to video element for others */}
               {vimeoVideos[videoId as keyof typeof vimeoVideos] ? (
-                <VimeoPlayerWithRating
+                <VimeoPlayer
                   videoId={vimeoVideos[videoId as keyof typeof vimeoVideos].id}
                   title={video.title}
                   className="w-full h-full"
-                  onRatingSubmit={(rating, feedback) => {
-                    console.log('Video rated:', { videoId, rating, feedback })
-                  }}
                 />
               ) : (
                 <video
