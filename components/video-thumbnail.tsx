@@ -24,7 +24,11 @@ export function VideoThumbnail({
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    if (!videoUrl) return
+    // For Vimeo videos or when no video URL, always use fallback image
+    if (!videoUrl || videoUrl.includes('vimeo.com')) {
+      setThumbnailSrc(fallbackImage)
+      return
+    }
 
     // Check if we have a cached thumbnail
     const cached = getCachedThumbnail(videoId, timeOffset)
@@ -43,11 +47,12 @@ export function VideoThumbnail({
       .catch((error) => {
         console.warn('Failed to extract video thumbnail:', error)
         // Keep using fallback image
+        setThumbnailSrc(fallbackImage)
       })
       .finally(() => {
         setIsLoading(false)
       })
-  }, [videoUrl, videoId, timeOffset])
+  }, [videoUrl, videoId, timeOffset, fallbackImage])
 
   return (
     <div className="relative w-full h-full" style={{ margin: 0, padding: 0, display: 'block', lineHeight: 0 }}>
