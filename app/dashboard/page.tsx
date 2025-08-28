@@ -164,7 +164,7 @@ function DashboardContent() {
         id: "puppy-basics",
         title: "PUPPY BASICS",
         duration: "2:54",
-        thumbnail_url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face",
+        thumbnail_url: `https://vumbnail.com/1113072634.jpg`, // Pulls from Vimeo directly
         instructor: "Jayme Nolan",
         category: "Foundation",
         video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
