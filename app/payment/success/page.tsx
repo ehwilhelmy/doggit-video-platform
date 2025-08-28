@@ -24,6 +24,8 @@ function PaymentSuccessContent() {
   
   const [formData, setFormData] = useState({
     email: emailFromUrl,
+    firstName: "",
+    lastName: "",
     pupName: "",
     password: "",
     confirmPassword: ""
@@ -33,6 +35,8 @@ function PaymentSuccessContent() {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [errors, setErrors] = useState({
     email: "",
+    firstName: "",
+    lastName: "",
     pupName: "",
     password: "",
     confirmPassword: ""
@@ -56,6 +60,8 @@ function PaymentSuccessContent() {
   const validateForm = () => {
     const newErrors = {
       email: "",
+      firstName: "",
+      lastName: "",
       pupName: "",
       password: "",
       confirmPassword: ""
@@ -65,6 +71,14 @@ function PaymentSuccessContent() {
       newErrors.email = "Please enter your email"
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email"
+    }
+    
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "Please enter your first name"
+    }
+    
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Please enter your last name"
     }
     
     if (!formData.pupName.trim()) {
@@ -84,7 +98,7 @@ function PaymentSuccessContent() {
     }
     
     setErrors(newErrors)
-    return !newErrors.email && !newErrors.pupName && !newErrors.password && !newErrors.confirmPassword
+    return !newErrors.email && !newErrors.firstName && !newErrors.lastName && !newErrors.pupName && !newErrors.password && !newErrors.confirmPassword
   }
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,8 +111,9 @@ function PaymentSuccessContent() {
     try {
       // Create user in Supabase with metadata
       const { data, error } = await signUp(formData.email, formData.password, {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         pup_name: formData.pupName,
-        first_name: formData.pupName, // Use pup name as first name for now
         subscription_status: 'active',
         subscription_start: new Date().toISOString()
       })
@@ -213,14 +228,59 @@ function PaymentSuccessContent() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="Enter your email"
-                className="mt-1 bg-zinc-800/50 border-zinc-700 text-white focus:border-jade-purple"
+                className={`mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 ${
+                  errors.email ? 'border-red-500' : ''
+                }`}
                 required
               />
               {errors.email && (
-                <p className="mt-1 text-red-500 text-xs">{errors.email}</p>
+                <p className="text-red-400 text-xs mt-1">{errors.email}</p>
               )}
+            </div>
+            
+            {/* Name Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName" className="text-gray-300 text-sm">
+                  First name <span className="text-red-400">*</span>
+                </Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  placeholder="Enter your first name"
+                  className={`mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 ${
+                    errors.firstName ? 'border-red-500' : ''
+                  }`}
+                  required
+                />
+                {errors.firstName && (
+                  <p className="text-red-400 text-xs mt-1">{errors.firstName}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="lastName" className="text-gray-300 text-sm">
+                  Last name <span className="text-red-400">*</span>
+                </Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  placeholder="Enter your last name"
+                  className={`mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 ${
+                    errors.lastName ? 'border-red-500' : ''
+                  }`}
+                  required
+                />
+                {errors.lastName && (
+                  <p className="text-red-400 text-xs mt-1">{errors.lastName}</p>
+                )}
+              </div>
             </div>
             
             {/* Pup's Name */}
