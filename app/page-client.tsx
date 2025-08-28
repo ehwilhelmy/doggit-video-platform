@@ -154,7 +154,8 @@ function LandingPageClient() {
   }
 
   const handleGetStarted = () => {
-    window.location.href = '/membership'
+    // Temporarily disabled - launching soon
+    return
   }
 
   const handleAddToCalendar = () => {
@@ -268,7 +269,7 @@ END:VCALENDAR`
             {/* Live Indicator */}
             <div className="inline-flex items-center gap-2 text-queen-purple px-6 py-3">
               <div className="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold tracking-wider">Coming Soon</span>
+              <span className="text-sm font-semibold tracking-wider">Subscribe Now</span>
             </div>
             
             {/* Main Title */}
@@ -430,7 +431,7 @@ END:VCALENDAR`
             <div className="relative group">
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=400&h=300&fit=crop&crop=face"
+                  src="https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png"
                   alt="Puppy learning advanced training techniques"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -458,7 +459,7 @@ END:VCALENDAR`
             <div className="relative group">
               <div className="relative h-96 rounded-2xl overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face"
+                  src="https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png"
                   alt="Dog learning leash training techniques"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -587,7 +588,8 @@ END:VCALENDAR`
                     </div>
                     
                     <Button 
-                      className="w-full bg-white text-purple-700 hover:bg-gray-100 py-4 text-lg font-bold shadow-lg transform hover:scale-105 transition-all"
+                      className="w-full bg-gray-400 text-gray-600 py-4 text-lg font-bold shadow-lg cursor-not-allowed"
+                      disabled
                       onClick={handleGetStarted}
                     >
                       Subscribe Now
@@ -639,7 +641,8 @@ END:VCALENDAR`
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className="bg-queen-purple hover:bg-queen-purple/90 text-white px-8 py-4 text-lg font-semibold"
+                className="bg-gray-500 text-gray-300 px-8 py-4 text-lg font-semibold cursor-not-allowed"
+                disabled
                 onClick={handleGetStarted}
               >
                 Subscribe Now
@@ -744,9 +747,11 @@ END:VCALENDAR`
                     <Button 
                       className="bg-queen-purple hover:bg-queen-purple/90 text-white px-5 py-2 text-sm"
                       onClick={() => {
-                        setShowTrailerModal(false)
-                        router.push(`/membership?v=${selectedVideoId}&from=modal`)
+                        // Disabled - launching soon
+                        return
                       }}
+                      disabled
+                      className="bg-gray-500 text-gray-300 cursor-not-allowed px-4 py-2 text-sm"
                     >
                       Subscribe Now
                     </Button>
