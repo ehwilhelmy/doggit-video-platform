@@ -103,7 +103,7 @@ const classes = [
 
 function LandingPageClient() {
   const router = useRouter()
-  const { user: supabaseUser, loading } = useAuth()
+  const { user: supabaseUser, loading, signOut } = useAuth()
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
   const [selectedTrainingGoals, setSelectedTrainingGoals] = useState<string[]>([])
@@ -227,9 +227,8 @@ END:VCALENDAR`
     setShowTrailerModal(true)
   }
 
-  const handleSignOut = () => {
-    localStorage.clear()
-    router.push('/')
+  const handleSignOut = async () => {
+    await signOut()
   }
 
   const getVideoUrl = (videoId: string) => {
