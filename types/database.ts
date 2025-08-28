@@ -164,6 +164,38 @@ export interface Database {
           added_at?: string
         }
       }
+      video_ratings: {
+        Row: {
+          id: string
+          user_id: string
+          video_id: string
+          video_title: string | null
+          rating: number
+          feedback: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          video_id: string
+          video_title?: string | null
+          rating: number
+          feedback?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          video_id?: string
+          video_title?: string | null
+          rating?: number
+          feedback?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -208,6 +240,16 @@ export interface Database {
           last_watched_at: string
         }[]
       }
+      get_video_rating_stats: {
+        Args: {
+          p_video_id: string
+        }
+        Returns: {
+          average_rating: number
+          total_ratings: number
+          rating_distribution: Record<string, number>
+        }[]
+      }
     }
     Enums: {
       subscription_status: 'active' | 'canceled' | 'past_due' | 'unpaid' | 'incomplete' | 'incomplete_expired' | 'trialing' | 'paused'
@@ -232,3 +274,7 @@ export type VideoProgressUpdate = Database['public']['Tables']['video_progress']
 export type UserWatchlist = Database['public']['Tables']['user_watchlist']['Row']
 export type UserWatchlistInsert = Database['public']['Tables']['user_watchlist']['Insert']
 export type UserWatchlistUpdate = Database['public']['Tables']['user_watchlist']['Update']
+
+export type VideoRating = Database['public']['Tables']['video_ratings']['Row']
+export type VideoRatingInsert = Database['public']['Tables']['video_ratings']['Insert']
+export type VideoRatingUpdate = Database['public']['Tables']['video_ratings']['Update']
