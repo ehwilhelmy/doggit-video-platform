@@ -24,6 +24,14 @@ export function VideoThumbnail({
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
+    // For puppy-basics, always use the fallback image (our custom thumbnail)
+    if (videoId === 'puppy-basics') {
+      setThumbnailSrc(fallbackImage)
+      // Clear any cached thumbnails for puppy-basics to force new image
+      localStorage.removeItem(`thumbnail-${videoId}-${timeOffset}`)
+      return
+    }
+
     // For Vimeo videos or when no video URL, always use fallback image
     if (!videoUrl || videoUrl.includes('vimeo.com')) {
       setThumbnailSrc(fallbackImage)
