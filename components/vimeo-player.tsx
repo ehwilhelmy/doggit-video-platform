@@ -16,15 +16,16 @@ export function VimeoPlayer({
   className = "",
   thumbnail
 }: VimeoPlayerProps) {
+  const [showCustomThumbnail, setShowCustomThumbnail] = useState(true)
   const [hasError, setHasError] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
 
   const handleError = () => {
     setHasError(true)
+    setShowCustomThumbnail(true) // Show custom thumbnail on error
   }
 
-  const handleLoad = () => {
-    setIsLoaded(true)
+  const handleThumbnailClick = () => {
+    setShowCustomThumbnail(false) // Hide custom thumbnail to reveal Vimeo player
   }
 
   return (
@@ -32,23 +33,24 @@ export function VimeoPlayer({
       className={`relative w-full ${className}`}
       style={{ paddingTop: '56.25%' }} // 16:9 aspect ratio
     >
-      {/* Thumbnail fallback for private videos */}
-      {(!isLoaded || hasError) && thumbnail && (
+      {/* Always show custom thumbnail initially */}
+      {showCustomThumbnail && thumbnail && (
         <div 
-          className="absolute inset-0 bg-black flex items-center justify-center"
+          className="absolute inset-0 bg-black flex items-center justify-center cursor-pointer z-10"
           style={{
             backgroundImage: `url(${thumbnail})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
+          onClick={handleThumbnailClick}
         >
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-black/30" />
           <div className="relative z-10 text-center text-white">
-            <PlayCircle className="h-16 w-16 mx-auto mb-4 opacity-80" />
+            <PlayCircle className="h-16 w-16 mx-auto mb-4 opacity-90 hover:opacity-100 transition-opacity" />
             <p className="text-lg font-semibold">{title}</p>
             {hasError && (
               <p className="text-sm text-gray-300 mt-2">
-                Video requires authentication
+                Click to attempt video playback
               </p>
             )}
           </div>
@@ -69,7 +71,6 @@ export function VimeoPlayer({
         }}
         title={title}
         onError={handleError}
-        onLoad={handleLoad}
       />
     </div>
   )
