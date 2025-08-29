@@ -266,11 +266,11 @@ END:VCALENDAR`
         {/* Main Content - Centered */}
         <div className="relative z-10 w-full text-center px-4 lg:px-8 py-16">
           <div className="max-w-5xl mx-auto space-y-6 pt-12">
-            {/* Live Indicator */}
+            {/* Live Indicator 
             <div className="inline-flex items-center gap-2 text-queen-purple px-6 py-3">
               <div className="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
               <span className="text-sm font-semibold tracking-wider">Subscribe Now</span>
-            </div>
+            </div>*/}
             
             {/* Main Title */}
             <div className="space-y-2">
@@ -443,7 +443,7 @@ END:VCALENDAR`
                   Training
                   </Badge>
                   <h3 className="text-xl font-bold text-white mb-2">
-                    ADVANCED TRAINING
+                    Potty TRAINING
                    
                   </h3>
                   <p className="text-gray-300 text-sm mb-4">
