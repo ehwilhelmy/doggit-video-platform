@@ -173,9 +173,9 @@ function DashboardContent() {
       },
       {
         id: "advanced-obedience",
-        title: "CRATE TRAINING",
+        title: "POTTY TRAINING",
         duration: "18 min",
-        thumbnail_url: "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=400&h=300&fit=crop&crop=face", 
+        thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png", 
         instructor: "Jayme Nolan",
         category: "Training",
         description: "Tap into your dog's natural instincts to create confidence and comfort in their crate."
@@ -481,7 +481,7 @@ function DashboardContent() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">CRATE TRAINING</h3>
+                  <h3 className="font-semibold text-white mb-1">POTTY TRAINING</h3>
                   <p className="text-sm text-gray-400 mb-2">Tap into your dog's natural instincts to create confidence and comfort in their crate.</p>
                 </div>
               </div>
