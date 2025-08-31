@@ -167,6 +167,7 @@ function DashboardContent() {
         thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/1%20Puppy%20Basics.png?v=3&t=1756419603",
         instructor: "Jayme Nolan",
         category: "Foundation",
+        vimeoId: "1113072634",
         video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
         description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
         tags: ["Foundation", "Puppy", "Basics"]

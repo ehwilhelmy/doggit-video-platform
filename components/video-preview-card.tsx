@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VideoDuration } from "@/components/video-duration"
+import { VimeoDuration } from "@/components/vimeo-duration"
 import { 
   PlayCircle, 
   Clock,
@@ -26,6 +27,7 @@ interface Video {
   category: string
   videoUrl?: string
   video_url?: string
+  vimeoId?: string
   description?: string
   free?: boolean
   tags?: string[]
@@ -164,12 +166,21 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
             <div>
               <h3 className="font-semibold text-foreground mb-1">{video.title}</h3>
             </div>
-            <VideoDuration
-              videoUrl={video.videoUrl || video.video_url}
-              fallbackDuration={video.duration}
-              showIcon={true}
-              className="text-xs text-muted-foreground"
-            />
+            {video.vimeoId ? (
+              <VimeoDuration
+                vimeoId={video.vimeoId}
+                fallbackDuration={video.duration}
+                showIcon={true}
+                className="text-gray-400"
+              />
+            ) : (
+              <VideoDuration
+                videoUrl={video.videoUrl || video.video_url}
+                fallbackDuration={video.duration}
+                showIcon={true}
+                className="text-xs text-muted-foreground"
+              />
+            )}
           </div>
           
           <div className="flex items-center gap-2 mb-3 flex-wrap">
