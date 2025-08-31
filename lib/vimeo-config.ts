@@ -17,7 +17,7 @@ export const vimeoVideos = {
   'potty-training': {
     id: '1113669343',
     title: 'POTTY TRAINING',
-    duration: 1080, // 18 min in seconds
+    duration: 134, // 2:14 in seconds
     thumbnail: `https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png`,
     description: 'Essential techniques for successful house training and establishing good bathroom habits.',
     category: 'Training'

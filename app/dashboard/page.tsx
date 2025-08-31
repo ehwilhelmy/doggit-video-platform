@@ -175,7 +175,7 @@ function DashboardContent() {
       {
         id: "potty-training",
         title: "POTTY TRAINING",
-        duration: "18:00",
+        duration: "2:14",
         thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png", 
         instructor: "Jayme Nolan",
         category: "Training",
