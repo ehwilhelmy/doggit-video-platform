@@ -11,6 +11,16 @@ export const vimeoVideos = {
     // thumbnail: 'https://i.vimeocdn.com/video/[VIDEO_THUMBNAIL_ID]_640x360.jpg',
     description: 'Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.',
     category: 'Puppy Training'
+  },
+  
+  // Potty Training - Available on Vimeo
+  'potty-training': {
+    id: '1113669343',
+    title: 'POTTY TRAINING',
+    duration: 1080, // 18 min in seconds
+    thumbnail: `https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png`,
+    description: 'Essential techniques for successful house training and establishing good bathroom habits.',
+    category: 'Training'
   }
   
   // Add more videos here as you upload them to Vimeo
