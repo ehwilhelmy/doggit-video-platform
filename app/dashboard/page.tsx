@@ -186,7 +186,7 @@ function DashboardContent() {
       {
         id: "leash-training",
         title: "LEASH TRAINING", 
-        duration: "15:00",
+        duration: "2:46",
         thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png",
         instructor: "Jayme Nolan",
         category: "Walking",
