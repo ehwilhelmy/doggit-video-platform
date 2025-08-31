@@ -47,11 +47,11 @@ const videosData = {
       { title: "Socialization Basics", time: "12:30", duration: "2 min" }
     ]
   },
-  "advanced-obedience": {
-    title: "CRATE TRAINING",
-    description: "Tap into your dog's natural instincts to create confidence and comfort in their crate.",
-    thumbnail: "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=1920&h=1080&fit=crop",
-    duration: "18 min",
+  "potty-training": {
+    title: "POTTY TRAINING",
+    description: "Essential techniques for successful house training and establishing good bathroom habits.",
+    thumbnail: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png",
+    duration: "2:14",
     instructor: "Jayme Nolan",
     instructorBio: "Degree in Animal Behavior with 15+ years running her own training and boarding business. Breeder of Merit of Vizslas, she fosters dogs, and competes in performance sports.",
     videoUrl: "/videos/crate-training.mp4",
@@ -66,8 +66,8 @@ const videosData = {
   "leash-training": {
     title: "LEASH TRAINING",
     description: "Learn effective leash training techniques for enjoyable walks.",
-    thumbnail: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1920&h=1080&fit=crop",
-    duration: "15 min",
+    thumbnail: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png",
+    duration: "2:46",
     instructor: "Jayme Nolan",
     instructorBio: "Degree in Animal Behavior with 15+ years running her own training and boarding business. Breeder of Merit of Vizslas, she fosters dogs, and competes in performance sports.",
     videoUrl: "/videos/leash-training.mp4",
