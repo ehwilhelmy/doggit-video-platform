@@ -9,7 +9,9 @@ import { Badge } from "@/components/ui/badge"
 import { Logo } from "@/components/logo"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VimeoPlayer } from "@/components/vimeo-player"
+import { ShareModal } from "@/components/share-modal"
 import { vimeoVideos } from "@/lib/vimeo-config"
+import { useAuth } from "@/contexts/auth-context"
 import { 
   X, 
   Play, 
@@ -99,12 +101,63 @@ function WatchPageContent() {
   const [duration, setDuration] = useState(174) // Fallback to 2:54 (174 seconds)
   const [volume, setVolume] = useState(1)
   const [activeTab, setActiveTab] = useState<'lessons' | 'notes'>('lessons')
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [notes, setNotes] = useState('')
+  const [isSavingNotes, setIsSavingNotes] = useState(false)
+  const { user } = useAuth()
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
 
   const handleBack = () => {
     router.push("/dashboard")
+  }
+
+  // Load notes when component mounts
+  useEffect(() => {
+    if (user && videoId) {
+      fetch(`/api/video-notes?videoId=${videoId}&userId=${user.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.notes) {
+            setNotes(data.notes)
+          }
+        })
+        .catch(err => console.error('Failed to load notes:', err))
+    }
+  }, [user, videoId])
+
+  const handleSaveNotes = async () => {
+    if (!user) return
+    
+    setIsSavingNotes(true)
+    try {
+      const response = await fetch('/api/video-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          videoId,
+          userId: user.id,
+          notes
+        })
+      })
+      
+      if (response.ok) {
+        // Show success feedback briefly
+        const saveButton = document.querySelector('[data-save-notes]')
+        if (saveButton) {
+          const originalText = saveButton.textContent
+          saveButton.textContent = 'Saved!'
+          setTimeout(() => {
+            saveButton.textContent = originalText
+          }, 2000)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save notes:', error)
+    } finally {
+      setIsSavingNotes(false)
+    }
   }
 
   const togglePlay = () => {
@@ -236,11 +289,13 @@ function WatchPageContent() {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-white hover:bg-white/10"
+            onClick={() => setShowShareModal(true)}
+          >
             Share
-          </Button>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-            Bookmark
           </Button>
         </div>
       </header>
@@ -448,10 +503,17 @@ function WatchPageContent() {
               <h4 className="text-white font-medium mb-4">My Notes</h4>
               <textarea
                 placeholder="Take notes while you watch..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
                 className="w-full h-64 lg:h-96 bg-zinc-800 border border-zinc-700 rounded-lg p-3 lg:p-4 text-sm lg:text-base text-white placeholder-gray-400 resize-none focus:outline-none focus:border-queen-purple"
               />
-              <Button className="w-full mt-3 lg:mt-4 bg-queen-purple hover:bg-queen-purple/90 text-sm lg:text-base">
-                Save Notes
+              <Button 
+                onClick={handleSaveNotes}
+                disabled={isSavingNotes || !notes.trim()}
+                data-save-notes
+                className="w-full mt-3 lg:mt-4 bg-queen-purple hover:bg-queen-purple/90 text-sm lg:text-base disabled:opacity-50"
+              >
+                {isSavingNotes ? 'Saving...' : 'Save Notes'}
               </Button>
             </div>
           </div>
@@ -459,6 +521,12 @@ function WatchPageContent() {
       </div>
       </div>
 
+      {/* Share Modal */}
+      <ShareModal 
+        open={showShareModal}
+        onOpenChange={setShowShareModal}
+        videoTitle={video.title}
+      />
     </div>
   )
 }
