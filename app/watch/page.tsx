@@ -10,7 +10,6 @@ import { Logo } from "@/components/logo"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VimeoPlayer } from "@/components/vimeo-player"
 import { vimeoVideos } from "@/lib/vimeo-config"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { 
   X, 
   Play, 
@@ -24,7 +23,6 @@ import {
   ChevronLeft,
   User,
   Clock,
-  Star,
   PlayCircle
 } from "lucide-react"
 
@@ -101,8 +99,6 @@ function WatchPageContent() {
   const [duration, setDuration] = useState(174) // Fallback to 2:54 (174 seconds)
   const [volume, setVolume] = useState(1)
   const [activeTab, setActiveTab] = useState<'lessons' | 'notes'>('lessons')
-  const [showRatingModal, setShowRatingModal] = useState(false)
-  const [userRating, setUserRating] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
@@ -191,12 +187,6 @@ function WatchPageContent() {
       // Fallback: set duration during playback if not set
       if (duration === 0 && videoEl.duration) {
         setDuration(videoEl.duration)
-      }
-      // Check if video is near the end (within 1 second)
-      if (videoEl.duration && videoEl.currentTime >= videoEl.duration - 1) {
-        if (!showRatingModal) {
-          setShowRatingModal(true)
-        }
       }
     }
     const handleLoadedMetadata = () => {
@@ -430,10 +420,6 @@ function WatchPageContent() {
                 <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
                 <span className="font-medium">{video.duration}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 lg:h-5 lg:w-5 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium">4.9/5 rating</span>
-              </div>
             </div>
           </div>
         </div>
@@ -473,70 +459,6 @@ function WatchPageContent() {
       </div>
       </div>
 
-      {/* Rating Modal */}
-      <Dialog open={showRatingModal} onOpenChange={setShowRatingModal}>
-        <DialogContent className="max-w-md w-full bg-zinc-900 border-zinc-700">
-          <DialogTitle className="text-xl font-bold text-white text-center">
-            Rate this Training
-          </DialogTitle>
-          
-          <div className="p-6 text-center">
-            <p className="text-gray-300 mb-6">How was your experience with "{video.title}"?</p>
-            
-            {/* Star Rating */}
-            <div className="flex justify-center gap-2 mb-6">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  onClick={() => setUserRating(star)}
-                  className="transition-colors"
-                >
-                  <Star 
-                    className={`h-8 w-8 ${
-                      star <= userRating 
-                        ? 'text-yellow-400 fill-yellow-400' 
-                        : 'text-gray-400 hover:text-yellow-300'
-                    }`}
-                  />
-                </button>
-              ))}
-            </div>
-            
-            {userRating > 0 && (
-              <p className="font-medium mb-4" style={{ color: '#9B86FF' }}>
-                {userRating === 5 ? 'Excellent!' : 
-                 userRating === 4 ? 'Great!' : 
-                 userRating === 3 ? 'Good!' : 
-                 userRating === 2 ? 'Okay' : 'Could be better'}
-              </p>
-            )}
-            
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-1 border-zinc-600 hover:bg-zinc-800 hover:text-white bg-white"
-                style={{ color: '#9B86FF' }}
-                onClick={() => setShowRatingModal(false)}
-              >
-                Skip
-              </Button>
-              <Button
-                className="flex-1 hover:opacity-90 text-white"
-                style={{ backgroundColor: '#9B86FF' }}
-                onClick={() => {
-                  // Save rating logic here
-                  console.log('Rating submitted:', userRating)
-                  setShowRatingModal(false)
-                  // Could redirect to more videos or show thank you
-                }}
-                disabled={userRating === 0}
-              >
-                Submit Rating
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
