@@ -28,9 +28,13 @@ export async function GET(request: NextRequest) {
     
     // Convert duration from seconds to MM:SS or HH:MM:SS format
     const formatDuration = (seconds: number) => {
+      if (!seconds || isNaN(seconds)) {
+        return null
+      }
+      
       const hours = Math.floor(seconds / 3600)
       const minutes = Math.floor((seconds % 3600) / 60)
-      const secs = seconds % 60
+      const secs = Math.floor(seconds % 60)
       
       if (hours > 0) {
         return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
@@ -38,9 +42,11 @@ export async function GET(request: NextRequest) {
       return `${minutes}:${secs.toString().padStart(2, '0')}`
     }
     
+    const formattedDuration = data.duration ? formatDuration(data.duration) : null
+    
     return NextResponse.json({ 
-      duration: data.duration,
-      formattedDuration: formatDuration(data.duration),
+      duration: data.duration || null,
+      formattedDuration: formattedDuration,
       title: data.title,
       thumbnail: data.thumbnail_url
     })

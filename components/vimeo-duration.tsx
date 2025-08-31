@@ -31,11 +31,21 @@ export function VimeoDuration({
       const cached = localStorage.getItem(cacheKey)
       
       if (cached) {
-        const { duration: cachedDuration, timestamp } = JSON.parse(cached)
-        // Use cache if less than 24 hours old
-        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
-          setDuration(cachedDuration)
-          return
+        try {
+          const { duration: cachedDuration, timestamp } = JSON.parse(cached)
+          // Use cache if less than 24 hours old and valid
+          if (Date.now() - timestamp < 24 * 60 * 60 * 1000 && 
+              cachedDuration && 
+              cachedDuration !== 'NaN:NaN') {
+            setDuration(cachedDuration)
+            return
+          } else {
+            // Clear invalid cache
+            localStorage.removeItem(cacheKey)
+          }
+        } catch (e) {
+          // Clear corrupted cache
+          localStorage.removeItem(cacheKey)
         }
       }
 
@@ -44,14 +54,25 @@ export function VimeoDuration({
         const response = await fetch(`/api/vimeo-info?id=${vimeoId}`)
         if (response.ok) {
           const data = await response.json()
+          // Use formatted duration if available, otherwise use fallback
           const formattedDuration = data.formattedDuration || fallbackDuration
-          setDuration(formattedDuration)
           
-          // Cache the duration
-          localStorage.setItem(cacheKey, JSON.stringify({
-            duration: formattedDuration,
-            timestamp: Date.now()
-          }))
+          // Only update if we got a valid duration
+          if (formattedDuration && formattedDuration !== 'NaN:NaN') {
+            setDuration(formattedDuration)
+            
+            // Cache the duration
+            localStorage.setItem(cacheKey, JSON.stringify({
+              duration: formattedDuration,
+              timestamp: Date.now()
+            }))
+          } else {
+            // Use fallback if API didn't return valid duration
+            setDuration(fallbackDuration)
+          }
+        } else {
+          // API error, use fallback
+          setDuration(fallbackDuration)
         }
       } catch (error) {
         console.error('Failed to fetch Vimeo duration:', error)
