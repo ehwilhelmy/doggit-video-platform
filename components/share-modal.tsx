@@ -16,7 +16,7 @@ export function ShareModal({ open, onOpenChange, videoTitle }: ShareModalProps) 
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href)
+      await navigator.clipboard.writeText('https://training.doggit.app')
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
@@ -41,19 +41,19 @@ export function ShareModal({ open, onOpenChange, videoTitle }: ShareModalProps) 
         
         <div className="p-6 text-center space-y-6">
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-white">"{videoTitle}"</h3>
+            <h3 className="text-lg font-semibold text-white">Share DOGGIT Training</h3>
             <p className="text-gray-300 text-sm">
-              Share this amazing training content with fellow dog lovers!
+              Help fellow dog owners discover expert training techniques!
             </p>
           </div>
 
           <div className="bg-zinc-800 rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-3 text-queen-purple">
               <Users className="h-5 w-5" />
-              <span className="font-medium">Invite Friends & Save!</span>
+              <span className="font-medium">Spread the Love!</span>
             </div>
             <p className="text-gray-300 text-sm">
-              When your friends subscribe using your link, you both get an extra month free!
+              Share our platform with dog owners who want professional training guidance.
             </p>
           </div>
 
@@ -62,7 +62,7 @@ export function ShareModal({ open, onOpenChange, videoTitle }: ShareModalProps) 
               onClick={handleCopyLink}
               className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white font-medium"
             >
-              {copied ? 'Link Copied!' : 'Copy Share Link'}
+              {copied ? 'Link Copied!' : 'Copy training.doggit.app'}
             </Button>
             
             <div className="flex items-center gap-2 text-xs text-gray-400">
