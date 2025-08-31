@@ -44,6 +44,7 @@ export function SignUpModal({ open, onOpenChange, selectedTrainingGoals = [], on
     lastName: "",
     email: "",
     password: "",
+    dogBreed: "",
     agreeToTerms: false
   })
 
@@ -75,9 +76,22 @@ export function SignUpModal({ open, onOpenChange, selectedTrainingGoals = [], on
       const { data, error } = await signUp(formData.email, formData.password, {
         firstName: formData.firstName,
         lastName: formData.lastName,
+        dogBreed: formData.dogBreed,
         trainingGoals: selectedTrainingGoals,
         createdAt: new Date().toISOString()
       })
+      
+      // Send to HubSpot (fire and forget - don't block signup)
+      fetch('/api/hubspot/create-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          dogBreed: formData.dogBreed
+        })
+      }).catch(err => console.log('HubSpot sync error:', err))
       
       if (error) {
         console.log('Signup error:', error)
@@ -280,6 +294,21 @@ export function SignUpModal({ open, onOpenChange, selectedTrainingGoals = [], on
                     </button>
                   </div>
                   {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dogBreed">Dog Breed (Optional)</Label>
+                  <Input
+                    id="dogBreed"
+                    type="text"
+                    placeholder="e.g., Golden Retriever, Mixed Breed"
+                    value={formData.dogBreed}
+                    onChange={(e) => {
+                      setFormData({ ...formData, dogBreed: e.target.value })
+                    }}
+                    disabled={isSubmitting}
+                  />
+                  <p className="text-xs text-gray-500">Help us tailor training content for your dog</p>
                 </div>
 
                 <div className="space-y-2">
