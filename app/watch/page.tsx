@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useRef, useEffect, Suspense } from "react"
+import { useState, useRef, useEffect, Suspense, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -104,10 +104,12 @@ function WatchPageContent() {
   const [showShareModal, setShowShareModal] = useState(false)
   const [notes, setNotes] = useState('')
   const [isSavingNotes, setIsSavingNotes] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const { user } = useAuth()
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<NodeJS.Timeout>()
 
   const handleBack = () => {
     router.push("/dashboard")
@@ -127,8 +129,9 @@ function WatchPageContent() {
     }
   }, [user, videoId])
 
-  const handleSaveNotes = async () => {
-    if (!user) return
+  // Auto-save notes with debouncing
+  const saveNotes = useCallback(async (notesToSave: string) => {
+    if (!user || !notesToSave.trim()) return
     
     setIsSavingNotes(true)
     try {
@@ -138,26 +141,36 @@ function WatchPageContent() {
         body: JSON.stringify({
           videoId,
           userId: user.id,
-          notes
+          notes: notesToSave
         })
       })
       
       if (response.ok) {
-        // Show success feedback briefly
-        const saveButton = document.querySelector('[data-save-notes]')
-        if (saveButton) {
-          const originalText = saveButton.textContent
-          saveButton.textContent = 'Saved!'
-          setTimeout(() => {
-            saveButton.textContent = originalText
-          }, 2000)
-        }
+        setLastSaved(new Date())
       }
     } catch (error) {
       console.error('Failed to save notes:', error)
     } finally {
       setIsSavingNotes(false)
     }
+  }, [user, videoId])
+
+  // Debounced save function
+  const debouncedSave = useCallback((notesToSave: string) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      saveNotes(notesToSave)
+    }, 1000) // Save 1 second after user stops typing
+  }, [saveNotes])
+
+  // Handle notes change with auto-save
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newNotes = e.target.value
+    setNotes(newNotes)
+    debouncedSave(newNotes)
   }
 
   const togglePlay = () => {
@@ -265,11 +278,14 @@ function WatchPageContent() {
     }
   }, [])
 
-  // Clean up timeout on unmount
+  // Clean up timeouts on unmount
   useEffect(() => {
     return () => {
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current)
+      }
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
       }
     }
   }, [])
@@ -500,21 +516,22 @@ function WatchPageContent() {
           {/* Notes Section */}
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 lg:p-6">
-              <h4 className="text-white font-medium mb-4">My Notes</h4>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-white font-medium">My Notes</h4>
+                <div className="text-xs text-gray-400">
+                  {isSavingNotes ? (
+                    <span className="text-queen-purple">Saving...</span>
+                  ) : lastSaved ? (
+                    <span>Last saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  ) : null}
+                </div>
+              </div>
               <textarea
-                placeholder="Take notes while you watch..."
+                placeholder="Take notes while you watch... (auto-saves as you type)"
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={handleNotesChange}
                 className="w-full h-64 lg:h-96 bg-zinc-800 border border-zinc-700 rounded-lg p-3 lg:p-4 text-sm lg:text-base text-white placeholder-gray-400 resize-none focus:outline-none focus:border-queen-purple"
               />
-              <Button 
-                onClick={handleSaveNotes}
-                disabled={isSavingNotes || !notes.trim()}
-                data-save-notes
-                className="w-full mt-3 lg:mt-4 bg-queen-purple hover:bg-queen-purple/90 text-sm lg:text-base disabled:opacity-50"
-              >
-                {isSavingNotes ? 'Saving...' : 'Save Notes'}
-              </Button>
             </div>
           </div>
         </div>
