@@ -46,10 +46,49 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
         
         // Get the subscription
-        const subscriptionResponse = await stripe.subscriptions.retrieve(
+        const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
-        const subscription = subscriptionResponse
+        
+        // Check if this is a promotional subscription that needs a schedule
+        const isPromotional = session.metadata?.schedule_type === 'promotional'
+        const firstPriceId = session.metadata?.first_price
+        const recurringPriceId = session.metadata?.recurring_price
+        
+        // If promotional, create a subscription schedule to change price after first month
+        if (isPromotional && recurringPriceId) {
+          try {
+            // Create subscription schedule
+            await stripe.subscriptionSchedules.create({
+              from_subscription: subscription.id,
+              phases: [
+                {
+                  // First phase: Current subscription at $1 for 1 month (already active)
+                  items: [{ 
+                    price: firstPriceId || subscription.items.data[0].price.id,
+                    quantity: 1 
+                  }],
+                  iterations: 1, // Only 1 billing cycle at $1
+                  start_date: subscription.current_period_start,
+                  end_date: subscription.current_period_end
+                },
+                {
+                  // Second phase: $10/month indefinitely
+                  items: [{ 
+                    price: recurringPriceId,
+                    quantity: 1 
+                  }],
+                  iterations: null, // Indefinite
+                  start_date: subscription.current_period_end
+                }
+              ]
+            })
+            console.log('Created subscription schedule for promotional pricing')
+          } catch (scheduleError) {
+            console.error('Error creating subscription schedule:', scheduleError)
+            // Continue anyway - subscription is still valid even if schedule fails
+          }
+        }
         
         // Update user's subscription in database
         const userId = session.client_reference_id || session.metadata?.supabase_user_id
@@ -69,7 +108,8 @@ export async function POST(request: NextRequest) {
               cancel_at_period_end: subscription.cancel_at_period_end,
               canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
               trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-              trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null
+              trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+              is_promotional: isPromotional || false
             }, {
               onConflict: 'user_id'
             })

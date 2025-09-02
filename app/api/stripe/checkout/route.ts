@@ -58,51 +58,66 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Default price - create product and price if needed
-    let finalPriceId = priceId
+    // Get or create product
+    const products = await stripe.products.list({ limit: 10 })
+    let product = products.data.find(p => p.name === 'DOGGIT Training Subscription')
     
-    if (!finalPriceId || finalPriceId === 'price_default') {
-      // Create or retrieve default product and price
-      const products = await stripe.products.list({ limit: 10 })
-      let product = products.data.find(p => p.name === 'DOGGIT Training Subscription')
-      
-      if (!product) {
-        product = await stripe.products.create({
-          name: 'DOGGIT Training Subscription',
-          description: 'Monthly subscription to DOGGIT dog training platform'
-        })
-      }
-      
-      const prices = await stripe.prices.list({ 
-        product: product.id,
-        limit: 10 
+    if (!product) {
+      product = await stripe.products.create({
+        name: 'DOGGIT Training Subscription',
+        description: 'Monthly subscription to DOGGIT dog training platform'
       })
-      let price = prices.data.find(p => 
-        p.recurring?.interval === 'month' && 
-        p.unit_amount === 999 // $9.99
-      )
-      
-      if (!price) {
-        price = await stripe.prices.create({
-          product: product.id,
-          unit_amount: 999, // $9.99 in cents
-          currency: 'usd',
-          recurring: {
-            interval: 'month'
-          }
-        })
-      }
-      
-      finalPriceId = price.id
     }
     
-    // Create checkout session
+    // Get or create the two price points
+    const prices = await stripe.prices.list({ 
+      product: product.id,
+      limit: 20 
+    })
+    
+    // Find or create $1 price
+    let price1Dollar = prices.data.find(p => 
+      p.recurring?.interval === 'month' && 
+      p.unit_amount === 100 // $1.00
+    )
+    
+    if (!price1Dollar) {
+      price1Dollar = await stripe.prices.create({
+        product: product.id,
+        unit_amount: 100, // $1.00 in cents
+        currency: 'usd',
+        recurring: {
+          interval: 'month'
+        },
+        nickname: 'First Month Special'
+      })
+    }
+    
+    // Find or create $10 price
+    let price10Dollar = prices.data.find(p => 
+      p.recurring?.interval === 'month' && 
+      p.unit_amount === 1000 // $10.00
+    )
+    
+    if (!price10Dollar) {
+      price10Dollar = await stripe.prices.create({
+        product: product.id,
+        unit_amount: 1000, // $10.00 in cents
+        currency: 'usd',
+        recurring: {
+          interval: 'month'
+        },
+        nickname: 'Regular Monthly'
+      })
+    }
+    
+    // Create checkout session with subscription schedule
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [
         {
-          price: finalPriceId,
+          price: price1Dollar.id, // Start with $1 price
           quantity: 1
         }
       ],
@@ -111,11 +126,17 @@ export async function POST(request: NextRequest) {
       customer: customerId,
       client_reference_id: user?.id,
       metadata: {
-        supabase_user_id: user?.id || ''
+        supabase_user_id: user?.id || '',
+        schedule_type: 'promotional', // Mark this as promotional pricing
+        first_price: price1Dollar.id,
+        recurring_price: price10Dollar.id
       },
       subscription_data: {
         metadata: {
-          supabase_user_id: user?.id || ''
+          supabase_user_id: user?.id || '',
+          promotional: 'true',
+          first_price: price1Dollar.id,
+          recurring_price: price10Dollar.id
         }
       },
       allow_promotion_codes: true
