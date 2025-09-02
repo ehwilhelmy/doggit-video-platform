@@ -178,7 +178,7 @@ function DashboardContent() {
         thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png", 
         instructor: "Jayme Nolan",
         category: "Training",
-        vimeoId: "1113669343",
+        vimeoId: "1114967907",
         description: "Essential techniques for successful house training and establishing good bathroom habits.",
         tags: ["Training", "Potty", "House Training"]
       },
