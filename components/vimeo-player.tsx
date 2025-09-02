@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect, useState } from 'react'
+
 interface VimeoPlayerProps {
   videoId: string
   title?: string
@@ -11,13 +13,32 @@ export function VimeoPlayer({
   title = "Video",
   className = ""
 }: VimeoPlayerProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div 
+        className={`relative w-full bg-zinc-800 ${className}`}
+        style={{ paddingTop: '56.25%' }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-white">Loading...</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div 
       className={`relative w-full ${className}`}
       style={{ paddingTop: '56.25%' }} // 16:9 aspect ratio
     >
       <iframe
-        src={`https://player.vimeo.com/video/${videoId}?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0&t=${Date.now()}`}
+        src={`https://player.vimeo.com/video/${videoId}?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0&v=${Date.now()}`}
         frameBorder="0"
         allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
         referrerPolicy="strict-origin-when-cross-origin"
