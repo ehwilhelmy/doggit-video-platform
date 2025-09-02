@@ -154,8 +154,8 @@ function LandingPageClient() {
   }
 
   const handleGetStarted = () => {
-    // Temporarily disabled - launching soon
-    return
+    // Subscribe to DOGGIT training
+    router.push('/membership')
   }
 
   const handleAddToCalendar = () => {
@@ -588,8 +588,7 @@ END:VCALENDAR`
                     </div>
                     
                     <Button 
-                      className="w-full bg-gray-400 text-gray-600 py-4 text-lg font-bold shadow-lg cursor-not-allowed"
-                      disabled
+                      className="w-full bg-white hover:bg-white/90 text-purple-900 py-4 text-lg font-bold shadow-lg transform transition-all duration-200 hover:scale-105"
                       onClick={handleGetStarted}
                     >
                       Subscribe Now
@@ -747,11 +746,9 @@ END:VCALENDAR`
                     <Button 
                       className="bg-queen-purple hover:bg-queen-purple/90 text-white px-5 py-2 text-sm"
                       onClick={() => {
-                        // Disabled - launching soon
-                        return
+                        setShowTrailerModal(false)
+                        router.push('/membership')
                       }}
-                      disabled
-                      className="bg-gray-500 text-gray-300 cursor-not-allowed px-4 py-2 text-sm"
                     >
                       Subscribe Now
                     </Button>

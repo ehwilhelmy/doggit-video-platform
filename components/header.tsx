@@ -106,8 +106,8 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                 Login
               </Button>
               <Button
-                className="bg-gray-400 text-white cursor-not-allowed"
-                disabled
+                className="bg-queen-purple hover:bg-queen-purple/90 text-white"
+                onClick={() => window.location.href = '/membership'}
                 data-signup-trigger
               >
                 Subscribe Now
@@ -202,8 +202,11 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                   Login
                 </Button>
                 <Button 
-                  className="w-full bg-gray-400 text-white cursor-not-allowed"
-                  disabled
+                  className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    window.location.href = '/membership'
+                  }}
                   data-signup-trigger
                 >
                   Subscribe Now
