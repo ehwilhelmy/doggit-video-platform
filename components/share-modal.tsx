@@ -71,18 +71,6 @@ export function ShareModal({ open, onOpenChange, videoTitle }: ShareModalProps) 
             </div>
           </div>
 
-          <div className="pt-4 border-t border-zinc-700">
-            <p className="text-gray-400 text-sm mb-4">
-              Want to unlock more premium training content?
-            </p>
-            <Button 
-              onClick={handleSubscribe}
-              variant="outline"
-              className="w-full border-queen-purple text-queen-purple hover:bg-queen-purple hover:text-white"
-            >
-              Subscribe for Full Access
-            </Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
