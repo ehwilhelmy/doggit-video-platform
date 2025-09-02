@@ -118,9 +118,14 @@ function WatchPageContent() {
   // Load notes when component mounts
   useEffect(() => {
     if (user && videoId) {
+      console.log('Loading notes for:', { videoId, userId: user.id })
       fetch(`/api/video-notes?videoId=${videoId}&userId=${user.id}`)
-        .then(res => res.json())
+        .then(res => {
+          console.log('Notes API response status:', res.status)
+          return res.json()
+        })
         .then(data => {
+          console.log('Notes API response data:', data)
           if (data.notes) {
             setNotes(data.notes)
           }
@@ -133,6 +138,7 @@ function WatchPageContent() {
   const saveNotes = useCallback(async (notesToSave: string) => {
     if (!user || !notesToSave.trim()) return
     
+    console.log('Saving notes for:', { videoId, userId: user.id, notesLength: notesToSave.length })
     setIsSavingNotes(true)
     try {
       const response = await fetch('/api/video-notes', {
@@ -144,6 +150,10 @@ function WatchPageContent() {
           notes: notesToSave
         })
       })
+      
+      console.log('Save notes response status:', response.status)
+      const responseData = await response.json()
+      console.log('Save notes response data:', responseData)
       
       if (response.ok) {
         setLastSaved(new Date())
