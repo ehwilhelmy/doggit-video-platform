@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter, useSearchParams } from "next/navigation"
+import Script from "next/script"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -555,6 +556,26 @@ function DashboardContent() {
           </div>
         </div>
       </main>
+      
+      {/* DevRev Chatbot - Only loads on dashboard (behind paywall) */}
+      <Script 
+        id="devrev-plug-sdk"
+        src="https://plug-platform.devrev.ai/static/plug.js"
+        strategy="afterInteractive"
+      />
+      <Script 
+        id="devrev-plug-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            if (window.plugSDK) {
+              window.plugSDK.init({
+                app_id: 'don:core:dvrv-us-1:devo/xRA49Vrw:plug_setting/1',
+              });
+            }
+          `,
+        }}
+      />
     </div>
   )
 }
