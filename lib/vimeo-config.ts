@@ -25,9 +25,9 @@ export const vimeoVideos = {
   
   // Leash Training - Available on Vimeo
   'leash-training': {
-    id: '1113672360',
+    id: '1114969488',
     title: 'LEASH TRAINING',
-    duration: 166, // 2:46 in seconds
+    duration: 166, // 2:46 in seconds - update if different
     thumbnail: `https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png`,
     description: 'Learn effective leash training techniques for enjoyable walks.',
     category: 'Walking'

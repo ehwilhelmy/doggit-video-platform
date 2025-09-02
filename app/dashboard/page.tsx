@@ -189,7 +189,7 @@ function DashboardContent() {
         thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png",
         instructor: "Jayme Nolan",
         category: "Walking",
-        vimeoId: "1113672360",
+        vimeoId: "1114969488",
         description: "Learn effective leash training techniques for enjoyable walks.",
         tags: ["Walking", "Leash", "Training"]
       }
