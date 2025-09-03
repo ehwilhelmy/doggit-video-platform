@@ -118,21 +118,29 @@ function WatchPageContent() {
   // Load notes when component mounts
   useEffect(() => {
     if (user && videoId) {
+      const storageKey = `notes-${videoId}-${user.id}`
+      console.log('Loading notes - videoId:', videoId, 'userId:', user.id, 'storageKey:', storageKey)
+      
+      // First try localStorage (immediate)
+      const storedNotes = localStorage.getItem(storageKey)
+      console.log('Found localStorage notes:', storedNotes ? storedNotes.length + ' characters' : 'none')
+      if (storedNotes) {
+        setNotes(storedNotes)
+      }
+      
+      // Also try API (async)
       fetch(`/api/video-notes?videoId=${videoId}&userId=${user.id}`)
         .then(res => res.json())
         .then(data => {
-          if (data.notes) {
+          console.log('API notes response:', data)
+          if (data.notes && data.notes !== storedNotes) {
+            // API has different notes, use those and update localStorage
             setNotes(data.notes)
+            localStorage.setItem(storageKey, data.notes)
           }
         })
         .catch(err => {
-          console.error('Failed to load notes:', err)
-          // Fallback to localStorage if API fails
-          const storageKey = `notes-${videoId}-${user.id}`
-          const storedNotes = localStorage.getItem(storageKey)
-          if (storedNotes) {
-            setNotes(storedNotes)
-          }
+          console.error('API failed, using localStorage:', err)
         })
     }
   }, [user, videoId])
@@ -143,10 +151,12 @@ function WatchPageContent() {
     
     setIsSavingNotes(true)
     const storageKey = `notes-${videoId}-${user.id}`
+    console.log('Saving notes - videoId:', videoId, 'userId:', user.id, 'storageKey:', storageKey, 'notesLength:', notesToSave.length)
     
     try {
       // Always save to localStorage as backup
       localStorage.setItem(storageKey, notesToSave)
+      console.log('Saved to localStorage successfully')
       
       // Try to save to database
       const response = await fetch('/api/video-notes', {
@@ -159,9 +169,12 @@ function WatchPageContent() {
         })
       })
       
+      console.log('API save response status:', response.status)
       if (response.ok) {
+        console.log('API save successful')
         setLastSaved(new Date())
       } else {
+        console.log('API save failed, but localStorage succeeded')
         // API failed but localStorage succeeded
         setLastSaved(new Date())
       }
