@@ -119,11 +119,9 @@ function WatchPageContent() {
   useEffect(() => {
     if (user && videoId) {
       const storageKey = `notes-${videoId}-${user.id}`
-      console.log('Loading notes - videoId:', videoId, 'userId:', user.id, 'storageKey:', storageKey)
       
       // First try localStorage (immediate)
       const storedNotes = localStorage.getItem(storageKey)
-      console.log('Found localStorage notes:', storedNotes ? storedNotes.length + ' characters' : 'none')
       if (storedNotes) {
         setNotes(storedNotes)
       }
@@ -132,7 +130,6 @@ function WatchPageContent() {
       fetch(`/api/video-notes?videoId=${videoId}&userId=${user.id}`)
         .then(res => res.json())
         .then(data => {
-          console.log('API notes response:', data)
           if (data.notes && data.notes !== storedNotes) {
             // API has different notes, use those and update localStorage
             setNotes(data.notes)
@@ -140,7 +137,7 @@ function WatchPageContent() {
           }
         })
         .catch(err => {
-          console.error('API failed, using localStorage:', err)
+          // Silently fail - localStorage fallback is already loaded
         })
     }
   }, [user, videoId])
@@ -151,12 +148,10 @@ function WatchPageContent() {
     
     setIsSavingNotes(true)
     const storageKey = `notes-${videoId}-${user.id}`
-    console.log('Saving notes - videoId:', videoId, 'userId:', user.id, 'storageKey:', storageKey, 'notesLength:', notesToSave.length)
     
     try {
       // Always save to localStorage as backup
       localStorage.setItem(storageKey, notesToSave)
-      console.log('Saved to localStorage successfully')
       
       // Try to save to database
       const response = await fetch('/api/video-notes', {
@@ -169,17 +164,13 @@ function WatchPageContent() {
         })
       })
       
-      console.log('API save response status:', response.status)
       if (response.ok) {
-        console.log('API save successful')
         setLastSaved(new Date())
       } else {
-        console.log('API save failed, but localStorage succeeded')
         // API failed but localStorage succeeded
         setLastSaved(new Date())
       }
     } catch (error) {
-      console.error('Failed to save notes to API:', error)
       // Still saved to localStorage, so show success
       setLastSaved(new Date())
     } finally {
