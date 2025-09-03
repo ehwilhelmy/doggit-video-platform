@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter, useSearchParams } from "next/navigation"
-import Script from "next/script"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -25,6 +24,7 @@ import {
   User,
   Shield,
   Settings,
+  Star,
   PartyPopper,
   Video,
   BookOpen,
@@ -169,7 +169,6 @@ function DashboardContent() {
         thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/1%20Puppy%20Basics.png?v=3&t=1756419603",
         instructor: "Jayme Nolan",
         category: "Foundation",
-        vimeoId: "1113072634",
         video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
         description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
         tags: ["Puppy"]
@@ -414,7 +413,7 @@ function DashboardContent() {
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/Jayme-Nolan.JPG" alt={videos[0].instructor} />
                         <AvatarFallback className="bg-jade-purple text-white text-xs font-medium">
-                          {videos[0].instructor.split(' ').map(n => n[0]).join('')}
+                          {videos[0].instructor.split(' ').map((n: string) => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                       <span>{videos[0].instructor}</span>
@@ -424,6 +423,10 @@ function DashboardContent() {
                       fallbackDuration={videos[0].duration}
                       showIcon={true}
                     />
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span>4.9/5 rating</span>
+                    </div>
                   </div>
                   
                   <div className="flex gap-4 pt-4">
@@ -458,7 +461,11 @@ function DashboardContent() {
                 video={video}
                 onVideoClick={handleVideoClick}
                 isSubscribed={isSubscribed}
-                progress={videoProgress[video.id]}
+                progress={videoProgress[video.id] ? {
+                  progress_percentage: videoProgress[video.id].progress_percentage || undefined,
+                  completed: videoProgress[video.id].completed || undefined,
+                  last_watched_at: videoProgress[video.id].last_watched_at || undefined
+                } : undefined}
               />
             ))}
           </div>
@@ -472,6 +479,22 @@ function DashboardContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               {/* Coming Soon Video Cards */}
+              <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
+                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
+                    alt="Coming Soon"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <span className="text-white font-medium text-lg">Coming Soon</span>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-white mb-1">CRATE TRAINING</h3>
+                  <p className="text-sm text-gray-400 mb-2">Tap into your dog's natural instincts to create confidence and comfort in their crate.</p>
+                </div>
+              </div>
 
               <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
@@ -527,8 +550,8 @@ function DashboardContent() {
               <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=400&h=300&fit=crop&crop=face"
-                    alt="Coming Soon"
+                    src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop&crop=face"
+                    alt="LEASH SKILLS"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -538,23 +561,6 @@ function DashboardContent() {
                 <div className="p-4">
                   <h3 className="font-semibold text-white mb-1">LEASH SKILLS</h3>
                   <p className="text-sm text-gray-400 mb-2">Create balance and control for stress-free walks.</p>
-                </div>
-              </div>
-
-              <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
-                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
-                    alt="Coming Soon"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                    <span className="text-white font-medium text-lg">Coming Soon</span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-white mb-1">CRATE TRAINING</h3>
-                  <p className="text-sm text-gray-400 mb-2">Tap into your dog's natural instincts to create confidence and comfort in their crate.</p>
                 </div>
               </div>
 
@@ -577,12 +583,12 @@ function DashboardContent() {
             </div>
 
             {/* Call to Action */}
-            <div className="mt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <p className="text-gray-400 text-sm text-center lg:text-left">
+            <div className="mt-8 text-center">
+              <p className="text-gray-400 text-sm mb-4">
                 Want to influence what we create next? Your training goals help us prioritize new content.
               </p>
               <Button 
-                className="bg-jade-purple text-white hover:bg-jade-purple/90 flex-shrink-0"
+                className="bg-jade-purple text-white hover:bg-jade-purple/90"
                 onClick={() => window.location.href = '/settings/preferences'}
               >
                 Update My Training Goals
@@ -593,7 +599,7 @@ function DashboardContent() {
           {/* Blog Articles Section */}
           <div className="mt-24">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-white mb-3">Latest from DOGGIT Resources</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">DOGG!T Resources</h2>
               <p className="text-gray-400">Expert insights and tips from our training professionals</p>
             </div>
             
@@ -712,26 +718,6 @@ function DashboardContent() {
           </div>
         </div>
       </main>
-      
-      {/* DevRev Chatbot - Only loads on dashboard (behind paywall) */}
-      <Script 
-        id="devrev-plug-sdk"
-        src="https://plug-platform.devrev.ai/static/plug.js"
-        strategy="afterInteractive"
-      />
-      <Script 
-        id="devrev-plug-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (window.plugSDK) {
-              window.plugSDK.init({
-                app_id: 'don:core:dvrv-us-1:devo/xRA49Vrw:plug_setting/1',
-              });
-            }
-          `,
-        }}
-      />
     </div>
   )
 }
