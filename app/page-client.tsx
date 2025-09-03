@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
+import { GlobalHeader } from "@/components/global-header"
 import { SignUpModal } from "@/components/signup-modal"
 import { SignInModal } from "@/components/signin-modal"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -243,6 +244,9 @@ END:VCALENDAR`
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      {/* Global Parent Header */}
+      <GlobalHeader />
+      
       {/* Header */}
       <Header 
         variant="landing" 

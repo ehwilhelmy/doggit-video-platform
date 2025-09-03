@@ -238,9 +238,10 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header */}
+      {/* Dashboard Header */}
       <header className="border-b border-zinc-800 bg-zinc-900">
-        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-6">
+          <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-4">
             <Logo size="sm" variant="white" />
           </div>
@@ -287,6 +288,7 @@ function DashboardContent() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          </div>
           </div>
         </div>
       </header>

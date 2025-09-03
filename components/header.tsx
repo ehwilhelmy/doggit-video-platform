@@ -47,7 +47,7 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
   ]
 
   return (
-    <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+    <header className={`fixed top-10 z-50 w-full transition-all duration-300 ${
       variant === "landing" 
         ? isScrolled 
           ? "bg-white/95 backdrop-blur-sm shadow-sm dark:bg-gray-950/95"
