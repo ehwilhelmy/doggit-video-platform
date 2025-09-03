@@ -56,7 +56,7 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
         ? "bg-transparent"
         : "bg-white/95 shadow-sm backdrop-blur-sm dark:bg-gradient-to-b dark:from-black/80 dark:to-transparent"
     }`}>
-      <div className="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8">
+      <div className="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8 max-w-[1440px]">
         {/* Left Section - Logo & Navigation */}
         <div className="flex items-center gap-8">
           <Logo 
