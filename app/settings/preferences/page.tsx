@@ -20,7 +20,7 @@ const trainingGoals = [
     description: "Help your pup build confidence with other dogs and people",
     icon: Target,
     status: "coming-soon",
-    estimatedRelease: "Q1 2025"
+    
   },
   {
     id: "trust",
@@ -28,7 +28,7 @@ const trainingGoals = [
     description: "Strengthen the bond between you and your furry friend",
     icon: Heart,
     status: "coming-soon",
-    estimatedRelease: "Q1 2025"
+   
   },
   {
     id: "manners",
@@ -43,7 +43,7 @@ const trainingGoals = [
     description: "Calm nervousness and build your pup's confidence",
     icon: Brain,
     status: "coming-soon",
-    estimatedRelease: "Q2 2025"
+   
   },
   {
     id: "aggression",
@@ -51,7 +51,7 @@ const trainingGoals = [
     description: "Address reactive behaviors with proven techniques",
     icon: Shield,
     status: "coming-soon",
-    estimatedRelease: "Q2 2025"
+  
   },
   {
     id: "explore",

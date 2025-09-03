@@ -172,7 +172,7 @@ function DashboardContent() {
         vimeoId: "1113072634",
         video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
         description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
-        tags: ["Foundation", "Puppy", "Basics"]
+        tags: ["Puppy"]
       },
       {
         id: "potty-training",
@@ -183,7 +183,7 @@ function DashboardContent() {
         category: "Training",
         vimeoId: "1114967907",
         description: "Essential techniques for successful house training and establishing good bathroom habits.",
-        tags: ["Training", "Potty", "House Training"]
+        tags: ["House Training"]
       },
       {
         id: "leash-training",
@@ -194,7 +194,7 @@ function DashboardContent() {
         category: "Walking",
         vimeoId: "1114969488",
         description: "Learn effective leash training techniques for enjoyable walks.",
-        tags: ["Walking", "Leash", "Training"]
+        tags: ["Leash"]
       }
     ])
     setVideosLoading(false)
@@ -591,7 +591,7 @@ function DashboardContent() {
           </div>
 
           {/* Blog Articles Section */}
-          <div className="mt-16">
+          <div className="mt-24">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-3">Latest from DOGGIT Resources</h2>
               <p className="text-gray-400">Expert insights and tips from our training professionals</p>

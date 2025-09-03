@@ -184,12 +184,12 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
           </div>
           
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <Badge variant="secondary" className="text-xs">{video.category}</Badge>
+            <Badge className="text-xs bg-gray-200 text-gray-800">{video.category}</Badge>
             {video.free && (
               <Badge className="text-xs bg-green-500 text-white">FREE</Badge>
             )}
             {video.tags && video.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs border-zinc-600 text-gray-400">
+              <Badge key={index} className="text-xs bg-gray-200 text-gray-800">
                 {tag}
               </Badge>
             ))}
