@@ -522,6 +522,39 @@ function DashboardContent() {
                 </div>
               </div>
 
+              <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
+                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=400&h=300&fit=crop&crop=face"
+                    alt="Coming Soon"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <span className="text-white font-medium text-lg">Coming Soon</span>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-white mb-1">LEASH SKILLS</h3>
+                  <p className="text-sm text-gray-400 mb-2">Create balance and control for stress-free walks.</p>
+                </div>
+              </div>
+
+              <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
+                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop&crop=face"
+                    alt="Coming Soon"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <span className="text-white font-medium text-lg">Coming Soon</span>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-white mb-1">CRATE TRAINING</h3>
+                  <p className="text-sm text-gray-400 mb-2">Tap into your dog's natural instincts to create confidence and comfort in their crate.</p>
+                </div>
+              </div>
 
               <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 opacity-75">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
