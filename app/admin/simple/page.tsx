@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -27,6 +29,9 @@ interface Video {
 
 export default function SimpleAdminPanel() {
   const router = useRouter()
+  const { user, loading } = useAuth()
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [isChecking, setIsChecking] = useState(true)
   const [videos] = useState<Video[]>([
     {
       id: "puppy-basics",
@@ -69,6 +74,56 @@ export default function SimpleAdminPanel() {
       view_count: 675
     }
   ])
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        router.push('/dashboard')
+        return
+      }
+
+      try {
+        const supabase = createClient()
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+
+        if (error || !profile || profile.role !== 'admin') {
+          // Not an admin, redirect to dashboard
+          router.push('/dashboard')
+          return
+        }
+
+        setIsAdmin(true)
+      } catch (error) {
+        console.error('Error checking admin status:', error)
+        router.push('/dashboard')
+      } finally {
+        setIsChecking(false)
+      }
+    }
+
+    if (!loading) {
+      checkAdminStatus()
+    }
+  }, [user, loading, router])
+
+  // Show loading while checking
+  if (loading || isChecking) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  // Don't render anything if not admin (will redirect)
+  if (!isAdmin) {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

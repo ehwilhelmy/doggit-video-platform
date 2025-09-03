@@ -30,7 +30,8 @@ import {
   BookOpen,
   Check,
   ExternalLink,
-  Calendar
+  Calendar,
+  CreditCard
 } from "lucide-react"
 
 function DashboardContent() {
@@ -48,6 +49,7 @@ function DashboardContent() {
   const [videosLoading, setVideosLoading] = useState(true)
   const [isPersonalized, setIsPersonalized] = useState(false)
   const [videoProgress, setVideoProgress] = useState<Record<string, VideoProgress>>({})
+  const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
 
   // Fetch user profile from Supabase
@@ -67,6 +69,8 @@ function DashboardContent() {
         setUserName(profile.first_name || '')
         setPupName(profile.pup_name || '')
         setTrainingGoals(profile.training_goals || [])
+        // Only set admin if explicitly set to 'admin' - all other values (null, undefined, other strings) are non-admin
+        setIsAdmin(profile.role === 'admin')
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
@@ -227,6 +231,27 @@ function DashboardContent() {
     router.push('/')
   }
 
+  const handleManageSubscription = async () => {
+    try {
+      const response = await fetch('/api/stripe/customer-portal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create customer portal session')
+      }
+
+      const { url } = await response.json()
+      window.location.href = url
+    } catch (error) {
+      console.error('Error opening customer portal:', error)
+      // Could show a toast notification here
+    }
+  }
+
   // Show loading state while auth is initializing
   if (loading || videosLoading) {
     return (
@@ -273,12 +298,21 @@ function DashboardContent() {
                   Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => window.location.href = '/admin/simple'}
+                  onClick={handleManageSubscription}
                   className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
                 >
-                  <Shield className="h-4 w-4 mr-2" />
-                  Admin
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Manage Subscription
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem 
+                    onClick={() => window.location.href = '/admin/simple'}
+                    className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem 
                   onClick={handleSignOut}
                   className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"

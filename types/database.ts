@@ -12,6 +12,7 @@ export interface Database {
           phone: string | null
           pup_name: string | null
           training_goals: string[] | null
+          role: string | null
           created_at: string
           updated_at: string
         }
@@ -23,6 +24,7 @@ export interface Database {
           phone?: string | null
           pup_name?: string | null
           training_goals?: string[] | null
+          role?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -34,6 +36,7 @@ export interface Database {
           phone?: string | null
           pup_name?: string | null
           training_goals?: string[] | null
+          role?: string | null
           created_at?: string
           updated_at?: string
         }
