@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Share2, Users, Heart } from "lucide-react"
+import Image from "next/image"
 
 interface ShareModalProps {
   open: boolean
@@ -33,9 +34,18 @@ export function ShareModal({ open, onOpenChange, videoTitle }: ShareModalProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md w-full bg-zinc-900 border-zinc-700">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
-            <Share2 className="h-5 w-5" />
-            Share Training Video
+          <DialogTitle className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16">
+                <Image
+                  src="/doggit-logo-mark.svg"
+                  alt="DOGGIT Logo"
+                  width={64}
+                  height={58}
+                  className="brightness-0 invert opacity-90"
+                />
+              </div>
+            </div>
           </DialogTitle>
         </DialogHeader>
         
