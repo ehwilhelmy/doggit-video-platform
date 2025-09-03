@@ -37,7 +37,9 @@ import {
   BookOpen,
   Smartphone,
   Download,
-  ChevronDown
+  ChevronDown,
+  Facebook,
+  Instagram
 } from "lucide-react"
 
 const instructors = [
@@ -680,16 +682,42 @@ END:VCALENDAR`
             <div className="flex flex-col md:flex-row items-center gap-4 text-white text-sm">
               <span>Copyright © 2024 DOGGIT. All rights reserved</span>
               <div className="flex gap-4">
-                <a href="#" className="underline hover:no-underline">Terms & Conditions</a>
-                <a href="#" className="underline hover:no-underline">Privacy</a>
+                <a 
+                  href="https://doggit.app/terms-of-service" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:no-underline"
+                >
+                  Terms & Conditions
+                </a>
+                <a 
+                  href="https://doggit.app/privacy-policy" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:no-underline"
+                >
+                  Privacy Policy
+                </a>
               </div>
             </div>
             <div className="flex gap-4">
-              <a href="#" className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-                <span className="text-white text-sm font-bold">f</span>
+              <a 
+                href="https://www.facebook.com/doggitapp" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook className="w-4 h-4 text-white" />
               </a>
-              <a href="#" className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-                <span className="text-white text-sm font-bold">@</span>
+              <a 
+                href="https://www.instagram.com/doggit.app" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-4 h-4 text-white" />
               </a>
             </div>
           </div>
