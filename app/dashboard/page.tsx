@@ -577,12 +577,12 @@ function DashboardContent() {
             </div>
 
             {/* Call to Action */}
-            <div className="mt-8 text-center">
-              <p className="text-gray-400 text-sm mb-4">
+            <div className="mt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <p className="text-gray-400 text-sm text-center lg:text-left">
                 Want to influence what we create next? Your training goals help us prioritize new content.
               </p>
               <Button 
-                className="bg-jade-purple text-white hover:bg-jade-purple/90"
+                className="bg-jade-purple text-white hover:bg-jade-purple/90 flex-shrink-0"
                 onClick={() => window.location.href = '/settings/preferences'}
               >
                 Update My Training Goals
