@@ -602,7 +602,7 @@ function DashboardContent() {
               <article className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                   <img 
-                    src="https://resources.doggit.app/content/images/size/w1000/2024/03/alexander-grey-62vi3TG5EDg-unsplash.jpg"
+                    src="https://resources.doggit.app/wp-content/uploads/2024/03/PuppiesInYard.jpg"
                     alt="Mythbusters! True or false?"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -636,7 +636,7 @@ function DashboardContent() {
               <article className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                   <img 
-                    src="https://resources.doggit.app/content/images/size/w1000/2024/03/shutterstock_1421918351.jpg"
+                    src="https://resources.doggit.app/wp-content/uploads/2024/03/female-veterinarian-examining-parson-russell-terrier-dog-solated-on-white-SBI-305113415.jpg"
                     alt="Health Clearances – What To Know And What To Look Out For"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -668,7 +668,7 @@ function DashboardContent() {
               <article className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                   <img 
-                    src="https://resources.doggit.app/content/images/size/w1000/2024/03/shutterstock_2139666923.jpg"
+                    src="https://resources.doggit.app/wp-content/uploads/2024/03/collar_types.jpg"
                     alt="Collar Types"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
