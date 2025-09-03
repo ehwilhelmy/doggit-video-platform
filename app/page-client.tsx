@@ -564,7 +564,7 @@ END:VCALENDAR`
               Simple, Transparent Pricing
             </h2>
             <p className="text-lg text-gray-300">
-              Choose the plan that works best for you
+              What's included in your membership?
             </p>
           </div>
           
@@ -600,28 +600,38 @@ END:VCALENDAR`
             
             {/* Bullet points - Right Side */}
             <div>
-              <ul className="space-y-4 text-left">
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
-                  <span className="text-lg">Cancel anytime • No commitments • Instant access</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
-                  <span className="text-lg">Expert Training Videos</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
-                  <span className="text-lg">New Videos Released Monthly</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
-                  <span className="text-lg">Community Support (50,000+ members)</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle className="w-6 h-6 text-queen-purple flex-shrink-0" />
-                  <span className="text-lg">30-Day Money-Back Guarantee</span>
-                </li>
-              </ul>
+              
+              {/* Features List */}
+              <div className="space-y-5">
+                <div className="flex items-start gap-4">
+                  <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
+                  <div>
+                    <span className="text-white text-lg font-medium">Expert Training Videos</span>
+                    <p className="text-gray-400 text-sm mt-1">Access our complete library of professional dog training courses.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
+                  <div>
+                    <span className="text-white text-lg font-medium">New Content Released Monthly</span>
+                    <p className="text-gray-400 text-sm mt-1">Fresh content added regularly to expand your training knowledge.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
+                  <div>
+                    <span className="text-white text-lg font-medium">Community Support</span>
+                    <p className="text-gray-400 text-sm mt-1">Learn alongside other dog owners with guidance from our expert trainers. Plus live chat & AI training support.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
+                  <div>
+                    <span className="text-white text-lg font-medium">30-Day Money-Back Guarantee</span>
+                    <p className="text-gray-400 text-sm mt-1">Try risk-free. Not satisfied? Get a full refund within 30 days.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

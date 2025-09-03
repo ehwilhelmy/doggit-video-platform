@@ -161,15 +161,15 @@ function MembershipPageContent() {
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">New Videos Released Monthly</span>
+                    <span className="text-white text-lg font-medium">New Content Released Monthly</span>
                     <p className="text-gray-400 text-sm mt-1">Fresh content added regularly to expand your training knowledge.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">Community Support (50,000+ members)</span>
-                    <p className="text-gray-400 text-sm mt-1">Learn alongside thousands of dog owners with guidance from expert trainers.</p>
+                    <span className="text-white text-lg font-medium">Community Support</span>
+                    <p className="text-gray-400 text-sm mt-1">Learn alongside other dog owners with guidance from our expert trainers. Plus live chat & AI training support.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
