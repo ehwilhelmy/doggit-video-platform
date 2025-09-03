@@ -118,29 +118,37 @@ function WatchPageContent() {
   // Load notes when component mounts
   useEffect(() => {
     if (user && videoId) {
-      console.log('Loading notes for:', { videoId, userId: user.id })
       fetch(`/api/video-notes?videoId=${videoId}&userId=${user.id}`)
-        .then(res => {
-          console.log('Notes API response status:', res.status)
-          return res.json()
-        })
+        .then(res => res.json())
         .then(data => {
-          console.log('Notes API response data:', data)
           if (data.notes) {
             setNotes(data.notes)
           }
         })
-        .catch(err => console.error('Failed to load notes:', err))
+        .catch(err => {
+          console.error('Failed to load notes:', err)
+          // Fallback to localStorage if API fails
+          const storageKey = `notes-${videoId}-${user.id}`
+          const storedNotes = localStorage.getItem(storageKey)
+          if (storedNotes) {
+            setNotes(storedNotes)
+          }
+        })
     }
   }, [user, videoId])
 
   // Auto-save notes with debouncing
   const saveNotes = useCallback(async (notesToSave: string) => {
-    if (!user || !notesToSave.trim()) return
+    if (!user) return
     
-    console.log('Saving notes for:', { videoId, userId: user.id, notesLength: notesToSave.length })
     setIsSavingNotes(true)
+    const storageKey = `notes-${videoId}-${user.id}`
+    
     try {
+      // Always save to localStorage as backup
+      localStorage.setItem(storageKey, notesToSave)
+      
+      // Try to save to database
       const response = await fetch('/api/video-notes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -151,15 +159,16 @@ function WatchPageContent() {
         })
       })
       
-      console.log('Save notes response status:', response.status)
-      const responseData = await response.json()
-      console.log('Save notes response data:', responseData)
-      
       if (response.ok) {
+        setLastSaved(new Date())
+      } else {
+        // API failed but localStorage succeeded
         setLastSaved(new Date())
       }
     } catch (error) {
-      console.error('Failed to save notes:', error)
+      console.error('Failed to save notes to API:', error)
+      // Still saved to localStorage, so show success
+      setLastSaved(new Date())
     } finally {
       setIsSavingNotes(false)
     }
@@ -172,6 +181,7 @@ function WatchPageContent() {
     }
     
     saveTimeoutRef.current = setTimeout(() => {
+      // Save even if empty to clear notes
       saveNotes(notesToSave)
     }, 1000) // Save 1 second after user stops typing
   }, [saveNotes])
@@ -530,9 +540,17 @@ function WatchPageContent() {
                 <h4 className="text-white font-medium">My Notes</h4>
                 <div className="text-xs text-gray-400">
                   {isSavingNotes ? (
-                    <span className="text-queen-purple">Saving...</span>
+                    <span className="text-queen-purple flex items-center gap-1">
+                      <div className="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
+                      Saving...
+                    </span>
                   ) : lastSaved ? (
-                    <span>Last saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="text-green-400 flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  ) : notes.trim() ? (
+                    <span className="text-yellow-400">Changes not saved</span>
                   ) : null}
                 </div>
               </div>
