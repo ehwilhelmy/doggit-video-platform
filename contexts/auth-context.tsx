@@ -104,11 +104,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check if user has active subscription in database
     setSubscriptionLoading(true)
     try {
-      // First check if this is an admin account - grant immediate access
+      // First check if this is an admin account or known user - grant immediate access
       const currentUser = await supabase.auth.getUser()
       console.log('Auth: Checking subscription for user:', currentUser.data.user?.email)
+      
+      // Admin accounts
       if (currentUser.data.user?.email === 'erica@doggit.app' || currentUser.data.user?.email === 'thor@doggit.app') {
         console.log('Auth: Admin account detected, granting access')
+        setIsSubscribed(true)
+        setSubscriptionLoading(false)
+        return
+      }
+      
+      // Temporary fix: Grant access to known users while RLS issue is being resolved
+      const knownUsers = [
+        'herohomesolutionswa@gmail.com',
+        'carleyjsimpson@gmail.com', 
+        'josimpson55@gmail.com',
+        'collinbutkus95@gmail.com',
+        'cameron@doggit.app',
+        'cameron.simpson99@gmail.com'
+      ]
+      if (knownUsers.includes(currentUser.data.user?.email || '')) {
+        console.log('Auth: Known user detected, granting access (temporary fix)')
         setIsSubscribed(true)
         setSubscriptionLoading(false)
         return
