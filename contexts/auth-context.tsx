@@ -106,6 +106,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsSubscribed(true)
         return
       }
+      
+      // Demo account for local development only
+      if (process.env.NODE_ENV === 'development' && currentUser.data.user?.email === 'demo@doggit.app') {
+        console.log('Auth: Demo account detected (local only), granting access')
+        setIsSubscribed(true)
+        return
+      }
 
       const { data, error } = await supabase
         .from('subscriptions')
