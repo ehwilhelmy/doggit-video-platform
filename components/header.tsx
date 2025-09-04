@@ -32,8 +32,10 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
-    // Set initial scroll state
-    setIsScrolled(window.scrollY > 50)
+    // Set initial scroll state - check if window exists (client-side only)
+    if (typeof window !== 'undefined') {
+      setIsScrolled(window.scrollY > 50)
+    }
     
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
@@ -50,16 +52,20 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
   ]
 
   return (
-    <header className={`sticky top-0 z-40 w-full transition-all duration-300 ${
-      variant === "landing" 
-        ? isScrolled 
-          ? "bg-white/95 backdrop-blur-sm shadow-sm dark:bg-gray-950/95"
-          : "bg-transparent"
-        : variant === "auth"
-        ? "bg-transparent"
-        : "bg-white/95 shadow-sm backdrop-blur-sm dark:bg-gradient-to-b dark:from-black/80 dark:to-transparent"
-    }`} style={variant === "landing" && !isScrolled ? { backgroundColor: 'transparent' } : {}}>
-      <div className="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8 max-w-[1440px]">
+    <header 
+      className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        variant === "landing" 
+          ? isScrolled 
+            ? "bg-white/95 backdrop-blur-sm shadow-sm dark:bg-gray-950/95"
+            : "header-transparent"
+          : variant === "auth"
+          ? "header-transparent"
+          : "bg-white/95 shadow-sm backdrop-blur-sm dark:bg-gradient-to-b dark:from-black/80 dark:to-transparent"
+      }`}
+    >
+      <div className={`container mx-auto flex items-center justify-between px-4 py-4 lg:px-8 max-w-[1440px] ${
+        variant === "landing" && !isScrolled ? "!bg-transparent" : ""
+      }`}>
         {/* Left Section - Logo & Navigation */}
         <div className="flex items-center gap-8">
           <Logo 

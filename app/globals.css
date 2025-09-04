@@ -201,4 +201,9 @@
     animation: slideShow 12s infinite;
     animation-delay: 9s;
   }
+  
+  .header-transparent {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
 }

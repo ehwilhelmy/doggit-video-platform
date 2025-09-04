@@ -246,7 +246,7 @@ END:VCALENDAR`
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 pb-20 sm:pb-0">
+    <div className="min-h-screen pb-20 sm:pb-0 bg-black">
       {/* Sticky Mobile Subscribe Button */}
       <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/95 to-black/80 backdrop-blur-sm sm:hidden">
         <Button 
