@@ -491,8 +491,8 @@ END:VCALENDAR`
             </div>
           </div>
           
-          {/* Single Watch Teaser Button */}
-          <div className="text-center mt-8">
+          {/* Watch Teaser and Subscribe Buttons */}
+          <div className="text-center mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               variant="outline" 
               size="lg"
@@ -501,6 +501,14 @@ END:VCALENDAR`
             >
               <PlayCircle className="mr-2 h-5 w-5" />
               Watch Teaser
+            </Button>
+            <Button 
+              size="lg"
+              className="bg-queen-purple hover:bg-queen-purple/90 text-white transition-all font-semibold px-8 py-3"
+              onClick={handleGetStarted}
+            >
+              <CheckCircle className="mr-2 h-5 w-5" />
+              Subscribe
             </Button>
           </div>
         </div>
