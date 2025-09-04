@@ -401,6 +401,27 @@ END:VCALENDAR`
             </p>
           </div>
           
+          {/* Watch Teaser and Subscribe Buttons */}
+          <div className="text-center mb-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all font-semibold px-8 py-3"
+              onClick={() => handleVideoPreview("puppy-basics")}
+            >
+              <PlayCircle className="mr-2 h-5 w-5" />
+              Watch Teaser
+            </Button>
+            <Button 
+              size="lg"
+              className="bg-queen-purple hover:bg-queen-purple/90 text-white transition-all font-semibold px-8 py-3"
+              onClick={handleGetStarted}
+            >
+              <CheckCircle className="mr-2 h-5 w-5" />
+              Subscribe Now
+            </Button>
+          </div>
+          
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Puppy Basics */}
             <div className="relative group">
@@ -489,27 +510,6 @@ END:VCALENDAR`
                 
               </div>
             </div>
-          </div>
-          
-          {/* Watch Teaser and Subscribe Buttons */}
-          <div className="text-center mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all font-semibold px-8 py-3"
-              onClick={() => handleVideoPreview("puppy-basics")}
-            >
-              <PlayCircle className="mr-2 h-5 w-5" />
-              Watch Teaser
-            </Button>
-            <Button 
-              size="lg"
-              className="bg-queen-purple hover:bg-queen-purple/90 text-white transition-all font-semibold px-8 py-3"
-              onClick={handleGetStarted}
-            >
-              <CheckCircle className="mr-2 h-5 w-5" />
-              Subscribe Now
-            </Button>
           </div>
         </div>
       </section>
