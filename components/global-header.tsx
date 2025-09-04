@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export function GlobalHeader() {
   return (
-    <div className="fixed top-0 z-50 w-full bg-zinc-950 border-b border-zinc-800">
+    <div className="relative w-full bg-zinc-950 border-b border-zinc-800">
       <div className="container mx-auto px-4 lg:px-8 max-w-[1440px]">
         <div className="flex items-center justify-between h-10">
           {/* Left side - DOGGIT Parent Brand */}

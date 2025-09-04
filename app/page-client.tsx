@@ -271,7 +271,7 @@ END:VCALENDAR`
       />
 
       {/* Hero Section - Live Stream Focus */}
-      <section className="relative h-[75vh] max-h-[700px] flex items-center justify-center overflow-hidden bg-black pt-20 sm:pt-24">
+      <section className="relative h-[75vh] max-h-[700px] flex items-center justify-center overflow-hidden bg-black">
         {/* Background Video/Image */}
         <div className="absolute inset-0">
           <img
