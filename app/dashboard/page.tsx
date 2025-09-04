@@ -35,9 +35,11 @@ import {
 } from "lucide-react"
 
 function DashboardContent() {
+  console.log('🚀 DASHBOARD COMPONENT LOADING')
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading, signOut, isSubscribed } = useAuth()
+  console.log('🔍 DASHBOARD - user:', user?.email, 'loading:', loading, 'isSubscribed:', isSubscribed)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
   const [showPreferencesConfirm, setShowPreferencesConfirm] = useState(false)
@@ -125,8 +127,11 @@ function DashboardContent() {
       if (user) {
         // Check if user has subscription (trust auth context)
         // Auth context already handles database + localStorage fallback
+        console.log('Dashboard: user logged in, isSubscribed:', isSubscribed, 'loading:', loading)
+        console.log('Dashboard: user email:', user.email)
+        
         if (!isSubscribed && !loading) {
-          console.log('No active subscription found, redirecting to landing page')
+          console.log('Dashboard: No active subscription found, redirecting to landing page')
           router.push('/')
           return
         }

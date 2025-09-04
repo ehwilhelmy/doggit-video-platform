@@ -33,7 +33,7 @@ interface SignInModalProps {
 }
 
 export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModalProps) {
-  const { signIn, signInWithProvider } = useAuth()
+  const { signIn, signInWithProvider, resetPassword } = useAuth()
   const router = useRouter()
   const [formData, setFormData] = useState({
     email: "",
@@ -121,13 +121,31 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setErrors({})
     
-    // Simulate password reset
-    setTimeout(() => {
+    if (!formData.email) {
+      setErrors({ submit: "Please enter your email address" })
       setIsLoading(false)
-      setShowForgotPassword(false)
-      alert("Password reset link sent to your email!")
-    }, 1000)
+      return
+    }
+    
+    try {
+      const { error } = await resetPassword(formData.email)
+      
+      if (error) {
+        console.error('Password reset error:', error)
+        setErrors({ submit: error.message || "Failed to send password reset email" })
+      } else {
+        // Success - show confirmation and go back to login
+        setShowForgotPassword(false)
+        setErrors({ submit: "" })
+        alert("Password reset link sent to your email! Check your inbox and follow the link to reset your password.")
+      }
+    } catch (error) {
+      setErrors({ submit: "Something went wrong. Please try again." })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -177,6 +195,12 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
                   />
                 </div>
               </div>
+
+              {errors.submit && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                  <p className="text-red-800 text-sm">{errors.submit}</p>
+                </div>
+              )}
 
               <Button
                 type="submit"

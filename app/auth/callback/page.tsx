@@ -10,13 +10,32 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleCallback = async () => {
       const supabase = createClient()
-      const { error } = await supabase.auth.getSession()
       
-      if (error) {
-        console.error('Auth callback error:', error)
-        router.push('/auth?error=callback_error')
+      // Check URL for auth type (recovery for password reset)
+      const urlParams = new URLSearchParams(window.location.search)
+      const type = urlParams.get('type')
+      
+      if (type === 'recovery') {
+        // This is a password reset callback
+        const { error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Recovery callback error:', error)
+          router.push('/auth?error=recovery_error&message=' + encodeURIComponent(error.message))
+        } else {
+          // Redirect to password reset page
+          router.push('/auth/reset-password')
+        }
       } else {
-        router.push('/dashboard')
+        // Regular auth callback
+        const { error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Auth callback error:', error)
+          router.push('/auth?error=callback_error')
+        } else {
+          router.push('/dashboard')
+        }
       }
     }
 
