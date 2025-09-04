@@ -116,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
       
-      // Temporary fix: Grant access to known users while RLS issue is being resolved
+      // Temporary fix: Grant access to known users, but still check DB for new subscribers
       const knownUsers = [
         'herohomesolutionswa@gmail.com',
         'carleyjsimpson@gmail.com', 
@@ -131,6 +131,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSubscriptionLoading(false)
         return
       }
+      
+      // For new users, still try the database query (allows new Stripe subscribers to access)
       
       // Demo account - allow in both development and production for now
       if (currentUser.data.user?.email === 'demo@doggit.app') {
