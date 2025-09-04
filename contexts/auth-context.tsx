@@ -98,10 +98,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkSubscriptionStatus = async (userId: string) => {
     // Check if user has active subscription in database
     try {
-      // First check if this is the admin account - grant immediate access
+      // First check if this is an admin account - grant immediate access
       const currentUser = await supabase.auth.getUser()
       console.log('Auth: Checking subscription for user:', currentUser.data.user?.email)
-      if (currentUser.data.user?.email === 'erica@doggit.app') {
+      if (currentUser.data.user?.email === 'erica@doggit.app' || currentUser.data.user?.email === 'thor@doggit.app') {
         console.log('Auth: Admin account detected, granting access')
         setIsSubscribed(true)
         return
@@ -143,9 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error checking subscription:', error)
-      // For admin account erica@doggit.app, grant access (fallback)
+      // For admin accounts, grant access (fallback)
       const currentUser = await supabase.auth.getUser()
-      if (currentUser.data.user?.email === 'erica@doggit.app') {
+      if (currentUser.data.user?.email === 'erica@doggit.app' || currentUser.data.user?.email === 'thor@doggit.app') {
         setIsSubscribed(true)
       } else {
         // TEMPORARY FIX: Allow all authenticated users in production until subscription system is fixed

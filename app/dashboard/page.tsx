@@ -130,8 +130,8 @@ function DashboardContent() {
         console.log('Dashboard: user logged in, isSubscribed:', isSubscribed, 'loading:', loading)
         console.log('Dashboard: user email:', user.email)
         
-        // Special handling for admin account - don't redirect immediately
-        if (user.email === 'erica@doggit.app') {
+        // Special handling for admin accounts - don't redirect immediately
+        if (user.email === 'erica@doggit.app' || user.email === 'thor@doggit.app') {
           console.log('Dashboard: Admin account detected, allowing access')
           // Don't redirect - admin always gets access
         } else if (user.email === 'demo@doggit.app') {
