@@ -141,9 +141,9 @@ function DashboardContent() {
       setTrainingGoals(storedGoals)
       setIsPersonalized(personalized)
       
-      // If user is not authenticated, redirect to login
+      // If user is not authenticated, redirect to landing page
       if (!user && !loading) {
-        router.push('/auth')
+        router.push('/')
         return
       }
       
