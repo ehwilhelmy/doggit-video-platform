@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -151,6 +151,9 @@ export function SignInModal({ open, onOpenChange, onSwitchToSignUp }: SignInModa
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md p-0 overflow-hidden bg-white dark:bg-gray-900">
+        <DialogTitle className="sr-only">
+          {showForgotPassword ? "Reset Password" : "Welcome Back"}
+        </DialogTitle>
         {/* Header */}
         <div className="relative bg-gradient-to-r from-jade-purple to-queen-purple p-6">
           <div className="text-center text-white">

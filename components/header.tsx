@@ -174,7 +174,11 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
           {/* Mobile Menu Button */}
           {showNavigation && (
             <button
-              className="md:hidden"
+              className={`md:hidden ${
+                variant === "landing" && !isScrolled
+                  ? "text-white/80 hover:text-white"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+              } transition-colors`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
