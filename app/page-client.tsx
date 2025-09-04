@@ -164,8 +164,8 @@ function LandingPageClient() {
   const handleAddToCalendar = () => {
     // Event details
     const eventTitle = "DOGGIT Expert Dog Training Live Stream"
-    const eventDescription = "Join renowned trainers Jayme Nolan and Jo Simpson for an exclusive live stream event on expert dog training techniques.\n\nWHERE TO WATCH:\n1:00 PM PST Session: https://services.doggit.app/watch/?v=livestream-sep-2025\n3:00 PM PST Session: https://services.doggit.app/watch/?v=livestream-sep-2025b\n\nWhen: September 6, 2025 - Live events at 1:00 PM PST and 3:00 PM PST\nWhat: Expert Dog Training Techniques\nWho: Jayme Nolan & Jo Simpson"
-    const eventLocation = "Online - DOGGIT Platform"
+    const eventDescription = "Join renowned trainers Jayme Nolan and Jo Simpson for an exclusive live stream event on expert dog training techniques.\n\nWHERE TO WATCH:\nhttps://www.facebook.com/doggit.app.7/live_videos/\n\nWhen: September 6, 2025 - Live events at 1:00 PM PST and 3:00 PM PST\nWhat: Expert Dog Training Techniques\nWho: Jayme Nolan & Jo Simpson"
+    const eventLocation = "Facebook Live - https://www.facebook.com/doggit.app.7/live_videos/"
     const startDate = new Date('2025-09-06T13:00:00-07:00') // Sept 6, 2025, 1:00 PM PST
     const endDate = new Date('2025-09-06T16:00:00-07:00') // 2 hour event
     
@@ -184,8 +184,8 @@ function LandingPageClient() {
   const downloadICSFile = () => {
     // Event details
     const eventTitle = "DOGGIT Expert Dog Training Live Stream"
-    const eventDescription = "Join renowned trainers Jayme Nolan and Jo Simpson for an exclusive live stream event on expert dog training techniques.\\n\\n📍 WHERE TO WATCH:\\n1:00 PM PST Session: https://services.doggit.app/watch/?v=livestream-sep-2025\\n3:00 PM PST Session: https://services.doggit.app/watch/?v=livestream-sep-2025b\\n\\n⏰ When: September 6, 2025 - Live events at 1:00 PM PST and 3:00 PM PST\\n🎯 What: Expert Dog Training Techniques\\n👥 Who: Jayme Nolan & Jo Simpson"
-    const eventLocation = "Online - DOGGIT Platform"
+    const eventDescription = "Join renowned trainers Jayme Nolan and Jo Simpson for an exclusive live stream event on expert dog training techniques.\\n\\n📍 WHERE TO WATCH:\\nhttps://www.facebook.com/doggit.app.7/live_videos/\\n\\n⏰ When: September 6, 2025 - Live events at 1:00 PM PST and 3:00 PM PST\\n🎯 What: Expert Dog Training Techniques\\n👥 Who: Jayme Nolan & Jo Simpson"
+    const eventLocation = "Facebook Live - https://www.facebook.com/doggit.app.7/live_videos/"
     const startDate = new Date('2025-09-06T14:00:00-07:00')
     const endDate = new Date('2025-09-06T16:00:00-07:00')
     
@@ -224,6 +224,7 @@ END:VCALENDAR`
     link.click()
     document.body.removeChild(link)
   }
+
 
   const handleVideoPreview = (videoId: string) => {
     setSelectedVideoId(videoId)
