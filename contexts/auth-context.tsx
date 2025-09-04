@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select('status')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
       
       console.log('Auth: Subscription query result:', { data, error, userId })
       
