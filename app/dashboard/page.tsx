@@ -37,8 +37,7 @@ import {
 function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading, signOut, isSubscribed: authSubscribed } = useAuth()
-  const [isSubscribed, setIsSubscribed] = useState(false)
+  const { user, loading, signOut, isSubscribed } = useAuth()
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
   const [showPreferencesConfirm, setShowPreferencesConfirm] = useState(false)
@@ -52,31 +51,6 @@ function DashboardContent() {
   const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
 
-  // Check subscription status from database
-  const checkSubscriptionStatus = async () => {
-    if (!user) return false
-    
-    try {
-      // Check for active subscription in database
-      const { data: subscription, error } = await supabase
-        .from('subscriptions')
-        .select('status')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .single()
-      
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking subscription:', error)
-        return false
-      }
-      
-      // If we have an active subscription in database, they're subscribed
-      return !!subscription
-    } catch (error) {
-      console.error('Error checking subscription status:', error)
-      return false
-    }
-  }
 
   // Fetch user profile from Supabase
   const fetchUserProfile = async () => {
@@ -149,25 +123,13 @@ function DashboardContent() {
       
       // Get user data from Supabase auth
       if (user) {
-        // Check subscription status from database first
-        const hasActiveSubscription = await checkSubscriptionStatus()
-        
-        // If no active subscription in database, check localStorage as fallback for legacy users
-        if (!hasActiveSubscription) {
-          const subscriptionActive = localStorage.getItem("subscriptionActive") === "true"
-          const paymentCompleted = localStorage.getItem("paymentCompleted") === "true"
-          const hasLocalSubscription = subscriptionActive || paymentCompleted
-          
-          // If neither database nor localStorage shows subscription, redirect to landing page
-          if (!hasLocalSubscription) {
-            console.log('No active subscription found, redirecting to landing page')
-            router.push('/')
-            return
-          }
+        // Check if user has subscription (trust auth context)
+        // Auth context already handles database + localStorage fallback
+        if (!isSubscribed && !loading) {
+          console.log('No active subscription found, redirecting to landing page')
+          router.push('/')
+          return
         }
-        
-        // User has valid subscription, set up dashboard
-        setIsSubscribed(true)
         
         // Fetch real profile from database
         fetchUserProfile()
@@ -208,7 +170,7 @@ function DashboardContent() {
     if (!loading) {
       verifyAccessAndSetup()
     }
-  }, [searchParams, user, authSubscribed, loading])
+  }, [searchParams, user, isSubscribed, loading])
 
   // Load videos - use hardcoded data for now
   useEffect(() => {
