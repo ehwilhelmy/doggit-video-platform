@@ -133,13 +133,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const hasPayment = paymentCompleted === 'true'
         console.log('Auth: localStorage paymentCompleted:', hasPayment)
         
-        // TEMPORARY FIX: Allow all authenticated users in production until subscription system is fixed
-        if (process.env.NODE_ENV === 'production') {
-          console.log('Auth: TEMPORARY - Allowing access for all authenticated users in production')
-          setIsSubscribed(true)
-        } else {
-          setIsSubscribed(hasPayment)
-        }
+        // Set subscription status based on payment status
+        setIsSubscribed(hasPayment)
       }
     } catch (error) {
       console.error('Error checking subscription:', error)
@@ -148,15 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser.data.user?.email === 'erica@doggit.app' || currentUser.data.user?.email === 'thor@doggit.app') {
         setIsSubscribed(true)
       } else {
-        // TEMPORARY FIX: Allow all authenticated users in production until subscription system is fixed
-        if (process.env.NODE_ENV === 'production') {
-          console.log('Auth: TEMPORARY - Allowing access for all authenticated users in production (catch block)')
-          setIsSubscribed(true)
-        } else {
-          // Fallback to localStorage for other users in development
-          const paymentCompleted = localStorage.getItem('paymentCompleted')
-          setIsSubscribed(paymentCompleted === 'true')
-        }
+        // Fallback to localStorage for other users
+        const paymentCompleted = localStorage.getItem('paymentCompleted')
+        setIsSubscribed(paymentCompleted === 'true')
       }
     }
   }
