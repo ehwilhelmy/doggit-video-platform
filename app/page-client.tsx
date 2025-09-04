@@ -508,7 +508,7 @@ END:VCALENDAR`
               onClick={handleGetStarted}
             >
               <CheckCircle className="mr-2 h-5 w-5" />
-              Subscribe
+              Subscribe Now
             </Button>
           </div>
         </div>
