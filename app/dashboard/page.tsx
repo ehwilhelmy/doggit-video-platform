@@ -317,13 +317,16 @@ function DashboardContent() {
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleManageSubscription}
-                  className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Manage Subscription
-                </DropdownMenuItem>
+                {/* Only show Manage Subscription for non-admin users */}
+                {user?.email !== 'erica@doggit.app' && (
+                  <DropdownMenuItem 
+                    onClick={handleManageSubscription}
+                    className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Manage Subscription
+                  </DropdownMenuItem>
+                )}
                 {isAdmin && (
                   <DropdownMenuItem 
                     onClick={() => window.location.href = '/admin/simple'}
