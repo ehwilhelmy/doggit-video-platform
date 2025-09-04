@@ -134,9 +134,9 @@ function DashboardContent() {
         if (user.email === 'erica@doggit.app') {
           console.log('Dashboard: Admin account detected, allowing access')
           // Don't redirect - admin always gets access
-        } else if (process.env.NODE_ENV === 'development' && user.email === 'demo@doggit.app') {
-          console.log('Dashboard: Demo account detected (local only), allowing access')
-          // Don't redirect - demo account for local testing
+        } else if (user.email === 'demo@doggit.app') {
+          console.log('Dashboard: Demo account detected, allowing access')
+          // Don't redirect - demo account for testing
         } else if (!isSubscribed && !loading) {
           console.log('Dashboard: No active subscription found, redirecting to landing page')
           router.push('/')

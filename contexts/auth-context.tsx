@@ -107,9 +107,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
       
-      // Demo account for local development only
-      if (process.env.NODE_ENV === 'development' && currentUser.data.user?.email === 'demo@doggit.app') {
-        console.log('Auth: Demo account detected (local only), granting access')
+      // Demo account - allow in both development and production for now
+      if (currentUser.data.user?.email === 'demo@doggit.app') {
+        console.log('Auth: Demo account detected, granting access')
         setIsSubscribed(true)
         return
       }
@@ -121,12 +121,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('status', 'active')
         .single()
       
+      console.log('Auth: Subscription query result:', { data, error, userId })
+      
       if (!error && data) {
+        console.log('Auth: Active subscription found in database')
         setIsSubscribed(true)
       } else {
-        // Fallback to localStorage for demo
+        console.log('Auth: No active subscription found in database, checking localStorage fallback')
+        // Fallback to localStorage for demo/testing
         const paymentCompleted = localStorage.getItem('paymentCompleted')
-        setIsSubscribed(paymentCompleted === 'true')
+        const hasPayment = paymentCompleted === 'true'
+        console.log('Auth: localStorage paymentCompleted:', hasPayment)
+        
+        // TEMPORARY FIX: Allow all authenticated users in production until subscription system is fixed
+        if (process.env.NODE_ENV === 'production') {
+          console.log('Auth: TEMPORARY - Allowing access for all authenticated users in production')
+          setIsSubscribed(true)
+        } else {
+          setIsSubscribed(hasPayment)
+        }
       }
     } catch (error) {
       console.error('Error checking subscription:', error)
@@ -135,9 +148,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser.data.user?.email === 'erica@doggit.app') {
         setIsSubscribed(true)
       } else {
-        // Fallback to localStorage for other users
-        const paymentCompleted = localStorage.getItem('paymentCompleted')
-        setIsSubscribed(paymentCompleted === 'true')
+        // TEMPORARY FIX: Allow all authenticated users in production until subscription system is fixed
+        if (process.env.NODE_ENV === 'production') {
+          console.log('Auth: TEMPORARY - Allowing access for all authenticated users in production (catch block)')
+          setIsSubscribed(true)
+        } else {
+          // Fallback to localStorage for other users in development
+          const paymentCompleted = localStorage.getItem('paymentCompleted')
+          setIsSubscribed(paymentCompleted === 'true')
+        }
       }
     }
   }
