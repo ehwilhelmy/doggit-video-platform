@@ -130,7 +130,11 @@ function DashboardContent() {
         console.log('Dashboard: user logged in, isSubscribed:', isSubscribed, 'loading:', loading)
         console.log('Dashboard: user email:', user.email)
         
-        if (!isSubscribed && !loading) {
+        // Special handling for admin account - don't redirect immediately
+        if (user.email === 'erica@doggit.app') {
+          console.log('Dashboard: Admin account detected, allowing access')
+          // Don't redirect - admin always gets access
+        } else if (!isSubscribed && !loading) {
           console.log('Dashboard: No active subscription found, redirecting to landing page')
           router.push('/')
           return
