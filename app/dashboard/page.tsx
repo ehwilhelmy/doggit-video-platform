@@ -158,10 +158,10 @@ function DashboardContent() {
           const paymentCompleted = localStorage.getItem("paymentCompleted") === "true"
           const hasLocalSubscription = subscriptionActive || paymentCompleted
           
-          // If neither database nor localStorage shows subscription, redirect to membership
+          // If neither database nor localStorage shows subscription, redirect to landing page
           if (!hasLocalSubscription) {
-            console.log('No active subscription found, redirecting to membership')
-            router.push('/membership')
+            console.log('No active subscription found, redirecting to landing page')
+            router.push('/')
             return
           }
         }
