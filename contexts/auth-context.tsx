@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
 
@@ -44,6 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Check subscription status
       if (session?.user) {
         checkSubscriptionStatus(session.user.id)
+      } else {
+        setSubscriptionLoading(false)
       }
       
       // Clear any legacy localStorage auth data if we have a real Supabase session
@@ -91,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         checkSubscriptionStatus(session.user.id)
       } else {
         setIsSubscribed(false)
+        setSubscriptionLoading(false)
       }
     })
 

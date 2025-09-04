@@ -39,7 +39,7 @@ function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading, signOut, isSubscribed, subscriptionLoading } = useAuth()
-  console.log('🔍 DASHBOARD - user:', user?.email, 'loading:', loading, 'isSubscribed:', isSubscribed)
+  console.log('🔍 DASHBOARD - user:', user?.email, 'loading:', loading, 'isSubscribed:', isSubscribed, 'subscriptionLoading:', subscriptionLoading)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
   const [showPreferencesConfirm, setShowPreferencesConfirm] = useState(false)
