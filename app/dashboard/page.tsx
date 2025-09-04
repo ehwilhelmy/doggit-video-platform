@@ -38,7 +38,7 @@ function DashboardContent() {
   console.log('🚀 DASHBOARD COMPONENT LOADING')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading, signOut, isSubscribed } = useAuth()
+  const { user, loading, signOut, isSubscribed, subscriptionLoading } = useAuth()
   console.log('🔍 DASHBOARD - user:', user?.email, 'loading:', loading, 'isSubscribed:', isSubscribed)
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
@@ -137,8 +137,9 @@ function DashboardContent() {
         } else if (user.email === 'demo@doggit.app') {
           console.log('Dashboard: Demo account detected, allowing access')
           // Don't redirect - demo account for testing
-        } else if (!isSubscribed && !loading) {
+        } else if (!isSubscribed && !loading && !subscriptionLoading) {
           console.log('Dashboard: No active subscription found, redirecting to landing page')
+          console.log('Dashboard: Debug - user:', user.email, 'isSubscribed:', isSubscribed, 'loading:', loading, 'subscriptionLoading:', subscriptionLoading)
           router.push('/')
           return
         }
@@ -182,7 +183,7 @@ function DashboardContent() {
     if (!loading) {
       verifyAccessAndSetup()
     }
-  }, [searchParams, user, isSubscribed, loading])
+  }, [searchParams, user, isSubscribed, loading, subscriptionLoading])
 
   // Load videos - use hardcoded data for now
   useEffect(() => {

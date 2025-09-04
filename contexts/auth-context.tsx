@@ -15,6 +15,7 @@ interface AuthContextType {
   signOut: () => Promise<{ error: any | null }>
   resetPassword: (email: string) => Promise<{ error: any | null }>
   isSubscribed: boolean
+  subscriptionLoading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -97,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkSubscriptionStatus = async (userId: string) => {
     // Check if user has active subscription in database
+    setSubscriptionLoading(true)
     try {
       // First check if this is an admin account - grant immediate access
       const currentUser = await supabase.auth.getUser()
@@ -104,6 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser.data.user?.email === 'erica@doggit.app' || currentUser.data.user?.email === 'thor@doggit.app') {
         console.log('Auth: Admin account detected, granting access')
         setIsSubscribed(true)
+        setSubscriptionLoading(false)
         return
       }
       
@@ -111,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser.data.user?.email === 'demo@doggit.app') {
         console.log('Auth: Demo account detected, granting access')
         setIsSubscribed(true)
+        setSubscriptionLoading(false)
         return
       }
 
@@ -136,6 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Set subscription status based on payment status
         setIsSubscribed(hasPayment)
       }
+      setSubscriptionLoading(false)
     } catch (error) {
       console.error('Error checking subscription:', error)
       // For admin accounts, grant access (fallback)
@@ -147,6 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const paymentCompleted = localStorage.getItem('paymentCompleted')
         setIsSubscribed(paymentCompleted === 'true')
       }
+      setSubscriptionLoading(false)
     }
   }
 
@@ -236,7 +243,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signInWithProvider,
       signOut,
       resetPassword,
-      isSubscribed
+      isSubscribed,
+      subscriptionLoading
     }}>
       {children}
     </AuthContext.Provider>
