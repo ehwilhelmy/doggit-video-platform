@@ -32,6 +32,9 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
+    // Set initial scroll state
+    setIsScrolled(window.scrollY > 50)
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
@@ -55,7 +58,7 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
         : variant === "auth"
         ? "bg-transparent"
         : "bg-white/95 shadow-sm backdrop-blur-sm dark:bg-gradient-to-b dark:from-black/80 dark:to-transparent"
-    }`}>
+    }`} style={variant === "landing" && !isScrolled ? { backgroundColor: 'transparent' } : {}}>
       <div className="container mx-auto flex items-center justify-between px-4 py-4 lg:px-8 max-w-[1440px]">
         {/* Left Section - Logo & Navigation */}
         <div className="flex items-center gap-8">
