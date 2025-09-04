@@ -246,7 +246,19 @@ END:VCALENDAR`
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950 pb-20 sm:pb-0">
+      {/* Sticky Mobile Subscribe Button */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/95 to-black/80 backdrop-blur-sm sm:hidden">
+        <Button 
+          size="lg"
+          className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white font-semibold py-4 text-lg shadow-2xl"
+          onClick={handleGetStarted}
+        >
+          <CheckCircle className="mr-2 h-5 w-5" />
+          Subscribe Now
+        </Button>
+      </div>
+      
       {/* Global Parent Header */}
       <GlobalHeader />
       
