@@ -116,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
       
-      // RLS policy has been updated with proper auth function permissions
+      // RLS policy now uses JWT tokens directly for authentication
       
       // Demo account - allow in both development and production for now
       if (currentUser.data.user?.email === 'demo@doggit.app') {
