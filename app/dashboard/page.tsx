@@ -14,6 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { VideoPreviewCard } from "@/components/video-preview-card"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VideoDuration } from "@/components/video-duration"
+import { SubscriptionManagement } from "@/components/subscription-management"
 import type { Profile, VideoProgress } from "@/types/database"
 import { 
   PlayCircle,
@@ -262,26 +263,6 @@ function DashboardContent() {
     router.push('/')
   }
 
-  const handleManageSubscription = async () => {
-    try {
-      const response = await fetch('/api/stripe/customer-portal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create customer portal session')
-      }
-
-      const { url } = await response.json()
-      window.location.href = url
-    } catch (error) {
-      console.error('Error opening customer portal:', error)
-      // Could show a toast notification here
-    }
-  }
 
   // Show loading state while auth is initializing
   if (loading || videosLoading) {
@@ -328,16 +309,7 @@ function DashboardContent() {
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
-                {/* Only show Manage Subscription for non-admin users */}
-                {user?.email !== 'erica@doggit.app' && (
-                  <DropdownMenuItem 
-                    onClick={handleManageSubscription}
-                    className="text-white hover:bg-zinc-700 focus:bg-zinc-700 cursor-pointer"
-                  >
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Manage Subscription
-                  </DropdownMenuItem>
-                )}
+                <SubscriptionManagement />
                 {isAdmin && (
                   <DropdownMenuItem 
                     onClick={() => window.location.href = '/admin/simple'}
