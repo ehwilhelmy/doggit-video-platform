@@ -116,23 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
       
-      // Temporary: Add known users back for immediate access while debugging RLS
-      const knownUsers = [
-        'herohomesolutionswa@gmail.com',
-        'carleyjsimpson@gmail.com', 
-        'josimpson55@gmail.com',
-        'collinbutkus95@gmail.com',
-        'cameron@doggit.app',
-        'cameron.simpson99@gmail.com'
-      ]
-      if (knownUsers.includes(currentUser.data.user?.email || '')) {
-        console.log('Auth: Known user detected, granting access')
-        setIsSubscribed(true)
-        setSubscriptionLoading(false)
-        return
-      }
-      
-      // RLS permissions and policies have been properly configured, but still debugging
+      // RLS policy has been updated with proper auth function permissions
       
       // Demo account - allow in both development and production for now
       if (currentUser.data.user?.email === 'demo@doggit.app') {
