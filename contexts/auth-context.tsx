@@ -116,7 +116,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
       
-      // RLS permissions and policies have been properly configured
+      // Temporary: Add known users back for immediate access while debugging RLS
+      const knownUsers = [
+        'herohomesolutionswa@gmail.com',
+        'carleyjsimpson@gmail.com', 
+        'josimpson55@gmail.com',
+        'collinbutkus95@gmail.com',
+        'cameron@doggit.app',
+        'cameron.simpson99@gmail.com'
+      ]
+      if (knownUsers.includes(currentUser.data.user?.email || '')) {
+        console.log('Auth: Known user detected, granting access')
+        setIsSubscribed(true)
+        setSubscriptionLoading(false)
+        return
+      }
+      
+      // RLS permissions and policies have been properly configured, but still debugging
       
       // Demo account - allow in both development and production for now
       if (currentUser.data.user?.email === 'demo@doggit.app') {
@@ -134,6 +150,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle()
       
       console.log('Auth: Subscription query result:', { data, error, userId })
+      console.log('Auth: Detailed error:', error)
+      console.log('Auth: Current user context:', currentUser.data.user)
       
       if (!error && data) {
         console.log('Auth: Active subscription found in database')
