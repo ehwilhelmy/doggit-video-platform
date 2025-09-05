@@ -27,12 +27,15 @@ export async function POST(request: NextRequest) {
     const body = await request.text()
     const signature = request.headers.get('stripe-signature')!
     
+    console.log('🎯 Webhook received:', new Date().toISOString())
+    
     let event: Stripe.Event
     
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+      console.log('✅ Webhook signature verified, event type:', event.type)
     } catch (err) {
-      console.error('Webhook signature verification failed:', err)
+      console.error('❌ Webhook signature verification failed:', err)
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -40,6 +43,8 @@ export async function POST(request: NextRequest) {
     }
     
     const supabase = await createClient()
+    
+    console.log('📝 Processing event:', event.type, 'Event ID:', event.id)
     
     switch (event.type) {
       case 'checkout.session.completed': {
@@ -93,8 +98,14 @@ export async function POST(request: NextRequest) {
         // Update user's subscription in database
         const userId = session.client_reference_id || session.metadata?.supabase_user_id
         
+        console.log('Webhook: Processing checkout.session.completed')
+        console.log('Webhook: User ID:', userId)
+        console.log('Webhook: Session ID:', session.id)
+        console.log('Webhook: Customer ID:', subscription.customer)
+        console.log('Webhook: Subscription Status:', subscription.status)
+        
         if (userId) {
-          await supabase
+          const { data, error } = await supabase
             .from('subscriptions')
             .upsert({
               user_id: userId,
@@ -113,6 +124,21 @@ export async function POST(request: NextRequest) {
             }, {
               onConflict: 'user_id'
             })
+          
+          if (error) {
+            console.error('Webhook: Error creating subscription:', error)
+            console.error('Webhook: Error details:', JSON.stringify(error, null, 2))
+          } else {
+            console.log('Webhook: Successfully created/updated subscription for user:', userId)
+            console.log('Webhook: Subscription data:', data)
+          }
+        } else {
+          console.error('Webhook: No userId found in session')
+          console.error('Webhook: Session data:', {
+            client_reference_id: session.client_reference_id,
+            metadata: session.metadata,
+            customer: session.customer
+          })
         }
         break
       }
