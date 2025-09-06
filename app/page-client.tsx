@@ -116,6 +116,7 @@ function LandingPageClient() {
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isLive, setIsLive] = useState(false)
   
   // Use Supabase auth state
   const isAuthenticated = !!supabaseUser && !loading
@@ -140,12 +141,20 @@ function LandingPageClient() {
   // Countdown timer effect
   useEffect(() => {
     const targetDate = new Date('2025-09-06T13:00:00-07:00') // September 6, 2025, 1:00 PM PST
+    const endDate = new Date('2025-09-06T16:00:00-07:00') // End at 4:00 PM PST (3 hour window)
 
     const updateCountdown = () => {
       const now = new Date().getTime()
       const distance = targetDate.getTime() - now
+      const endDistance = endDate.getTime() - now
 
-      if (distance > 0) {
+      // Check if we're currently live (between start and end time)
+      if (distance <= 0 && endDistance > 0) {
+        setIsLive(true)
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      } else if (distance > 0) {
+        // Still counting down
+        setIsLive(false)
         const days = Math.floor(distance / (1000 * 60 * 60 * 24))
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
@@ -153,6 +162,8 @@ function LandingPageClient() {
 
         setTimeLeft({ days, hours, minutes, seconds })
       } else {
+        // Event has ended
+        setIsLive(false)
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       }
     }
@@ -324,30 +335,46 @@ END:VCALENDAR`
             
             {/* Event Details - White Box */}
             <div className="max-w-2xl mx-auto space-y-6">
-              <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl">
-                {/* Compact Countdown Timer */}
-                <div className="flex items-center gap-1 sm:gap-3 w-full justify-center overflow-hidden">
-                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.days.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Days</div>
-                  </div>
-                  <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
-                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Hours</div>
-                  </div>
-                  <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
-                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Min</div>
-                  </div>
-                  <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
-                  <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                    <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Sec</div>
+              {isLive ? (
+                <div className="bg-queen-purple rounded-2xl p-4 sm:p-6 shadow-xl">
+                  <div className="text-center">
+                    <h3 className="text-2xl sm:text-4xl font-bold text-white mb-4 uppercase tracking-wide">Happening Now!</h3>
+                    <Button
+                      size="lg"
+                      className="w-full sm:w-auto bg-white text-queen-purple hover:bg-gray-100 font-bold text-lg px-8"
+                      onClick={() => window.open('https://www.facebook.com/doggit.app.7/live_videos/', '_blank')}
+                    >
+                      <PlayCircle className="mr-2 h-5 w-5" />
+                      Watch Live Stream on Facebook
+                    </Button>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl">
+                  {/* Compact Countdown Timer */}
+                  <div className="flex items-center gap-1 sm:gap-3 w-full justify-center overflow-hidden">
+                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.days.toString().padStart(2, '0')}</div>
+                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Days</div>
+                    </div>
+                    <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
+                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.hours.toString().padStart(2, '0')}</div>
+                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Hours</div>
+                    </div>
+                    <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
+                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.minutes.toString().padStart(2, '0')}</div>
+                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Min</div>
+                    </div>
+                    <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
+                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
+                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.seconds.toString().padStart(2, '0')}</div>
+                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Sec</div>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {/* Event Info */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-300">
@@ -364,31 +391,32 @@ END:VCALENDAR`
               </div>
             </div>
             
-            {/* CTA Button */}
-            <div className="flex justify-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    size="lg" 
-                    className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
-                  >
-                    <Calendar className="w-5 h-5 mr-2" />
-                    Save the Date
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuItem onClick={handleAddToCalendar} className="cursor-pointer">
-                    <img 
-                      src="https://www.google.com/favicon.ico" 
-                      alt="Google" 
-                      className="w-4 h-4 mr-2"
-                    />
-                    Google Calendar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Apple Calendar (.ics)
+            {/* CTA Button - Only show when not live */}
+            {!isLive && (
+              <div className="flex justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      size="lg" 
+                      className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
+                    >
+                      <Calendar className="w-5 h-5 mr-2" />
+                      Save the Date
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <DropdownMenuItem onClick={handleAddToCalendar} className="cursor-pointer">
+                      <img 
+                        src="https://www.google.com/favicon.ico" 
+                        alt="Google" 
+                        className="w-4 h-4 mr-2"
+                      />
+                      Google Calendar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Apple Calendar (.ics)
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
                     <img 
@@ -405,6 +433,7 @@ END:VCALENDAR`
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+            )}
           </div>
         </div>
         
