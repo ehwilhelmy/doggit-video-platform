@@ -30,18 +30,15 @@ export interface VideoUpload {
 class AdminService {
   private supabase = createClient()
 
-  // Check if current user is admin (DEMO MODE - any authenticated user is admin)
+  // Check if current user is admin
   async isAdmin(): Promise<boolean> {
     const { data: { user } } = await this.supabase.auth.getUser()
     
     if (!user) return false
     
-    // DEMO: Allow any authenticated user to be admin
-    return true
-    
-    // Production check:
-    // return user.email === 'admin@doggit.app' || 
-    //        user.user_metadata?.role === 'admin'
+    // Check if user is admin
+    return user.email === 'admin@doggit.app' || 
+           user.user_metadata?.role === 'admin'
   }
 
   // Get all videos

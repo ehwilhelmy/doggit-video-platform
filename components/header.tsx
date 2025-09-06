@@ -23,9 +23,10 @@ interface HeaderProps {
   isAuthenticated?: boolean
   user?: { firstName?: string; email?: string }
   onSignOut?: () => void
+  isAdmin?: boolean
 }
 
-export function Header({ variant = "landing", showAuth = true, showNavigation = true, isAuthenticated = false, user, onSignOut }: HeaderProps) {
+export function Header({ variant = "landing", showAuth = true, showNavigation = true, isAuthenticated = false, user, onSignOut, isAdmin = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
@@ -155,13 +156,15 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                     <Settings className="h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => window.location.href = '/admin/simple'} 
-                    className="gap-2"
-                  >
-                    <Shield className="h-4 w-4" />
-                    Admin
-                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = '/admin/simple'} 
+                      className="gap-2"
+                    >
+                      <Shield className="h-4 w-4" />
+                      Admin
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={onSignOut} className="gap-2">
                     <LogOut className="h-4 w-4" />
                     Sign out

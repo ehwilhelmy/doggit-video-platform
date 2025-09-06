@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
+import { adminService } from "@/lib/admin"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -114,6 +115,7 @@ function LandingPageClient() {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
   const [showSubscriptionPrompt, setShowSubscriptionPrompt] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [isAdmin, setIsAdmin] = useState(false)
   
   // Use Supabase auth state
   const isAuthenticated = !!supabaseUser && !loading
@@ -121,6 +123,19 @@ function LandingPageClient() {
     firstName: supabaseUser.user_metadata?.first_name || supabaseUser.user_metadata?.pup_name,
     email: supabaseUser.email 
   } : null
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (isAuthenticated) {
+        const adminStatus = await adminService.isAdmin()
+        setIsAdmin(adminStatus)
+      } else {
+        setIsAdmin(false)
+      }
+    }
+    checkAdminStatus()
+  }, [isAuthenticated])
 
   // Countdown timer effect
   useEffect(() => {
@@ -268,6 +283,7 @@ END:VCALENDAR`
         isAuthenticated={isAuthenticated}
         user={user}
         onSignOut={handleSignOut}
+        isAdmin={isAdmin}
       />
 
       {/* Hero Section - Live Stream Focus */}
