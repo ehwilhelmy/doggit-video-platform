@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useRef, useEffect, Suspense, useCallback } from "react"
+import { useState, useRef, useEffect, Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -93,7 +93,10 @@ function WatchPageContent() {
   const videoId = searchParams.get("v") || "puppy-basics"
   const from = searchParams.get("from") || "welcome"
   
-  const video = videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"]
+  const video = useMemo(() => 
+    videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"],
+    [videoId]
+  )
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(true)
@@ -102,14 +105,13 @@ function WatchPageContent() {
   const [volume, setVolume] = useState(1)
   const [activeTab, setActiveTab] = useState<'lessons' | 'notes'>('lessons')
   const [showShareModal, setShowShareModal] = useState(false)
-  const [notes, setNotes] = useState('')
-  const [isSavingNotes, setIsSavingNotes] = useState(false)
-  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const notesRef = useRef('')
+  const lastSavedRef = useRef<Date | null>(null)
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>()
   const { user } = useAuth()
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
 
   const handleBack = () => {
     router.push("/dashboard")
@@ -123,7 +125,10 @@ function WatchPageContent() {
       // First try localStorage (immediate)
       const storedNotes = localStorage.getItem(storageKey)
       if (storedNotes) {
-        setNotes(storedNotes)
+        notesRef.current = storedNotes
+        // Update the textarea if it exists
+        const textarea = document.querySelector('textarea[placeholder*="Take notes"]') as HTMLTextAreaElement
+        if (textarea) textarea.value = storedNotes
       }
       
       // Also try API (async)
@@ -132,8 +137,11 @@ function WatchPageContent() {
         .then(data => {
           if (data.notes && data.notes !== storedNotes) {
             // API has different notes, use those and update localStorage
-            setNotes(data.notes)
+            notesRef.current = data.notes
             localStorage.setItem(storageKey, data.notes)
+            // Update the textarea
+            const textarea = document.querySelector('textarea[placeholder*="Take notes"]') as HTMLTextAreaElement
+            if (textarea) textarea.value = data.notes
           }
         })
         .catch(err => {
@@ -142,16 +150,33 @@ function WatchPageContent() {
     }
   }, [user, videoId])
 
-  // Auto-save notes with debouncing
-  const saveNotes = useCallback(async (notesToSave: string) => {
+  // Manual save notes function
+  const saveNotes = async () => {
     if (!user) return
     
-    setIsSavingNotes(true)
+    // Get status elements directly from DOM
+    const statusEl = document.getElementById('save-status')
+    const buttonEl = document.getElementById('save-button')
+    
+    // Show saving status
+    if (statusEl) {
+      statusEl.innerHTML = `
+        <span class="text-queen-purple flex items-center gap-1">
+          <div class="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
+          Saving...
+        </span>
+      `
+    }
+    if (buttonEl) {
+      buttonEl.textContent = 'Saving...'
+      buttonEl.setAttribute('disabled', 'true')
+    }
+    
     const storageKey = `notes-${videoId}-${user.id}`
     
     try {
       // Always save to localStorage as backup
-      localStorage.setItem(storageKey, notesToSave)
+      localStorage.setItem(storageKey, notesRef.current)
       
       // Try to save to database
       const response = await fetch('/api/video-notes', {
@@ -160,41 +185,126 @@ function WatchPageContent() {
         body: JSON.stringify({
           videoId,
           userId: user.id,
-          notes: notesToSave
+          notes: notesRef.current
         })
       })
       
-      if (response.ok) {
-        setLastSaved(new Date())
-      } else {
-        // API failed but localStorage succeeded
-        setLastSaved(new Date())
+      lastSavedRef.current = new Date()
+      
+      // Show saved status
+      if (statusEl) {
+        statusEl.innerHTML = `
+          <span class="text-green-400 flex items-center gap-1">
+            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+            Saved!
+          </span>
+        `
       }
+      if (buttonEl) {
+        buttonEl.textContent = 'Save Notes'
+        buttonEl.removeAttribute('disabled')
+      }
+      
+      // Reset to idle after 2 seconds
+      setTimeout(() => {
+        if (statusEl) statusEl.innerHTML = ''
+      }, 2000)
+      
     } catch (error) {
-      // Still saved to localStorage, so show success
-      setLastSaved(new Date())
-    } finally {
-      setIsSavingNotes(false)
+      // Still saved to localStorage
+      lastSavedRef.current = new Date()
+      
+      // Show saved status (localStorage backup)
+      if (statusEl) {
+        statusEl.innerHTML = `
+          <span class="text-green-400 flex items-center gap-1">
+            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+            Saved!
+          </span>
+        `
+      }
+      if (buttonEl) {
+        buttonEl.textContent = 'Save Notes'
+        buttonEl.removeAttribute('disabled')
+      }
+      
+      setTimeout(() => {
+        if (statusEl) statusEl.innerHTML = ''
+      }, 2000)
     }
-  }, [user, videoId])
+  }
 
-  // Debounced save function
-  const debouncedSave = useCallback((notesToSave: string) => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current)
+  // Auto-save function (no state changes)
+  const autoSaveNotes = async () => {
+    if (!user || !notesRef.current) return
+    
+    const statusEl = document.getElementById('save-status')
+    const storageKey = `notes-${videoId}-${user.id}`
+    
+    try {
+      // Always save to localStorage immediately
+      localStorage.setItem(storageKey, notesRef.current)
+      
+      // Try to save to database in background
+      await fetch('/api/video-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          videoId,
+          userId: user.id,
+          notes: notesRef.current
+        })
+      })
+      
+      lastSavedRef.current = new Date()
+      
+      // Show subtle auto-save confirmation
+      if (statusEl) {
+        statusEl.innerHTML = `
+          <span class="text-gray-500 flex items-center gap-1">
+            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+            Auto-saved
+          </span>
+        `
+        
+        // Clear after 3 seconds
+        setTimeout(() => {
+          if (statusEl) statusEl.innerHTML = ''
+        }, 3000)
+      }
+      
+    } catch (error) {
+      // Still show saved (localStorage backup)
+      lastSavedRef.current = new Date()
+      
+      if (statusEl) {
+        statusEl.innerHTML = `
+          <span class="text-gray-500 flex items-center gap-1">
+            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+            Auto-saved
+          </span>
+        `
+        
+        setTimeout(() => {
+          if (statusEl) statusEl.innerHTML = ''
+        }, 3000)
+      }
+    }
+  }
+
+  // Handle notes change with auto-save (no state change = no re-render)
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    notesRef.current = e.target.value
+    
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
     }
     
-    saveTimeoutRef.current = setTimeout(() => {
-      // Save even if empty to clear notes
-      saveNotes(notesToSave)
-    }, 1000) // Save 1 second after user stops typing
-  }, [saveNotes])
-
-  // Handle notes change with auto-save
-  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newNotes = e.target.value
-    setNotes(newNotes)
-    debouncedSave(newNotes)
+    // Set new timeout for auto-save (2 seconds after stopping typing)
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      autoSaveNotes()
+    }, 2000)
   }
 
   const togglePlay = () => {
@@ -308,8 +418,8 @@ function WatchPageContent() {
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current)
       }
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current)
       }
     }
   }, [])
@@ -362,6 +472,7 @@ function WatchPageContent() {
                 />
               ) : (
                 <video
+                  key={`video-${videoId}`}
                   ref={videoRef}
                   className="w-full h-full object-contain"
                   src={video.videoUrl}
@@ -542,25 +653,24 @@ function WatchPageContent() {
             <div className="p-4 lg:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-white font-medium">My Notes</h4>
-                <div className="text-xs text-gray-400">
-                  {isSavingNotes ? (
-                    <span className="text-queen-purple flex items-center gap-1">
-                      <div className="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
-                      Saving...
-                    </span>
-                  ) : lastSaved ? (
-                    <span className="text-green-400 flex items-center gap-1">
-                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  ) : notes.trim() ? (
-                    <span className="text-yellow-400">Changes not saved</span>
-                  ) : null}
+                <div className="flex items-center gap-2">
+                  <div id="save-status" className="text-xs text-gray-400">
+                    {/* Status updates handled via DOM manipulation */}
+                  </div>
+                  <Button
+                    id="save-button"
+                    onClick={saveNotes}
+                    disabled={!user}
+                    size="sm"
+                    className="bg-queen-purple hover:bg-queen-purple/90 text-white px-3 py-1 text-xs"
+                  >
+                    Save Notes
+                  </Button>
                 </div>
               </div>
               <textarea
-                placeholder="Take notes while you watch... (auto-saves as you type)"
-                value={notes}
+                placeholder="Take notes while you watch..."
+                defaultValue={notesRef.current}
                 onChange={handleNotesChange}
                 className="w-full h-64 lg:h-96 bg-zinc-800 border border-zinc-700 rounded-lg p-3 lg:p-4 text-sm lg:text-base text-white placeholder-gray-400 resize-none focus:outline-none focus:border-queen-purple"
               />
