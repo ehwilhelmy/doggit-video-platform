@@ -6,7 +6,6 @@ import { useState, useRef, useEffect, Suspense, useCallback, useMemo } from "rea
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Logo } from "@/components/logo"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VimeoPlayer } from "@/components/vimeo-player"
 import { ShareModal } from "@/components/share-modal"
@@ -114,8 +113,14 @@ function WatchPageContent() {
   const controlsTimeoutRef = useRef<NodeJS.Timeout>()
 
   const handleBack = () => {
-    router.push("/dashboard")
+    // Go back to previous page or fallback to dashboard
+    if (window.history.length > 1) {
+      router.back()
+    } else {
+      router.push("/dashboard")
+    }
   }
+
 
   // Load notes when component mounts
   useEffect(() => {
@@ -428,14 +433,15 @@ function WatchPageContent() {
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="flex items-center justify-between p-4 lg:p-6 bg-black/90 backdrop-blur-sm relative z-50">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <button
             onClick={handleBack}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="flex items-center gap-2 p-2 hover:bg-white/10 rounded-lg transition-colors"
+            title="Go back to previous page"
           >
-            <ChevronLeft className="h-6 w-6 text-white" />
+            <ChevronLeft className="h-5 w-5 text-white" />
+            <span className="text-white font-medium">Dashboard</span>
           </button>
-          <Logo size="sm" variant="white" />
         </div>
         
         <div className="flex items-center gap-2">
