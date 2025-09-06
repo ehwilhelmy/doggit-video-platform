@@ -105,25 +105,51 @@ export async function POST(request: NextRequest) {
         console.log('Webhook: Subscription Status:', subscription.status)
         
         if (userId) {
-          const { data, error } = await supabase
+          // First check if subscription already exists
+          const { data: existingSub } = await supabase
             .from('subscriptions')
-            .upsert({
-              user_id: userId,
-              stripe_subscription_id: subscription.id,
-              stripe_customer_id: subscription.customer as string,
-              stripe_price_id: subscription.items.data[0].price.id,
-              status: subscription.status as any,
-              billing_interval: subscription.items.data[0].price.recurring?.interval as any,
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-              cancel_at_period_end: subscription.cancel_at_period_end,
-              canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-              trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-              trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-              is_promotional: isPromotional || false
-            }, {
-              onConflict: 'user_id'
-            })
+            .select('*')
+            .eq('user_id', userId)
+            .single()
+
+          const subscriptionData = {
+            user_id: userId,
+            stripe_subscription_id: subscription.id,
+            stripe_customer_id: subscription.customer as string,
+            stripe_price_id: subscription.items.data[0].price.id,
+            status: subscription.status as any,
+            billing_interval: subscription.items.data[0].price.recurring?.interval as any,
+            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+            trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+            trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+            is_promotional: isPromotional || false
+          }
+
+          let data, error
+          
+          if (existingSub) {
+            // Update existing subscription with Stripe data
+            console.log('Webhook: Updating existing subscription with Stripe data')
+            const result = await supabase
+              .from('subscriptions')
+              .update(subscriptionData)
+              .eq('user_id', userId)
+              .select()
+            data = result.data
+            error = result.error
+          } else {
+            // Create new subscription
+            console.log('Webhook: Creating new subscription')
+            const result = await supabase
+              .from('subscriptions')
+              .insert(subscriptionData)
+              .select()
+            data = result.data
+            error = result.error
+          }
           
           if (error) {
             console.error('Webhook: Error creating subscription:', error)

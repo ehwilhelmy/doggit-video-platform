@@ -8,6 +8,8 @@ export async function GET() {
     const supabase = await createClient()
 
     // Find users with profiles but no subscriptions (last 24 hours)
+    // Exclude recent users (less than 1 hour old) to give Stripe webhooks time to process
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
       .select(`
@@ -15,6 +17,7 @@ export async function GET() {
         created_at
       `)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .lt('created_at', oneHourAgo)
 
     if (profilesError) {
       console.error('Error fetching profiles:', profilesError)
