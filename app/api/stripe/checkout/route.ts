@@ -31,31 +31,43 @@ export async function POST(request: NextRequest) {
     
     const stripe = getStripe()
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    console.log('Auth result:', { user: user ? 'found' : 'null', authError })
+    
+    if (!user) {
+      console.error('No authenticated user found:', authError)
+      return NextResponse.json(
+        { error: 'Authentication required. Please log in and try again.' },
+        { status: 401 }
+      )
+    }
+    
+    console.log('Authenticated user:', { id: user.id, email: user.email })
     
     // Create or retrieve Stripe customer
     let customerId: string | undefined
     
-    if (user) {
-      // Check if user already has a Stripe customer ID in subscriptions
-      const { data: subscription } = await supabase
-        .from('subscriptions')
-        .select('stripe_customer_id')
-        .eq('user_id', user.id)
-        .single()
-      
-      if (subscription?.stripe_customer_id) {
-        customerId = subscription.stripe_customer_id
-      } else {
-        // Create new Stripe customer
-        const customer = await stripe.customers.create({
-          email: user.email,
-          metadata: {
-            supabase_user_id: user.id
-          }
-        })
-        customerId = customer.id
-      }
+    // Check if user already has a Stripe customer ID in subscriptions
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('stripe_customer_id')
+      .eq('user_id', user.id)
+      .single()
+    
+    if (subscription?.stripe_customer_id) {
+      customerId = subscription.stripe_customer_id
+      console.log('Found existing Stripe customer:', customerId)
+    } else {
+      // Create new Stripe customer
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          supabase_user_id: user.id
+        }
+      })
+      customerId = customer.id
+      console.log('Created new Stripe customer:', customerId)
     }
     
     // Get or create product
@@ -124,16 +136,16 @@ export async function POST(request: NextRequest) {
       success_url: successUrl || `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${process.env.NEXT_PUBLIC_APP_URL}/membership`,
       customer: customerId,
-      client_reference_id: user?.id,
+      client_reference_id: user.id,
       metadata: {
-        supabase_user_id: user?.id || '',
+        supabase_user_id: user.id,
         schedule_type: 'promotional', // Mark this as promotional pricing
         first_price: price1Dollar.id,
         recurring_price: price10Dollar.id
       },
       subscription_data: {
         metadata: {
-          supabase_user_id: user?.id || '',
+          supabase_user_id: user.id,
           promotional: 'true',
           first_price: price1Dollar.id,
           recurring_price: price10Dollar.id
