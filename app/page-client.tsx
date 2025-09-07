@@ -272,19 +272,7 @@ END:VCALENDAR`
   }
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0 bg-black">
-      {/* Sticky Mobile Subscribe Button */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/95 to-black/80 backdrop-blur-sm sm:hidden">
-        <Button 
-          size="lg"
-          className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white font-semibold py-4 text-lg shadow-2xl"
-          onClick={handleGetStarted}
-        >
-          <CheckCircle className="mr-2 h-5 w-5" />
-          Subscribe Now
-        </Button>
-      </div>
-      
+    <div className="min-h-screen bg-black">
       {/* Global Parent Header */}
       <GlobalHeader />
       
@@ -312,128 +300,40 @@ END:VCALENDAR`
         {/* Main Content - Centered */}
         <div className="relative z-10 w-full text-center px-4 lg:px-8 py-16">
           <div className="max-w-5xl mx-auto space-y-6 pt-12">
-            {/* Live Indicator 
-            <div className="inline-flex items-center gap-2 text-queen-purple px-6 py-3">
-              <div className="w-2 h-2 bg-queen-purple rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold tracking-wider">Subscribe Now</span>
-            </div>*/}
-            
             {/* Main Title */}
             <div className="space-y-2">
               <h1 className="text-4xl lg:text-6xl font-bold text-white leading-none tracking-tight">
                 Expert Dog Training
               </h1>
               <h2 className="text-2xl lg:text-4xl font-semibold text-queen-purple">
-                Live Stream Event
+                Transform Your Dog Today
               </h2>
             </div>
             
             {/* Subtitle */}
             <p className="text-lg lg:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Join renowned trainers <span className="text-white font-semibold">Jayme Nolan</span> and <span className="text-white font-semibold">Jo Simpson</span> for an exclusive live stream.
+              Master proven techniques from professional trainers <span className="text-white font-semibold">Jayme Nolan</span> and <span className="text-white font-semibold">Jo Simpson</span>. Build the perfect relationship with your dog through expert guidance and step-by-step training programs.
             </p>
             
-            {/* Event Details - White Box */}
-            <div className="max-w-2xl mx-auto space-y-6">
-              {isLive ? (
-                <div className="bg-queen-purple rounded-2xl p-4 sm:p-6 shadow-xl">
-                  <div className="text-center">
-                    <h3 className="text-2xl sm:text-4xl font-bold text-white mb-4 uppercase tracking-wide">Happening Now!</h3>
-                    <Button
-                      size="lg"
-                      className="w-full sm:w-auto bg-white text-queen-purple hover:bg-gray-100 font-bold text-lg px-8"
-                      onClick={() => window.open('https://www.facebook.com/doggit.app.7/live_videos/', '_blank')}
-                    >
-                      <PlayCircle className="mr-2 h-5 w-5" />
-                      Watch Live Stream on Facebook
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-xl">
-                  {/* Compact Countdown Timer */}
-                  <div className="flex items-center gap-1 sm:gap-3 w-full justify-center overflow-hidden">
-                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.days.toString().padStart(2, '0')}</div>
-                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Days</div>
-                    </div>
-                    <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
-                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Hours</div>
-                    </div>
-                    <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
-                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Min</div>
-                    </div>
-                    <div className="text-queen-purple text-xl sm:text-3xl font-bold">:</div>
-                    <div className="px-1 sm:px-4 py-2 sm:py-3 text-center min-w-0 flex-1">
-                      <div className="text-3xl sm:text-5xl font-bold text-queen-purple leading-none">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                      <div className="text-xs text-gray-800 uppercase tracking-wide font-medium mt-1">Sec</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Event Info */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-300">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-queen-purple" />
-                  <span className="text-sm font-medium">September 6, 2025</span>
-                </div>
-                <div className="hidden sm:block w-1 h-1 bg-gray-600 rounded-full"></div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-queen-purple" />
-                  <span className="text-sm font-medium">Live at 1:00 PM & 3:00 PM PST</span>
-                </div>
-               
-              </div>
+            {/* Call to Action */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button 
+                size="lg" 
+                className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
+                onClick={() => window.location.href = '/membership'}
+              >
+                Subscribe Today
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-queen-purple text-queen-purple hover:bg-queen-purple hover:text-white px-8 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
+                onClick={() => window.location.href = '/watch'}
+              >
+                <PlayCircle className="w-5 h-5 mr-2" />
+                Watch Free Teaser
+              </Button>
             </div>
-            
-            {/* CTA Button - Only show when not live */}
-            {!isLive && (
-              <div className="flex justify-center">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      size="lg" 
-                      className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
-                    >
-                      <Calendar className="w-5 h-5 mr-2" />
-                      Save the Date
-                      <ChevronDown className="w-4 h-4 ml-2" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuItem onClick={handleAddToCalendar} className="cursor-pointer">
-                      <img 
-                        src="https://www.google.com/favicon.ico" 
-                        alt="Google" 
-                        className="w-4 h-4 mr-2"
-                      />
-                      Google Calendar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Apple Calendar (.ics)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
-                    <img 
-                      src="https://www.microsoft.com/favicon.ico" 
-                      alt="Outlook" 
-                      className="w-4 h-4 mr-2"
-                    />
-                    Outlook Calendar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={downloadICSFile} className="cursor-pointer">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download .ics file
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            )}
           </div>
         </div>
         
@@ -546,27 +446,6 @@ END:VCALENDAR`
                 
               </div>
             </div>
-          </div>
-          
-          {/* Watch Teaser and Subscribe Buttons */}
-          <div className="text-center mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="bg-white/90 text-gray-900 border-white hover:bg-white hover:text-gray-900 transition-all font-semibold px-8 py-3"
-              onClick={() => handleVideoPreview("puppy-basics")}
-            >
-              <PlayCircle className="mr-2 h-5 w-5" />
-              Watch Teaser
-            </Button>
-            <Button 
-              size="lg"
-              className="bg-queen-purple hover:bg-queen-purple/90 text-white transition-all font-semibold px-8 py-3"
-              onClick={handleGetStarted}
-            >
-              <CheckCircle className="mr-2 h-5 w-5" />
-              Subscribe Now
-            </Button>
           </div>
         </div>
       </section>
