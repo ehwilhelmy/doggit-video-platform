@@ -17,6 +17,9 @@ export async function POST(request: NextRequest) {
     // Add debugging - webhook-testing branch
     console.log('Stripe checkout API called - webhook-testing branch')
     
+    // Debug headers and cookies
+    console.log('Request headers:', Object.fromEntries(request.headers.entries()))
+    
     if (!process.env.STRIPE_SECRET_KEY) {
       console.error('STRIPE_SECRET_KEY not found')
       return NextResponse.json(
@@ -31,9 +34,14 @@ export async function POST(request: NextRequest) {
     
     const stripe = getStripe()
     const supabase = await createClient()
+    
+    console.log('Creating supabase client...')
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
-    console.log('Auth result:', { user: user ? 'found' : 'null', authError })
+    console.log('Auth result:', { 
+      user: user ? { id: user.id, email: user.email } : 'null', 
+      authError: authError ? authError.message : 'none' 
+    })
     
     if (!user) {
       console.error('No authenticated user found:', authError)
