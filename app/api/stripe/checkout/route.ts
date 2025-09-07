@@ -14,8 +14,8 @@ function getStripe() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Add debugging
-    console.log('Stripe checkout API called')
+    // Add debugging - webhook-testing branch
+    console.log('Stripe checkout API called - webhook-testing branch')
     
     if (!process.env.STRIPE_SECRET_KEY) {
       console.error('STRIPE_SECRET_KEY not found')
