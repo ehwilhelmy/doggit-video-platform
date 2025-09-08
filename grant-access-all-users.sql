@@ -19,12 +19,10 @@ FROM auth.users u
 LEFT JOIN public.subscriptions s ON u.id = s.user_id
 WHERE u.email IN (
   'thor@doggit.app',
-  'demo@doggit.app',
   'erica@doggit.app',
   'herohomesolutionswa@gmail.com',
   'carleyjsimpson@gmail.com',
   'josimpson55@gmail.com',
-  'collinbutkus95@gmail.com',
   'cameron@doggit.app',
   'cameron.simpson99@gmail.com'
 )
