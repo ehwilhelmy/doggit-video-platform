@@ -2,22 +2,35 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, Suspense } from "react"
+import { useState, Suspense, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { X, CheckCircle, CreditCard } from "lucide-react"
+import { X, CheckCircle, CreditCard, User, Lock } from "lucide-react"
 import Image from "next/image"
+import { useAuth } from "@/contexts/auth-context"
+import { SignInModal } from "@/components/signin-modal"
 
 function MembershipPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { user, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
+  const [showSignIn, setShowSignIn] = useState(false)
   
   const fromModal = searchParams.get("from") === "modal"
   const videoId = searchParams.get("v")
 
-  const handleSubscribe = async () => {
+  // Check if user just logged in and redirect to checkout
+  useEffect(() => {
+    const checkoutPending = localStorage.getItem('checkout_pending')
+    if (user && checkoutPending === 'true') {
+      localStorage.removeItem('checkout_pending')
+      handleStripeCheckout()
+    }
+  }, [user])
+
+  const handleStripeCheckout = async () => {
     setIsLoading(true)
     try {
       // Call our Stripe checkout API
@@ -27,7 +40,7 @@ function MembershipPageContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_default', // Monthly subscription price
+          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_default',
           successUrl: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${window.location.origin}/membership`
         })
@@ -39,16 +52,26 @@ function MembershipPageContent() {
         // Redirect to Stripe Checkout
         window.location.href = data.url
       } else {
-        // Fallback to old payment flow if Stripe isn't set up
-        router.push(`/payment?from=${fromModal ? 'modal' : 'membership'}&video=${videoId || 'puppy-basics'}`)
+        console.error('No Stripe URL returned:', data)
+        // Show error message instead of falling back
+        alert('Payment system is currently unavailable. Please try again later.')
       }
     } catch (error) {
       console.error('Error creating checkout session:', error)
-      console.log('Falling back to old payment flow due to error:', error)
-      // Fallback to old payment flow
-      router.push(`/payment?from=${fromModal ? 'modal' : 'membership'}&video=${videoId || 'puppy-basics'}`)
+      alert('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleSubscribe = async () => {
+    if (!user) {
+      // Mark that checkout is pending and show sign in
+      localStorage.setItem('checkout_pending', 'true')
+      setShowSignIn(true)
+    } else {
+      // User is logged in, proceed to Stripe
+      handleStripeCheckout()
     }
   }
 
@@ -56,15 +79,51 @@ function MembershipPageContent() {
     router.back()
   }
 
+  // Progress steps based on auth status
+  const getProgressWidth = () => {
+    if (!user) return '33%' // Step 1: Membership
+    if (user && !isLoading) return '66%' // Step 2: Account created
+    return '100%' // Step 3: Payment processing
+  }
+
+  const getProgressSteps = () => {
+    return (
+      <div className="flex justify-between text-sm">
+        <div className={`flex flex-col items-center ${!user ? 'text-queen-purple' : 'text-gray-500'}`}>
+          <div className="mb-2">1</div>
+          <span>Membership</span>
+        </div>
+        <div className={`flex flex-col items-center ${user && !isLoading ? 'text-queen-purple' : 'text-gray-500'}`}>
+          <div className="mb-2">2</div>
+          <span>Account</span>
+        </div>
+        <div className={`flex flex-col items-center ${isLoading ? 'text-queen-purple' : 'text-gray-500'}`}>
+          <div className="mb-2">3</div>
+          <span>Payment</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black">
       {/* Progress Bar */}
-      <div className="w-full bg-zinc-900 h-2">
-        <div className="h-full bg-gradient-to-r from-queen-purple to-jade-purple" style={{ width: '33%' }}></div>
+      <div className="w-full bg-zinc-900 h-2 relative">
+        <div 
+          className="h-full bg-gradient-to-r from-queen-purple to-jade-purple transition-all duration-500" 
+          style={{ width: getProgressWidth() }}
+        />
+      </div>
+
+      {/* Progress Steps */}
+      <div className="bg-zinc-900 border-b border-zinc-800 py-4">
+        <div className="container mx-auto px-6">
+          {getProgressSteps()}
+        </div>
       </div>
 
       {/* Header */}
-      <header className="bg-zinc-900 border-b border-zinc-800">
+      <header className="bg-zinc-900">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Logo size="sm" variant="white" />
@@ -138,11 +197,33 @@ function MembershipPageContent() {
               {/* CTA Button */}
               <Button
                 onClick={handleSubscribe}
-                disabled={isLoading}
+                disabled={isLoading || authLoading}
                 className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white py-4 text-xl font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Redirecting to checkout...' : 'Continue to Checkout'}
+                {authLoading ? (
+                  'Loading...'
+                ) : isLoading ? (
+                  'Redirecting to checkout...'
+                ) : !user ? (
+                  <>
+                    <User className="mr-2 h-5 w-5" />
+                    Create Account & Subscribe
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-5 w-5" />
+                    Continue to Payment
+                  </>
+                )}
               </Button>
+
+              {/* Security Note */}
+              {!user && (
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Lock className="h-4 w-4" />
+                  <span>Secure checkout powered by Stripe</span>
+                </div>
+              )}
             </div>
 
             {/* Right Column - What's Included */}
@@ -184,6 +265,18 @@ function MembershipPageContent() {
           </div>
         </div>
       </div>
+
+      {/* Sign In Modal */}
+      {showSignIn && (
+        <SignInModal 
+          isOpen={showSignIn}
+          onClose={() => {
+            setShowSignIn(false)
+            localStorage.removeItem('checkout_pending')
+          }}
+          redirectUrl="/membership"
+        />
+      )}
     </div>
   )
 }
