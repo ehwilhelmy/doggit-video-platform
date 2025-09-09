@@ -267,16 +267,15 @@ function MembershipPageContent() {
       </div>
 
       {/* Sign In Modal */}
-      {showSignIn && (
-        <SignInModal 
-          isOpen={showSignIn}
-          onClose={() => {
-            setShowSignIn(false)
+      <SignInModal 
+        open={showSignIn}
+        onOpenChange={(open) => {
+          setShowSignIn(open)
+          if (!open) {
             localStorage.removeItem('checkout_pending')
-          }}
-          redirectUrl="/membership"
-        />
-      )}
+          }
+        }}
+      />
     </div>
   )
 }
