@@ -9,14 +9,14 @@ import { Logo } from "@/components/logo"
 import { X, CheckCircle, CreditCard, User, Lock } from "lucide-react"
 import Image from "next/image"
 import { useAuth } from "@/contexts/auth-context"
-import { SignInModal } from "@/components/signin-modal"
+import { AccountCreationStep } from "@/components/account-creation-step"
 
 function MembershipPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
-  const [showSignIn, setShowSignIn] = useState(false)
+  const [showAccountCreation, setShowAccountCreation] = useState(false)
   
   const fromModal = searchParams.get("from") === "modal"
   const videoId = searchParams.get("v")
@@ -66,9 +66,8 @@ function MembershipPageContent() {
 
   const handleSubscribe = async () => {
     if (!user) {
-      // Mark that checkout is pending and show sign in
-      localStorage.setItem('checkout_pending', 'true')
-      setShowSignIn(true)
+      // Show account creation step
+      setShowAccountCreation(true)
     } else {
       // User is logged in, proceed to Stripe
       handleStripeCheckout()
@@ -81,8 +80,8 @@ function MembershipPageContent() {
 
   // Progress steps based on auth status
   const getProgressWidth = () => {
-    if (!user) return '33%' // Step 1: Membership
-    if (user && !isLoading) return '66%' // Step 2: Account created
+    if (!user && !showAccountCreation) return '33%' // Step 1: Membership
+    if (showAccountCreation || (user && !isLoading)) return '66%' // Step 2: Account
     return '100%' // Step 3: Payment processing
   }
 
@@ -93,7 +92,7 @@ function MembershipPageContent() {
           <div className="mb-2">1</div>
           <span>Membership</span>
         </div>
-        <div className={`flex flex-col items-center ${user && !isLoading ? 'text-queen-purple' : 'text-gray-500'}`}>
+        <div className={`flex flex-col items-center ${showAccountCreation || (user && !isLoading) ? 'text-queen-purple' : 'text-gray-500'}`}>
           <div className="mb-2">2</div>
           <span>Account</span>
         </div>
@@ -162,7 +161,18 @@ function MembershipPageContent() {
             </p>
           </div>
 
-          {/* Two Column Layout for Desktop */}
+          {/* Show account creation or pricing based on state */}
+          {showAccountCreation && !user ? (
+            <div className="max-w-md mx-auto">
+              <button
+                onClick={() => setShowAccountCreation(false)}
+                className="text-gray-400 hover:text-white mb-4 text-sm flex items-center gap-2"
+              >
+                ← Back to pricing
+              </button>
+              <AccountCreationStep onSuccess={handleStripeCheckout} />
+            </div>
+          ) : (
           <div className="grid lg:grid-cols-2 gap-16 mb-16 items-start">
             {/* Left Column - Pricing */}
             <div className="space-y-6">
@@ -263,19 +273,9 @@ function MembershipPageContent() {
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
-
-      {/* Sign In Modal */}
-      <SignInModal 
-        open={showSignIn}
-        onOpenChange={(open) => {
-          setShowSignIn(open)
-          if (!open) {
-            localStorage.removeItem('checkout_pending')
-          }
-        }}
-      />
     </div>
   )
 }
