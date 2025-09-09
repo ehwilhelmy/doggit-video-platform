@@ -13,11 +13,15 @@ function getStripe() {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('🚀 Webhook endpoint called at:', new Date().toISOString())
+  console.log('Headers:', Object.fromEntries(request.headers.entries()))
+  
   try {
     const stripe = getStripe()
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
     
     if (!webhookSecret) {
+      console.error('❌ STRIPE_WEBHOOK_SECRET not configured')
       return NextResponse.json(
         { error: 'Webhook secret not configured' },
         { status: 500 }
@@ -152,11 +156,18 @@ export async function POST(request: NextRequest) {
           }
           
           if (error) {
-            console.error('Webhook: Error creating subscription:', error)
-            console.error('Webhook: Error details:', JSON.stringify(error, null, 2))
+            console.error('❌ Webhook: Error creating subscription:', error)
+            console.error('❌ Webhook: Error details:', JSON.stringify(error, null, 2))
+            console.error('❌ Webhook: Attempted data:', JSON.stringify(subscriptionData, null, 2))
+            // Return error response to Stripe so it retries
+            return NextResponse.json(
+              { error: 'Failed to save subscription', details: error },
+              { status: 500 }
+            )
           } else {
-            console.log('Webhook: Successfully created/updated subscription for user:', userId)
-            console.log('Webhook: Subscription data:', data)
+            console.log('✅ Webhook: Successfully created/updated subscription for user:', userId)
+            console.log('✅ Webhook: Subscription data:', data)
+            console.log('✅ Webhook: Stripe customer ID saved:', subscriptionData.stripe_customer_id)
           }
         } else {
           console.error('Webhook: No userId found in session')
