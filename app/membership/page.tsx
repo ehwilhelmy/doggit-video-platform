@@ -6,10 +6,11 @@ import { useState, Suspense, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { X, CheckCircle, CreditCard, User, Lock } from "lucide-react"
+import { CheckCircle, CreditCard, User, Lock } from "lucide-react"
 import Image from "next/image"
 import { useAuth } from "@/contexts/auth-context"
 import { AccountCreationStep } from "@/components/account-creation-step"
+import { CheckoutHeader } from "@/components/checkout-header"
 
 function MembershipPageContent() {
   const router = useRouter()
@@ -74,92 +75,36 @@ function MembershipPageContent() {
     }
   }
 
-  const handleBack = () => {
-    router.back()
-  }
-
-  // Progress steps based on auth status
-  const getProgressWidth = () => {
-    if (!user && !showAccountCreation) return '33%' // Step 1: Membership
-    if (showAccountCreation || (user && !isLoading)) return '66%' // Step 2: Account
-    return '100%' // Step 3: Payment processing
-  }
-
-  const getProgressSteps = () => {
-    return (
-      <div className="flex justify-between text-sm">
-        <div className={`flex flex-col items-center ${!user ? 'text-queen-purple' : 'text-gray-500'}`}>
-          <div className="mb-2">1</div>
-          <span>Membership</span>
-        </div>
-        <div className={`flex flex-col items-center ${showAccountCreation || (user && !isLoading) ? 'text-queen-purple' : 'text-gray-500'}`}>
-          <div className="mb-2">2</div>
-          <span>Account</span>
-        </div>
-        <div className={`flex flex-col items-center ${isLoading ? 'text-queen-purple' : 'text-gray-500'}`}>
-          <div className="mb-2">3</div>
-          <span>Payment</span>
-        </div>
-      </div>
-    )
+  // Determine current step
+  const getCurrentStep = () => {
+    if (isLoading) return 'payment'
+    if (showAccountCreation || user) return 'account'
+    return 'membership'
   }
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Progress Bar */}
-      <div className="w-full bg-zinc-900 h-2 relative">
-        <div 
-          className="h-full bg-gradient-to-r from-queen-purple to-jade-purple transition-all duration-500" 
-          style={{ width: getProgressWidth() }}
-        />
-      </div>
-
-      {/* Progress Steps */}
-      <div className="bg-zinc-900 border-b border-zinc-800 py-4">
-        <div className="container mx-auto px-6">
-          {getProgressSteps()}
-        </div>
-      </div>
-
-      {/* Header */}
-      <header className="bg-zinc-900">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Logo size="sm" variant="white" />
-            <button
-              onClick={handleBack}
-              className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
-            >
-              <X className="h-5 w-5 text-gray-400 hover:text-white" />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Clean Header with Stepper */}
+      <CheckoutHeader 
+        currentStep={getCurrentStep()} 
+        onClose={() => router.push('/')}
+      />
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-6 py-16">
         <div className="max-w-4xl mx-auto">
           
-          {/* Header */}
-          <div className="text-center mb-12">
-            {/* DOGGIT Logo Mark */}
-            <div className="w-20 h-20 mx-auto mb-6">
-              <Image
-                src="/doggit-logo-mark.svg"
-                alt="DOGGIT Logo"
-                width={80}
-                height={73}
-                className="brightness-0 invert opacity-90"
-              />
+          {/* Only show header when not in account creation */}
+          {!showAccountCreation && (
+            <div className="text-center mb-12">
+              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+                Choose Your Membership
+              </h1>
+              <p className="text-lg text-gray-400">
+                Expert dog training from world-class instructors
+              </p>
             </div>
-            
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-              UNLOCK EXPERT DOG TRAINING
-            </h1>
-            <p className="text-xl text-gray-300">
-              Join thousands of successful dog owners and start your journey today
-            </p>
-          </div>
+          )}
 
           {/* Show account creation or pricing based on state */}
           {showAccountCreation && !user ? (
@@ -176,31 +121,34 @@ function MembershipPageContent() {
           <div className="grid lg:grid-cols-2 gap-16 mb-16 items-start">
             {/* Left Column - Pricing */}
             <div className="space-y-6">
-              {/* Special Offer */}
-              <div className="bg-gradient-to-br from-queen-purple to-jade-purple rounded-xl p-8 shadow-xl border border-purple-500/20">
-                <div className="text-white font-semibold text-sm mb-2 tracking-wider">SPECIAL OFFER</div>
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-5xl font-bold text-white">$1</span>
-                  <span className="text-purple-100 text-lg">first month</span>
+              {/* Pricing Card */}
+              <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800 shadow-xl">
+                <div className="text-center mb-6">
+                  <div className="inline-block bg-gradient-to-r from-queen-purple to-jade-purple text-white text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                    SPECIAL OFFER - SAVE 90%
+                  </div>
+                  <div className="flex items-baseline justify-center gap-2 mb-2">
+                    <span className="text-5xl font-bold text-white">$1</span>
+                    <span className="text-gray-400 text-lg">first month</span>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Then $10/month • Cancel anytime
+                  </div>
                 </div>
-                <div className="text-sm text-purple-100 mb-4">Then $10/month • Cancel anytime</div>
-                <div className="text-xs text-purple-200">
-                  Save 90% on your first month
-                </div>
-              </div>
-
-              {/* Pricing Summary */}
-              <div className="bg-zinc-900 rounded-xl p-6 border border-zinc-800 shadow-sm">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-gray-400">You'll be charged</span>
-                  <span className="font-bold text-white">$1.00 today</span>
-                </div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-gray-400">Then</span>
-                  <span className="text-white">$10.00/month</span>
-                </div>
-                <div className="text-sm text-gray-500 mt-3 pt-3 border-t border-zinc-800">
-                  Cancel anytime
+                
+                {/* Divider */}
+                <div className="border-t border-zinc-800 my-6"></div>
+                
+                {/* Pricing Details */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Today's charge</span>
+                    <span className="font-bold text-white">$1.00</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Starting month 2</span>
+                    <span className="text-white">$10.00/month</span>
+                  </div>
                 </div>
               </div>
 
