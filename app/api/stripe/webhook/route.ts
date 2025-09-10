@@ -13,11 +13,14 @@ function getStripe() {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('Webhook endpoint called')
+  
   try {
     const stripe = getStripe()
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
     
     if (!webhookSecret) {
+      console.error('STRIPE_WEBHOOK_SECRET not configured')
       return NextResponse.json(
         { error: 'Webhook secret not configured' },
         { status: 500 }
@@ -50,10 +53,27 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         
+        console.log('Processing checkout.session.completed for session:', session.id)
+        
+        // Check if subscription exists
+        if (!session.subscription) {
+          console.error('No subscription ID in session')
+          return NextResponse.json({ received: true })
+        }
+        
         // Get the subscription
-        const subscription = await stripe.subscriptions.retrieve(
-          session.subscription as string
-        )
+        let subscription
+        try {
+          subscription = await stripe.subscriptions.retrieve(
+            session.subscription as string
+          )
+        } catch (err) {
+          console.error('Failed to retrieve subscription:', err)
+          return NextResponse.json(
+            { error: 'Failed to retrieve subscription' },
+            { status: 500 }
+          )
+        }
         
         // Check if this is a promotional subscription that needs a schedule
         const isPromotional = session.metadata?.schedule_type === 'promotional'
@@ -154,6 +174,9 @@ export async function POST(request: NextRequest) {
           if (error) {
             console.error('Webhook: Error creating subscription:', error)
             console.error('Webhook: Error details:', JSON.stringify(error, null, 2))
+            // Don't return 500 - return success so Stripe doesn't keep retrying
+            // We'll handle this manually
+            console.error('CRITICAL: Subscription not saved to database but returning 200 to stop Stripe retries')
           } else {
             console.log('Webhook: Successfully created/updated subscription for user:', userId)
             console.log('Webhook: Subscription data:', data)
