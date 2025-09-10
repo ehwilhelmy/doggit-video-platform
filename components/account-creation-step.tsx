@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Heart } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LogoMark } from "@/components/logo-mark"
 
@@ -20,7 +20,8 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: ""
+    name: "",
+    puppyName: ""
   })
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -42,7 +43,8 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
     try {
       if (isSignUp) {
         const { error } = await signUp(formData.email, formData.password, {
-          full_name: formData.name
+          full_name: formData.name,
+          puppy_name: formData.puppyName
         })
         if (error) {
           setError(error.message)
@@ -81,22 +83,44 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
       {/* Email Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {isSignUp && (
-          <div>
-            <Label htmlFor="name" className="text-gray-400 text-sm">
-              Your name
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              required={isSignUp}
-              disabled={isLoading}
-              className="mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
-            />
-          </div>
+          <>
+            <div>
+              <Label htmlFor="name" className="text-gray-400 text-sm">
+                Your name
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={handleChange}
+                required={isSignUp}
+                disabled={isLoading}
+                className="mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="puppyName" className="text-gray-400 text-sm">
+                Your pup's name
+              </Label>
+              <div className="relative mt-1">
+                <Heart className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <Input
+                  id="puppyName"
+                  name="puppyName"
+                  type="text"
+                  placeholder="Enter your pup's name"
+                  value={formData.puppyName}
+                  onChange={handleChange}
+                  required={isSignUp}
+                  disabled={isLoading}
+                  className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+                />
+              </div>
+            </div>
+          </>
         )}
 
         <div>
