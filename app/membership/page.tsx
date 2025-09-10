@@ -109,13 +109,10 @@ function MembershipPageContent() {
           {/* Show account creation or pricing based on state */}
           {showAccountCreation && !user ? (
             <div className="max-w-md mx-auto">
-              <button
-                onClick={() => setShowAccountCreation(false)}
-                className="text-gray-400 hover:text-white mb-4 text-sm flex items-center gap-2"
-              >
-                ← Back to pricing
-              </button>
-              <AccountCreationStep onSuccess={handleStripeCheckout} />
+              <AccountCreationStep 
+                onSuccess={handleStripeCheckout} 
+                onBack={() => setShowAccountCreation(false)}
+              />
             </div>
           ) : (
           <div className="grid lg:grid-cols-2 gap-16 mb-16 items-start">

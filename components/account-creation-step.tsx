@@ -11,9 +11,10 @@ import { Logo } from "@/components/logo"
 
 interface AccountCreationStepProps {
   onSuccess?: () => void
+  onBack?: () => void
 }
 
-export function AccountCreationStep({ onSuccess }: AccountCreationStepProps) {
+export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepProps) {
   const { signUp, signIn } = useAuth()
   const [isSignUp, setIsSignUp] = useState(true)
   const [formData, setFormData] = useState({
@@ -189,6 +190,18 @@ export function AccountCreationStep({ onSuccess }: AccountCreationStepProps) {
           </button>
         </div>
       </form>
+
+      {/* Back to pricing button at bottom */}
+      {onBack && (
+        <div className="mt-6 pt-6 border-t border-zinc-800 text-center">
+          <button
+            onClick={onBack}
+            className="text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            ← Back to pricing
+          </button>
+        </div>
+      )}
     </div>
   )
 }
