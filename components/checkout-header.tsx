@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Logo } from "@/components/logo"
 import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -36,53 +37,48 @@ export function CheckoutHeader({ currentStep, onClose }: CheckoutHeaderProps) {
           <Logo size="sm" variant="white" />
           
           {/* Progress Steps - Desktop */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center">
             {steps.map((step, index) => {
               const isActive = step.id === currentStep
               const isCompleted = index < currentStepIndex
-              const isUpcoming = index > currentStepIndex
               
               return (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <div className="flex items-center gap-3">
-                      {/* Step Line (before) */}
-                      {index > 0 && (
-                        <div 
-                          className={`h-[2px] w-20 transition-colors ${
-                            isCompleted || isActive
-                              ? 'bg-queen-purple' 
-                              : 'bg-zinc-700'
-                          }`}
-                        />
-                      )}
-                      
-                      {/* Step Label */}
-                      <span 
-                        className={`text-sm font-medium transition-colors ${
-                          isActive 
-                            ? 'text-white' 
-                            : isCompleted 
-                            ? 'text-queen-purple' 
-                            : 'text-zinc-500'
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                      
-                      {/* Step Line (after) */}
-                      {index < steps.length - 1 && (
-                        <div 
-                          className={`h-[2px] w-20 transition-colors ${
-                            isCompleted 
-                              ? 'bg-queen-purple' 
-                              : 'bg-zinc-700'
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <React.Fragment key={step.id}>
+                  {/* Line before step (except for first) */}
+                  {index > 0 && (
+                    <div 
+                      className={`h-[2px] w-16 transition-colors ${
+                        isCompleted || isActive
+                          ? 'bg-queen-purple' 
+                          : 'bg-zinc-700'
+                      }`}
+                    />
+                  )}
+                  
+                  {/* Step Label */}
+                  <span 
+                    className={`text-sm font-medium transition-colors px-2 ${
+                      isActive 
+                        ? 'text-white' 
+                        : isCompleted 
+                        ? 'text-queen-purple' 
+                        : 'text-zinc-500'
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                  
+                  {/* Line after step (except for last) */}
+                  {index < steps.length - 1 && (
+                    <div 
+                      className={`h-[2px] w-16 transition-colors ${
+                        isCompleted 
+                          ? 'bg-queen-purple' 
+                          : 'bg-zinc-700'
+                      }`}
+                    />
+                  )}
+                </React.Fragment>
               )
             })}
           </div>
