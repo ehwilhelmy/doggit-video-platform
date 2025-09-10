@@ -31,6 +31,13 @@ function MembershipPageContent() {
     }
   }, [user])
 
+  // Redirect logged-in users to dashboard if they shouldn't be here
+  useEffect(() => {
+    if (user && !localStorage.getItem('checkout_pending') && !fromModal) {
+      router.push('/dashboard')
+    }
+  }, [user, fromModal, router])
+
   const handleStripeCheckout = async () => {
     setIsLoading(true)
     try {

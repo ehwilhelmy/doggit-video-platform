@@ -183,8 +183,12 @@ function LandingPageClient() {
   }
 
   const handleGetStarted = () => {
-    // Subscribe to DOGGIT training
-    router.push('/membership')
+    // Redirect based on user login status
+    if (supabaseUser) {
+      router.push('/dashboard')
+    } else {
+      router.push('/membership')
+    }
   }
 
   const handleAddToCalendar = () => {
@@ -320,9 +324,9 @@ END:VCALENDAR`
               <Button 
                 size="lg" 
                 className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
-                onClick={() => window.location.href = '/membership'}
+                onClick={() => window.location.href = supabaseUser ? '/dashboard' : '/membership'}
               >
-                Subscribe Today
+                {supabaseUser ? 'Go to Dashboard' : 'Subscribe Today'}
               </Button>
               <Button 
                 variant="outline" 
