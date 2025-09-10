@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Mail, Lock, Eye, EyeOff, AlertCircle, Heart } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Heart, CheckCircle, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LogoMark } from "@/components/logo-mark"
 
@@ -26,6 +26,7 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isRedirecting, setIsRedirecting] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -49,14 +50,22 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
         if (error) {
           setError(error.message)
         } else {
-          onSuccess?.()
+          setIsRedirecting(true)
+          // Small delay for smoother transition
+          setTimeout(() => {
+            onSuccess?.()
+          }, 500)
         }
       } else {
         const { error } = await signIn(formData.email, formData.password)
         if (error) {
           setError(error.message)
         } else {
-          onSuccess?.()
+          setIsRedirecting(true)
+          // Small delay for smoother transition
+          setTimeout(() => {
+            onSuccess?.()
+          }, 500)
         }
       }
     } catch (err: any) {
@@ -67,7 +76,17 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
   }
 
   return (
-    <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800 shadow-xl">
+    <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800 shadow-xl relative">
+      {/* Success/Redirect Overlay */}
+      {isRedirecting && (
+        <div className="absolute inset-0 bg-zinc-900/95 rounded-xl flex flex-col items-center justify-center z-50">
+          <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+          <h3 className="text-xl font-semibold text-white mb-2">Account Created!</h3>
+          <p className="text-gray-400 mb-4">Redirecting to payment...</p>
+          <Loader2 className="h-6 w-6 text-queen-purple animate-spin" />
+        </div>
+      )}
+
       {/* DOGGIT Mark at top */}
       <div className="flex justify-center mb-6">
         <LogoMark size="lg" variant="white" />
@@ -197,10 +216,11 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
 
         <Button
           type="submit"
-          disabled={isLoading}
-          className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white py-3 text-lg font-semibold rounded-xl"
+          disabled={isLoading || isRedirecting}
+          className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white py-3 text-lg font-semibold rounded-xl flex items-center justify-center gap-2"
         >
-          {isLoading ? 'Processing...' : isSignUp ? 'Continue With Email' : 'Sign In'}
+          {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
+          {isLoading ? 'Creating Account...' : isSignUp ? 'Continue With Email' : 'Sign In'}
         </Button>
 
         <div className="text-center text-sm text-gray-400">

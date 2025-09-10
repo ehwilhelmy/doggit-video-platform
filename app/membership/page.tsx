@@ -77,8 +77,9 @@ function MembershipPageContent() {
 
   // Determine current step
   const getCurrentStep = () => {
+    if (showAccountCreation && !user) return 'account'
     if (isLoading) return 'payment'
-    if (showAccountCreation || user) return 'account'
+    if (user) return 'payment' // User is logged in, ready for payment
     return 'membership'
   }
 
