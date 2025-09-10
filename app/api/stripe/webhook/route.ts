@@ -87,7 +87,6 @@ export async function POST(request: NextRequest) {
                     price: recurringPriceId,
                     quantity: 1 
                   }],
-                  iterations: null, // Indefinite
                   start_date: subscription.current_period_end
                 }
               ]
