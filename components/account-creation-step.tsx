@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Logo } from "@/components/logo"
+import { LogoMark } from "@/components/logo-mark"
 
 interface AccountCreationStepProps {
   onSuccess?: () => void
@@ -66,9 +66,9 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
 
   return (
     <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800 shadow-xl">
-      {/* DOGGIT Logo at top */}
+      {/* DOGGIT Mark at top */}
       <div className="flex justify-center mb-6">
-        <Logo size="md" variant="white" />
+        <LogoMark size="lg" variant="white" />
       </div>
 
       <h2 className="text-2xl font-bold text-white text-center mb-2">
@@ -198,7 +198,7 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
             onClick={onBack}
             className="text-sm text-gray-400 hover:text-white transition-colors"
           >
-            ← Back to pricing
+            ← Back to membership
           </button>
         </div>
       )}
