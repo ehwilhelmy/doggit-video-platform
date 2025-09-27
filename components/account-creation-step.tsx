@@ -51,6 +51,8 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
           setError(error.message)
         } else {
           setIsRedirecting(true)
+          // Set a flag that we're in checkout process
+          localStorage.setItem('checkout_pending', 'true')
           // Small delay for smoother transition
           setTimeout(() => {
             onSuccess?.()
@@ -62,6 +64,8 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
           setError(error.message)
         } else {
           setIsRedirecting(true)
+          // Set a flag that we're in checkout process
+          localStorage.setItem('checkout_pending', 'true')
           // Small delay for smoother transition
           setTimeout(() => {
             onSuccess?.()
