@@ -139,16 +139,8 @@ function DashboardContent() {
           console.log('Dashboard: Demo account detected, allowing access')
           // Don't redirect - demo account for testing
         } else if (!isSubscribed && !loading && !subscriptionLoading) {
-          console.log('Dashboard: No active subscription found, checking with delay before redirect')
-          console.log('Dashboard: Debug - user:', user.email, 'isSubscribed:', isSubscribed, 'loading:', loading, 'subscriptionLoading:', subscriptionLoading)
-          // Wait 2 seconds to allow subscription check to complete
-          setTimeout(() => {
-            console.log('Dashboard: Timeout check - isSubscribed:', isSubscribed, 'subscriptionLoading:', subscriptionLoading)
-            if (!isSubscribed && !subscriptionLoading) {
-              console.log('Dashboard: Still no subscription after timeout, redirecting')
-              router.push('/')
-            }
-          }, 2000)
+          console.log('Dashboard: No active subscription found, redirecting immediately to account page')
+          router.push('/account')
           return
         }
         

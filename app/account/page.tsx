@@ -2,46 +2,28 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, Suspense, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Logo } from "@/components/logo"
-import { CheckCircle, CreditCard, User, Lock } from "lucide-react"
-import Image from "next/image"
+import { CheckCircle, CreditCard, Play, Star } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { AccountCreationModal } from "@/components/account-creation-modal"
-import { CheckoutHeader } from "@/components/checkout-header"
+import { LogoMark } from "@/components/logo-mark"
 
-function MembershipPageContent() {
+export default function AccountPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
-  const [showAccountModal, setShowAccountModal] = useState(false)
-  
-  const fromModal = searchParams.get("from") === "modal"
-  const videoId = searchParams.get("v")
 
-  // Check if user just logged in and redirect to checkout
+  // Redirect non-logged in users to membership page
   useEffect(() => {
-    const checkoutPending = localStorage.getItem('checkout_pending')
-    if (user && checkoutPending === 'true') {
-      localStorage.removeItem('checkout_pending')
-      handleStripeCheckout()
+    if (!authLoading && !user) {
+      router.push('/membership')
     }
-  }, [user])
-
-  // Redirect logged-in users to dashboard if they shouldn't be here
-  useEffect(() => {
-    if (user && !localStorage.getItem('checkout_pending') && !fromModal && !showAccountModal) {
-      router.push('/dashboard')
-    }
-  }, [user, fromModal, router, showAccountModal])
+  }, [user, authLoading, router])
 
   const handleStripeCheckout = async () => {
     setIsLoading(true)
     try {
-      // Call our Stripe checkout API
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: {
@@ -57,11 +39,9 @@ function MembershipPageContent() {
       const data = await response.json()
       
       if (data.url) {
-        // Redirect to Stripe Checkout
         window.location.href = data.url
       } else {
         console.error('No Stripe URL returned:', data)
-        // Show error message instead of falling back
         alert('Payment system is currently unavailable. Please try again later.')
       }
     } catch (error) {
@@ -72,44 +52,50 @@ function MembershipPageContent() {
     }
   }
 
-  const handleSubscribe = async () => {
-    if (!user) {
-      // Show account creation modal
-      setShowAccountModal(true)
-    } else {
-      // User is logged in, proceed to Stripe
-      handleStripeCheckout()
-    }
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-queen-purple border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
   }
 
-  // Determine current step
-  const getCurrentStep = () => {
-    if (showAccountModal && !user) return 'account'
-    if (isLoading) return 'payment'
-    if (user) return 'payment' // User is logged in, ready for payment
-    return 'membership'
+  if (!user) {
+    return null // Will redirect via useEffect
   }
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Clean Header with Stepper */}
-      <CheckoutHeader 
-        currentStep={getCurrentStep()} 
-        onClose={() => router.push('/')}
-      />
+      {/* Header */}
+      <div className="border-b border-zinc-800">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <LogoMark size="sm" variant="white" />
+              <span className="text-white text-xl font-bold">DOGGIT</span>
+            </div>
+            <button
+              onClick={() => router.push('/')}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         <div className="max-w-4xl mx-auto">
-          
           <div className="text-center mb-12">
             <h1 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-              Choose Your Membership
+              Welcome to DOGGIT, {user.user_metadata?.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="text-lg text-gray-400">
-              Expert dog training from world-class instructors
+              Your account is ready. Complete your subscription to start training {user.user_metadata?.puppy_name || 'your pup'}.
             </p>
           </div>
+
           <div className="grid lg:grid-cols-2 gap-16 mb-16 items-start">
             {/* Left Column - Pricing */}
             <div className="space-y-6">
@@ -146,39 +132,36 @@ function MembershipPageContent() {
 
               {/* CTA Button */}
               <Button
-                onClick={handleSubscribe}
-                disabled={isLoading || authLoading}
+                onClick={handleStripeCheckout}
+                disabled={isLoading}
                 className="w-full bg-queen-purple hover:bg-queen-purple/90 text-white py-4 text-xl font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {authLoading ? (
-                  'Loading...'
-                ) : isLoading ? (
+                {isLoading ? (
                   'Redirecting to checkout...'
-                ) : !user ? (
-                  <>
-                    <User className="mr-2 h-5 w-5" />
-                    Create Account & Subscribe
-                  </>
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-5 w-5" />
-                    Continue to Payment
+                    Complete Your Subscription
                   </>
                 )}
               </Button>
 
-              {/* Security Note */}
-              {!user && (
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Lock className="h-4 w-4" />
-                  <span>Secure checkout powered by Stripe</span>
+              {/* Trust Indicators */}
+              <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                  <span>4.9/5 rating</span>
                 </div>
-              )}
+                <div className="flex items-center gap-1">
+                  <Play className="h-4 w-4" />
+                  <span>50+ videos</span>
+                </div>
+              </div>
             </div>
 
-            {/* Right Column - What's Included */}
+            {/* Right Column - What You're Getting */}
             <div>
-              <h3 className="text-2xl font-semibold text-white mb-8">WHAT'S INCLUDED</h3>
+              <h3 className="text-2xl font-semibold text-white mb-8">START TRAINING TODAY</h3>
               
               {/* Features List */}
               <div className="space-y-5">
@@ -192,15 +175,15 @@ function MembershipPageContent() {
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
-                    <span className="text-white text-lg font-medium">New Content Released Monthly</span>
-                    <p className="text-gray-400 text-sm mt-1">Fresh content added regularly to expand your training knowledge.</p>
+                    <span className="text-white text-lg font-medium">Personalized for {user.user_metadata?.puppy_name || 'Your Pup'}</span>
+                    <p className="text-gray-400 text-sm mt-1">Training plans customized for your dog's specific needs and behavior.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <CheckCircle className="h-6 w-6 text-queen-purple flex-shrink-0 mt-1" />
                   <div>
                     <span className="text-white text-lg font-medium">Community Support</span>
-                    <p className="text-gray-400 text-sm mt-1">Learn alongside other dog owners with guidance from our expert trainers. Plus live chat & AI training support.</p>
+                    <p className="text-gray-400 text-sm mt-1">Learn alongside other dog owners with guidance from our expert trainers.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -211,29 +194,26 @@ function MembershipPageContent() {
                   </div>
                 </div>
               </div>
+
+              {/* Social Proof */}
+              <div className="mt-8 p-6 bg-zinc-900 rounded-xl border border-zinc-800">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-400">4.9/5 from 10,000+ dog owners</span>
+                </div>
+                <p className="text-sm text-gray-300 italic">
+                  "My dog went from destructive to obedient in just 2 weeks. The training videos are incredibly effective!"
+                </p>
+                <p className="text-xs text-gray-500 mt-2">- Sarah M., Golden Retriever owner</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Account Creation Modal */}
-      <AccountCreationModal
-        open={showAccountModal}
-        onOpenChange={setShowAccountModal}
-        onSuccess={handleStripeCheckout}
-      />
     </div>
-  )
-}
-
-export default function MembershipPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-purple-300 border-t-purple-500 rounded-full animate-spin" />
-      </div>
-    }>
-      <MembershipPageContent />
-    </Suspense>
   )
 }
