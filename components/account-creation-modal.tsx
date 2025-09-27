@@ -58,9 +58,11 @@ export function AccountCreationModal({ open, onOpenChange, onSuccess }: AccountC
         setIsLoading(false)
       } else {
         setIsSuccess(true)
-        // Close modal and proceed directly to checkout
-        onOpenChange(false)
-        onSuccess?.()
+        // Brief delay to ensure auth state settles, then proceed
+        setTimeout(() => {
+          onOpenChange(false)
+          onSuccess?.()
+        }, 300)
       }
     } catch (err: any) {
       // Remove the flag if there was an error

@@ -26,7 +26,7 @@ function MembershipPageContent() {
   useEffect(() => {
     const checkoutPending = localStorage.getItem('checkout_pending')
     if (user && checkoutPending === 'true') {
-      localStorage.removeItem('checkout_pending')
+      // Don't remove the flag immediately to prevent dashboard redirect
       handleStripeCheckout()
     }
   }, [user])
@@ -57,6 +57,8 @@ function MembershipPageContent() {
       const data = await response.json()
       
       if (data.url) {
+        // Clear the checkout pending flag before redirecting to Stripe
+        localStorage.removeItem('checkout_pending')
         // Redirect to Stripe Checkout
         window.location.href = data.url
       } else {
