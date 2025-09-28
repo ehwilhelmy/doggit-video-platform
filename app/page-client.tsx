@@ -107,7 +107,7 @@ const classes = [
 
 function LandingPageClient() {
   const router = useRouter()
-  const { user: supabaseUser, loading, signOut } = useAuth()
+  const { user: supabaseUser, loading, signOut, isSubscribed, subscriptionLoading } = useAuth()
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
   const [selectedTrainingGoals, setSelectedTrainingGoals] = useState<string[]>([])
@@ -183,8 +183,16 @@ function LandingPageClient() {
   }
 
   const handleGetStarted = () => {
-    // Subscribe to DOGGIT training
-    router.push('/membership')
+    // Redirect based on user login and subscription status
+    if (supabaseUser) {
+      if (isSubscribed) {
+        router.push('/dashboard')
+      } else {
+        router.push('/account')
+      }
+    } else {
+      router.push('/membership')
+    }
   }
 
   const handleAddToCalendar = () => {
@@ -283,6 +291,8 @@ END:VCALENDAR`
         user={user}
         onSignOut={handleSignOut}
         isAdmin={isAdmin}
+        isSubscribed={isSubscribed}
+        subscriptionLoading={subscriptionLoading}
       />
 
       {/* Hero Section - Live Stream Focus */}
@@ -320,9 +330,16 @@ END:VCALENDAR`
               <Button 
                 size="lg" 
                 className="bg-queen-purple hover:bg-queen-purple/90 text-white px-10 py-4 text-lg font-semibold rounded-xl transform hover:scale-105 transition-all"
-                onClick={() => window.location.href = '/membership'}
+                onClick={handleGetStarted}
+                disabled={loading || subscriptionLoading}
               >
-                Subscribe Today
+                {loading || subscriptionLoading ? (
+                  'Loading...'
+                ) : supabaseUser ? (
+                  isSubscribed ? 'Go to Dashboard' : 'Continue to Subscription'
+                ) : (
+                  'Subscribe Today'
+                )}
               </Button>
               <Button 
                 variant="outline" 

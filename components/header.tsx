@@ -24,9 +24,11 @@ interface HeaderProps {
   user?: { firstName?: string; email?: string }
   onSignOut?: () => void
   isAdmin?: boolean
+  isSubscribed?: boolean
+  subscriptionLoading?: boolean
 }
 
-export function Header({ variant = "landing", showAuth = true, showNavigation = true, isAuthenticated = false, user, onSignOut, isAdmin = false }: HeaderProps) {
+export function Header({ variant = "landing", showAuth = true, showNavigation = true, isAuthenticated = false, user, onSignOut, isAdmin = false, isSubscribed = false, subscriptionLoading = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
@@ -135,9 +137,10 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                     ? "text-gray-600 hover:text-jade-purple"
                     : "text-white/80 hover:text-white hover:bg-white/10"
                   : "text-gray-600 hover:text-jade-purple"}
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => window.location.href = isSubscribed ? '/dashboard' : '/account'}
+                disabled={subscriptionLoading}
               >
-                Go to Dashboard
+                {subscriptionLoading ? 'Loading...' : isSubscribed ? 'Go to Dashboard' : 'Continue to Subscription'}
               </Button>
               
               <DropdownMenu>
@@ -237,10 +240,11 @@ export function Header({ variant = "landing", showAuth = true, showNavigation = 
                   className="w-full justify-start"
                   onClick={() => {
                     setIsMenuOpen(false)
-                    window.location.href = '/dashboard'
+                    window.location.href = isSubscribed ? '/dashboard' : '/account'
                   }}
+                  disabled={subscriptionLoading}
                 >
-                  Go to my dashboard
+                  {subscriptionLoading ? 'Loading...' : isSubscribed ? 'Go to my dashboard' : 'Continue to subscription'}
                 </Button>
                 <Button 
                   variant="ghost" 
