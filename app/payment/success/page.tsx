@@ -16,11 +16,20 @@ import Image from "next/image"
 function PaymentSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { signUp } = useAuth()
+  const { signUp, user } = useAuth()
   
   const emailFromUrl = searchParams.get("email") || ""
   const sessionId = searchParams.get("session_id") || ""
   const isDemoMode = searchParams.get("demo") === "true"
+  
+  // Check if user is already authenticated
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (user) {
+      console.log('User already authenticated, redirecting to dashboard')
+      router.push('/dashboard')
+    }
+  }, [user, router])
   
   const [formData, setFormData] = useState({
     email: emailFromUrl,
@@ -33,6 +42,7 @@ function PaymentSuccessContent() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [errors, setErrors] = useState({
     email: "",
     firstName: "",
@@ -41,6 +51,15 @@ function PaymentSuccessContent() {
     password: "",
     confirmPassword: ""
   })
+  
+  // Set loading false after initial auth check
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsCheckingAuth(false)
+    }, 1500) // Give it 1.5 seconds to check auth
+    
+    return () => clearTimeout(timer)
+  }, [])
   
   // Password strength indicator
   const getPasswordStrength = (password: string) => {
@@ -176,6 +195,18 @@ function PaymentSuccessContent() {
     if (errors[field as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [field]: "" }))
     }
+  }
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white">Verifying your account...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
