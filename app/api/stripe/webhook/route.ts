@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 // Initialize Stripe only when needed
 function getStripe() {
@@ -29,24 +29,53 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.text()
-    const signature = request.headers.get('stripe-signature')!
+    const signature = request.headers.get('stripe-signature')
+    const isTestWebhook = request.headers.get('x-test-webhook') === 'true'
     
     console.log('🎯 Webhook received:', new Date().toISOString())
+    console.log('🎯 Is test webhook:', isTestWebhook)
     
     let event: Stripe.Event
     
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-      console.log('✅ Webhook signature verified, event type:', event.type)
-    } catch (err) {
-      console.error('❌ Webhook signature verification failed:', err)
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      )
+    if (isTestWebhook) {
+      // For test webhooks, parse the body directly without signature verification
+      try {
+        event = JSON.parse(body)
+        console.log('✅ Test webhook parsed, event type:', event.type)
+      } catch (err) {
+        console.error('❌ Test webhook JSON parsing failed:', err)
+        return NextResponse.json(
+          { error: 'Invalid JSON in test webhook' },
+          { status: 400 }
+        )
+      }
+    } else {
+      // For real webhooks, verify signature
+      if (!signature) {
+        console.error('❌ Missing stripe-signature header')
+        return NextResponse.json(
+          { error: 'Missing stripe-signature header' },
+          { status: 400 }
+        )
+      }
+      
+      try {
+        event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+        console.log('✅ Webhook signature verified, event type:', event.type)
+      } catch (err) {
+        console.error('❌ Webhook signature verification failed:', err)
+        return NextResponse.json(
+          { error: 'Invalid signature' },
+          { status: 400 }
+        )
+      }
     }
     
-    const supabase = await createClient()
+    // Use service role client for webhook operations to bypass RLS
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
     
     console.log('📝 Processing event:', event.type, 'Event ID:', event.id)
     
@@ -54,10 +83,43 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         
-        // Get the subscription
-        const subscription = await stripe.subscriptions.retrieve(
-          session.subscription as string
-        )
+        let subscription: Stripe.Subscription
+        
+        if (isTestWebhook) {
+          // For test webhooks, create a mock subscription object
+          subscription = {
+            id: session.subscription as string,
+            object: 'subscription',
+            customer: session.customer as string,
+            status: 'active',
+            items: {
+              object: 'list',
+              data: [{
+                id: 'si_test_item',
+                object: 'subscription_item',
+                price: {
+                  id: session.metadata?.first_price || 'price_test_1dollar',
+                  object: 'price',
+                  recurring: {
+                    interval: 'month'
+                  }
+                },
+                quantity: 1
+              }]
+            },
+            current_period_start: Math.floor(Date.now() / 1000),
+            current_period_end: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60),
+            cancel_at_period_end: false,
+            canceled_at: null,
+            trial_start: null,
+            trial_end: null
+          } as Stripe.Subscription
+        } else {
+          // Get the subscription from Stripe for real webhooks
+          subscription = await stripe.subscriptions.retrieve(
+            session.subscription as string
+          )
+        }
         
         // Check if this is a promotional subscription that needs a schedule
         const isPromotional = session.metadata?.schedule_type === 'promotional'
@@ -65,7 +127,7 @@ export async function POST(request: NextRequest) {
         const recurringPriceId = session.metadata?.recurring_price
         
         // If promotional, create a subscription schedule to change price after first month
-        if (isPromotional && recurringPriceId) {
+        if (isPromotional && recurringPriceId && !isTestWebhook) {
           try {
             // Create subscription schedule
             await stripe.subscriptionSchedules.create({
@@ -96,18 +158,22 @@ export async function POST(request: NextRequest) {
             console.error('Error creating subscription schedule:', scheduleError)
             // Continue anyway - subscription is still valid even if schedule fails
           }
+        } else if (isPromotional && isTestWebhook) {
+          console.log('Skipping subscription schedule creation for test webhook')
         }
         
         // Update user's subscription in database
         const userId = session.client_reference_id || session.metadata?.supabase_user_id
         
-        console.log('Webhook: Processing checkout.session.completed')
-        console.log('Webhook: User ID:', userId)
-        console.log('Webhook: Session ID:', session.id)
-        console.log('Webhook: Customer ID:', subscription.customer)
-        console.log('Webhook: Subscription Status:', subscription.status)
+        console.log('🎯 Webhook: Processing checkout.session.completed')
+        console.log('🎯 Webhook: User ID:', userId)
+        console.log('🎯 Webhook: Session ID:', session.id)
+        console.log('🎯 Webhook: Customer ID:', subscription.customer)
+        console.log('🎯 Webhook: Subscription Status:', subscription.status)
+        console.log('🎯 Webhook: Session metadata:', session.metadata)
+        console.log('🎯 Webhook: Session client_reference_id:', session.client_reference_id)
         
-        if (userId) {
+        if (userId && userId !== 'anonymous_test') {
           // First check if subscription already exists
           const { data: existingSub } = await supabase
             .from('subscriptions')
@@ -169,12 +235,24 @@ export async function POST(request: NextRequest) {
             console.log('✅ Webhook: Stripe customer ID saved:', subscriptionData.stripe_customer_id)
           }
         } else {
-          console.error('Webhook: No userId found in session')
-          console.error('Webhook: Session data:', {
+          console.error('🚨 Webhook: No valid userId found in session')
+          console.error('🚨 Webhook: userId value:', userId)
+          console.error('🚨 Webhook: Session data:', {
             client_reference_id: session.client_reference_id,
             metadata: session.metadata,
             customer: session.customer
           })
+          
+          // For debugging: Let's also try to find the user by customer email
+          if (session.customer_details?.email) {
+            console.log('🔍 Webhook: Attempting to find user by email:', session.customer_details.email)
+            const { data: userByEmail } = await supabase.auth.admin.listUsers()
+            const matchingUser = userByEmail.users.find(u => u.email === session.customer_details?.email)
+            if (matchingUser) {
+              console.log('🔍 Webhook: Found user by email:', matchingUser.id)
+              // Could potentially create subscription here for the found user
+            }
+          }
         }
         break
       }
