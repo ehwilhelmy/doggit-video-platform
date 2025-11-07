@@ -46,12 +46,40 @@ CREATE POLICY "Users can insert own profile" ON public.profiles
 -- Function to automatically create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  full_name_value TEXT;
+  first_name_value TEXT;
+  last_name_value TEXT;
 BEGIN
-  INSERT INTO public.profiles (id, first_name, last_name)
+  -- Try to get full_name first
+  full_name_value := NEW.raw_user_meta_data->>'full_name';
+
+  -- If full_name exists, split it into first and last name
+  IF full_name_value IS NOT NULL AND full_name_value != '' THEN
+    -- Split on first space
+    first_name_value := split_part(full_name_value, ' ', 1);
+    last_name_value := NULLIF(substring(full_name_value from length(split_part(full_name_value, ' ', 1)) + 2), '');
+  ELSE
+    -- Otherwise try individual fields
+    first_name_value := COALESCE(
+      NEW.raw_user_meta_data->>'first_name',
+      NEW.raw_user_meta_data->>'firstName'
+    );
+    last_name_value := COALESCE(
+      NEW.raw_user_meta_data->>'last_name',
+      NEW.raw_user_meta_data->>'lastName'
+    );
+  END IF;
+
+  INSERT INTO public.profiles (id, first_name, last_name, pup_name)
   VALUES (
     NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'first_name', NEW.raw_user_meta_data->>'firstName'),
-    COALESCE(NEW.raw_user_meta_data->>'last_name', NEW.raw_user_meta_data->>'lastName')
+    first_name_value,
+    last_name_value,
+    COALESCE(
+      NEW.raw_user_meta_data->>'pup_name',
+      NEW.raw_user_meta_data->>'puppy_name'
+    )
   );
   RETURN NEW;
 END;

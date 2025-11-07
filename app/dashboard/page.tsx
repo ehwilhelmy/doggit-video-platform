@@ -110,6 +110,7 @@ function DashboardContent() {
       const isWelcome = searchParams.get("welcome") === "true"
       const personalized = searchParams.get("personalized") === "true"
       const fromGoals = searchParams.get("from") === "goals"
+      const paymentComplete = searchParams.get("payment_complete") === "true"
       
       // Get pup's name and training goals from localStorage (fallback)
       const storedPupName = localStorage.getItem("pupName") || ""
@@ -138,6 +139,12 @@ function DashboardContent() {
         } else if (user.email === 'demo@doggit.app') {
           console.log('Dashboard: Demo account detected, allowing access')
           // Don't redirect - demo account for testing
+        } else if (paymentComplete) {
+          console.log('Dashboard: Payment just completed, allowing access while subscription links')
+          // Don't redirect - subscription is being linked, give it time to propagate
+          // Show welcome message for new subscribers
+          setShowWelcome(true)
+          setTimeout(() => setShowWelcome(false), 8000)
         } else if (!isSubscribed && !loading && !subscriptionLoading) {
           console.log('Dashboard: No active subscription found, redirecting immediately to account page')
           router.push('/account')

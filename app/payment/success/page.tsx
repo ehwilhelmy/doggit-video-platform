@@ -16,20 +16,70 @@ import Image from "next/image"
 function PaymentSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { signUp, user } = useAuth()
-  
+  const { signUp, user, refreshSubscriptionStatus } = useAuth()
+
   const emailFromUrl = searchParams.get("email") || ""
   const sessionId = searchParams.get("session_id") || ""
   const isDemoMode = searchParams.get("demo") === "true"
-  
+
+  // Track if we've already started linking to prevent duplicate calls
+  const [hasStartedLinking, setHasStartedLinking] = useState(false)
+
   // Check if user is already authenticated
   useEffect(() => {
-    // If user is already logged in, redirect to dashboard
-    if (user) {
-      console.log('User already authenticated, redirecting to dashboard')
-      router.push('/dashboard')
+    const handleAuthenticatedUser = async () => {
+      if (!user || hasStartedLinking) return
+
+      // User is logged in with a session_id - they just completed checkout
+      if (sessionId) {
+        console.log('User already authenticated after checkout, linking subscription...')
+        setHasStartedLinking(true)
+        setIsLinkingSubscription(true)
+
+        try {
+          console.log('🔗 Calling link-subscription with sessionId:', sessionId)
+          const linkResponse = await fetch('/api/stripe/link-subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          })
+
+          const linkData = await linkResponse.json()
+          console.log('📦 Link-subscription response:', linkData)
+
+          if (linkResponse.ok) {
+            console.log('✅ Subscription linked successfully:', linkData)
+            // Set payment completed flag so auth context can find it
+            localStorage.setItem('paymentCompleted', 'true')
+
+            // Refresh subscription status in auth context
+            console.log('🔄 Refreshing subscription status...')
+            await refreshSubscriptionStatus()
+          } else {
+            console.error('❌ Failed to link subscription:', linkResponse.status, linkData)
+            alert(`Failed to link subscription: ${linkData.error || 'Unknown error'}. Check console for details.`)
+          }
+        } catch (error) {
+          console.error('❌ Error linking subscription:', error)
+          alert('Error linking subscription. Check console for details.')
+        }
+
+        // Redirect to dashboard with a flag indicating payment was just completed
+        setTimeout(() => {
+          router.push('/dashboard?payment_complete=true')
+        }, 1500)
+        return
+      }
+
+      // User is logged in without session_id - shouldn't be on this page
+      if (!sessionId) {
+        console.log('User already authenticated with no checkout session, redirecting to dashboard')
+        router.push('/dashboard')
+      }
     }
-  }, [user, router])
+
+    handleAuthenticatedUser()
+  }, [user, router, sessionId, hasStartedLinking, refreshSubscriptionStatus])
   
   const [formData, setFormData] = useState({
     email: emailFromUrl,
@@ -43,6 +93,7 @@ function PaymentSuccessContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isLinkingSubscription, setIsLinkingSubscription] = useState(false)
   const [errors, setErrors] = useState({
     email: "",
     firstName: "",
@@ -147,18 +198,46 @@ function PaymentSuccessContent() {
       if (data.user) {
         console.log('User created successfully:', data.user.id)
         console.log('Welcome email would be sent to:', formData.email)
-        
+
         // If user was created but needs email confirmation, handle it
         if (!data.session) {
           console.log('No session after signup - user needs email confirmation')
-          
+
           // For now, proceed with localStorage auth until email is confirmed
           // In a production app, you might want to show an email confirmation screen
           console.log('User will need to confirm email to get full Supabase session')
         } else {
           console.log('User signed up and session created successfully')
         }
-        
+
+        // Link the Stripe subscription to the user's account
+        if (sessionId) {
+          try {
+            console.log('🔗 Linking Stripe subscription to user account...')
+            const linkResponse = await fetch('/api/stripe/link-subscription', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId })
+            })
+
+            if (linkResponse.ok) {
+              const linkData = await linkResponse.json()
+              console.log('✅ Successfully linked subscription:', linkData)
+
+              // Refresh subscription status in auth context
+              console.log('🔄 Refreshing subscription status...')
+              await refreshSubscriptionStatus()
+            } else {
+              const errorData = await linkResponse.json()
+              console.error('❌ Failed to link subscription:', errorData)
+              // Continue anyway - user can still access the platform
+            }
+          } catch (linkError) {
+            console.error('❌ Error linking subscription:', linkError)
+            // Continue anyway - webhook might have already handled it
+          }
+        }
+
         // Store additional data in localStorage for backwards compatibility (will be cleaned up by auth context)
         const accountData = {
           email: formData.email,
@@ -168,17 +247,17 @@ function PaymentSuccessContent() {
           createdAt: new Date().toISOString(),
           userId: data.user.id
         }
-        
+
         localStorage.setItem('accountData', JSON.stringify(accountData))
         localStorage.setItem('pupName', formData.pupName)
         localStorage.setItem('userEmail', formData.email)
         localStorage.setItem('subscriptionActive', 'true')
         localStorage.setItem('paymentCompleted', 'true')
         localStorage.setItem('isAuthenticated', 'true')
-        
-        // Redirect to personalized goals selection with pup name
+
+        // Redirect to dashboard with payment complete flag
         setTimeout(() => {
-          router.push(`/onboarding/goals-web?email=${encodeURIComponent(formData.email)}&pup=${encodeURIComponent(formData.pupName)}`)
+          router.push(`/dashboard?payment_complete=true&email=${encodeURIComponent(formData.email)}&pup=${encodeURIComponent(formData.pupName)}`)
         }, 500)
       }
       
@@ -197,13 +276,15 @@ function PaymentSuccessContent() {
     }
   }
 
-  // Show loading while checking authentication
-  if (isCheckingAuth) {
+  // Show loading while checking authentication or linking subscription
+  if (isCheckingAuth || isLinkingSubscription) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white">Verifying your account...</p>
+          <p className="text-white">
+            {isLinkingSubscription ? 'Setting up your subscription...' : 'Verifying your account...'}
+          </p>
         </div>
       </div>
     )

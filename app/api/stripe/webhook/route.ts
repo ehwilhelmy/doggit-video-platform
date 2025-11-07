@@ -134,28 +134,27 @@ export async function POST(request: NextRequest) {
               from_subscription: subscription.id,
               phases: [
                 {
-                  // First phase: Current subscription at $1 for 1 month (already active)
-                  items: [{ 
+                  // First phase: Current subscription at $1 for 1 month
+                  // Use iterations only (not end_date) - Stripe will calculate the end automatically
+                  items: [{
                     price: firstPriceId || subscription.items.data[0].price.id,
-                    quantity: 1 
+                    quantity: 1
                   }],
-                  iterations: 1, // Only 1 billing cycle at $1
-                  start_date: subscription.current_period_start,
-                  end_date: subscription.current_period_end
+                  iterations: 1 // Only 1 billing cycle at $1
                 },
                 {
                   // Second phase: $10/month indefinitely
-                  items: [{ 
+                  // No iterations = continues indefinitely
+                  items: [{
                     price: recurringPriceId,
-                    quantity: 1 
-                  }],
-                  start_date: subscription.current_period_end
+                    quantity: 1
+                  }]
                 }
               ]
             })
-            console.log('Created subscription schedule for promotional pricing')
+            console.log('✅ Created subscription schedule for promotional pricing')
           } catch (scheduleError) {
-            console.error('Error creating subscription schedule:', scheduleError)
+            console.error('❌ Error creating subscription schedule:', scheduleError)
             // Continue anyway - subscription is still valid even if schedule fails
           }
         } else if (isPromotional && isTestWebhook) {
@@ -173,16 +172,32 @@ export async function POST(request: NextRequest) {
         console.log('🎯 Webhook: Session metadata:', session.metadata)
         console.log('🎯 Webhook: Session client_reference_id:', session.client_reference_id)
         
-        if (userId && userId !== 'anonymous_test') {
+        // Try to find a valid user ID
+        let finalUserId = userId && userId !== 'anonymous_test' ? userId : null
+
+        // If no valid user ID, try to find user by email
+        if (!finalUserId && session.customer_details?.email) {
+          console.log('🔍 Webhook: No valid userId, attempting to find user by email:', session.customer_details.email)
+          const { data: userByEmail } = await supabase.auth.admin.listUsers()
+          const matchingUser = userByEmail.users.find(u => u.email === session.customer_details?.email)
+          if (matchingUser) {
+            finalUserId = matchingUser.id
+            console.log('✅ Webhook: Found user by email:', finalUserId)
+          } else {
+            console.log('⚠️ Webhook: No user found with email:', session.customer_details.email)
+          }
+        }
+
+        if (finalUserId) {
           // First check if subscription already exists
           const { data: existingSub } = await supabase
             .from('subscriptions')
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', finalUserId)
             .single()
 
           const subscriptionData = {
-            user_id: userId,
+            user_id: finalUserId,
             stripe_subscription_id: subscription.id,
             stripe_customer_id: subscription.customer as string,
             stripe_price_id: subscription.items.data[0].price.id,
@@ -198,14 +213,14 @@ export async function POST(request: NextRequest) {
           }
 
           let data, error
-          
+
           if (existingSub) {
             // Update existing subscription with Stripe data
             console.log('Webhook: Updating existing subscription with Stripe data')
             const result = await supabase
               .from('subscriptions')
               .update(subscriptionData)
-              .eq('user_id', userId)
+              .eq('user_id', finalUserId)
               .select()
             data = result.data
             error = result.error
@@ -219,7 +234,7 @@ export async function POST(request: NextRequest) {
             data = result.data
             error = result.error
           }
-          
+
           if (error) {
             console.error('❌ Webhook: Error creating subscription:', error)
             console.error('❌ Webhook: Error details:', JSON.stringify(error, null, 2))
@@ -230,29 +245,23 @@ export async function POST(request: NextRequest) {
               { status: 500 }
             )
           } else {
-            console.log('✅ Webhook: Successfully created/updated subscription for user:', userId)
+            console.log('✅ Webhook: Successfully created/updated subscription for user:', finalUserId)
             console.log('✅ Webhook: Subscription data:', data)
             console.log('✅ Webhook: Stripe customer ID saved:', subscriptionData.stripe_customer_id)
           }
         } else {
-          console.error('🚨 Webhook: No valid userId found in session')
-          console.error('🚨 Webhook: userId value:', userId)
+          console.error('🚨 Webhook: No valid userId found and could not find user by email')
+          console.error('🚨 Webhook: Original userId:', userId)
           console.error('🚨 Webhook: Session data:', {
             client_reference_id: session.client_reference_id,
             metadata: session.metadata,
-            customer: session.customer
+            customer: session.customer,
+            customer_email: session.customer_details?.email
           })
-          
-          // For debugging: Let's also try to find the user by customer email
-          if (session.customer_details?.email) {
-            console.log('🔍 Webhook: Attempting to find user by email:', session.customer_details.email)
-            const { data: userByEmail } = await supabase.auth.admin.listUsers()
-            const matchingUser = userByEmail.users.find(u => u.email === session.customer_details?.email)
-            if (matchingUser) {
-              console.log('🔍 Webhook: Found user by email:', matchingUser.id)
-              // Could potentially create subscription here for the found user
-            }
-          }
+          console.log('⚠️ Webhook: Subscription created in Stripe but not saved to database')
+          console.log('⚠️ Webhook: User will need to link subscription after creating account')
+          // Store the subscription info temporarily - we'll link it when user creates account
+          // For now, return success so Stripe doesn't retry
         }
         break
       }
