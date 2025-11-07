@@ -48,9 +48,9 @@ function PaymentSuccessContent() {
           console.error('❌ Error linking subscription:', error)
         }
 
-        // Redirect to dashboard after linking (or attempting to link)
+        // Redirect to dashboard with a flag indicating payment was just completed
         setTimeout(() => {
-          router.push('/dashboard')
+          router.push('/dashboard?payment_complete=true')
         }, 1500)
         return
       }
@@ -235,9 +235,9 @@ function PaymentSuccessContent() {
         localStorage.setItem('paymentCompleted', 'true')
         localStorage.setItem('isAuthenticated', 'true')
 
-        // Redirect to personalized goals selection with pup name
+        // Redirect to dashboard with payment complete flag
         setTimeout(() => {
-          router.push(`/onboarding/goals-web?email=${encodeURIComponent(formData.email)}&pup=${encodeURIComponent(formData.pupName)}`)
+          router.push(`/dashboard?payment_complete=true&email=${encodeURIComponent(formData.email)}&pup=${encodeURIComponent(formData.pupName)}`)
         }, 500)
       }
       
