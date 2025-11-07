@@ -24,12 +24,46 @@ function PaymentSuccessContent() {
   
   // Check if user is already authenticated
   useEffect(() => {
-    // If user is already logged in, redirect to dashboard
-    if (user) {
-      console.log('User already authenticated, redirecting to dashboard')
-      router.push('/dashboard')
+    const handleAuthenticatedUser = async () => {
+      if (!user) return
+
+      // User is logged in with a session_id - they just completed checkout
+      if (sessionId) {
+        console.log('User already authenticated after checkout, linking subscription...')
+        setIsLinkingSubscription(true)
+
+        try {
+          const linkResponse = await fetch('/api/stripe/link-subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          })
+
+          if (linkResponse.ok) {
+            console.log('✅ Subscription linked successfully')
+          } else {
+            console.error('❌ Failed to link subscription')
+          }
+        } catch (error) {
+          console.error('❌ Error linking subscription:', error)
+        }
+
+        // Redirect to dashboard after linking (or attempting to link)
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 1500)
+        return
+      }
+
+      // User is logged in without session_id - shouldn't be on this page
+      if (!sessionId) {
+        console.log('User already authenticated with no checkout session, redirecting to dashboard')
+        router.push('/dashboard')
+      }
     }
-  }, [user, router])
+
+    handleAuthenticatedUser()
+  }, [user, router, sessionId])
   
   const [formData, setFormData] = useState({
     email: emailFromUrl,
@@ -43,6 +77,7 @@ function PaymentSuccessContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [isLinkingSubscription, setIsLinkingSubscription] = useState(false)
   const [errors, setErrors] = useState({
     email: "",
     firstName: "",
@@ -221,13 +256,15 @@ function PaymentSuccessContent() {
     }
   }
 
-  // Show loading while checking authentication
-  if (isCheckingAuth) {
+  // Show loading while checking authentication or linking subscription
+  if (isCheckingAuth || isLinkingSubscription) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white">Verifying your account...</p>
+          <p className="text-white">
+            {isLinkingSubscription ? 'Setting up your subscription...' : 'Verifying your account...'}
+          </p>
         </div>
       </div>
     )
