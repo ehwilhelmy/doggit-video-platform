@@ -16,20 +16,24 @@ import Image from "next/image"
 function PaymentSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { signUp, user } = useAuth()
-  
+  const { signUp, user, refreshSubscriptionStatus } = useAuth()
+
   const emailFromUrl = searchParams.get("email") || ""
   const sessionId = searchParams.get("session_id") || ""
   const isDemoMode = searchParams.get("demo") === "true"
-  
+
+  // Track if we've already started linking to prevent duplicate calls
+  const [hasStartedLinking, setHasStartedLinking] = useState(false)
+
   // Check if user is already authenticated
   useEffect(() => {
     const handleAuthenticatedUser = async () => {
-      if (!user) return
+      if (!user || hasStartedLinking) return
 
       // User is logged in with a session_id - they just completed checkout
       if (sessionId) {
         console.log('User already authenticated after checkout, linking subscription...')
+        setHasStartedLinking(true)
         setIsLinkingSubscription(true)
 
         try {
@@ -45,6 +49,12 @@ function PaymentSuccessContent() {
 
           if (linkResponse.ok) {
             console.log('✅ Subscription linked successfully:', linkData)
+            // Set payment completed flag so auth context can find it
+            localStorage.setItem('paymentCompleted', 'true')
+
+            // Refresh subscription status in auth context
+            console.log('🔄 Refreshing subscription status...')
+            await refreshSubscriptionStatus()
           } else {
             console.error('❌ Failed to link subscription:', linkResponse.status, linkData)
             alert(`Failed to link subscription: ${linkData.error || 'Unknown error'}. Check console for details.`)
@@ -69,7 +79,7 @@ function PaymentSuccessContent() {
     }
 
     handleAuthenticatedUser()
-  }, [user, router, sessionId])
+  }, [user, router, sessionId, hasStartedLinking, refreshSubscriptionStatus])
   
   const [formData, setFormData] = useState({
     email: emailFromUrl,
@@ -213,6 +223,10 @@ function PaymentSuccessContent() {
             if (linkResponse.ok) {
               const linkData = await linkResponse.json()
               console.log('✅ Successfully linked subscription:', linkData)
+
+              // Refresh subscription status in auth context
+              console.log('🔄 Refreshing subscription status...')
+              await refreshSubscriptionStatus()
             } else {
               const errorData = await linkResponse.json()
               console.error('❌ Failed to link subscription:', errorData)

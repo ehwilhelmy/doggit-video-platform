@@ -14,6 +14,7 @@ interface AuthContextType {
   signInWithProvider: (provider: 'google' | 'facebook') => Promise<{ error: any | null }>
   signOut: () => Promise<{ error: any | null }>
   resetPassword: (email: string) => Promise<{ error: any | null }>
+  refreshSubscriptionStatus: () => Promise<void>
   isSubscribed: boolean
   subscriptionLoading: boolean
 }
@@ -242,6 +243,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error }
   }
 
+  const refreshSubscriptionStatus = async () => {
+    if (user) {
+      console.log('Manually refreshing subscription status for user:', user.id)
+      await checkSubscriptionStatus(user.id)
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -252,6 +260,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signInWithProvider,
       signOut,
       resetPassword,
+      refreshSubscriptionStatus,
       isSubscribed,
       subscriptionLoading
     }}>
