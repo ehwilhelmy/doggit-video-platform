@@ -147,18 +147,42 @@ function PaymentSuccessContent() {
       if (data.user) {
         console.log('User created successfully:', data.user.id)
         console.log('Welcome email would be sent to:', formData.email)
-        
+
         // If user was created but needs email confirmation, handle it
         if (!data.session) {
           console.log('No session after signup - user needs email confirmation')
-          
+
           // For now, proceed with localStorage auth until email is confirmed
           // In a production app, you might want to show an email confirmation screen
           console.log('User will need to confirm email to get full Supabase session')
         } else {
           console.log('User signed up and session created successfully')
         }
-        
+
+        // Link the Stripe subscription to the user's account
+        if (sessionId) {
+          try {
+            console.log('🔗 Linking Stripe subscription to user account...')
+            const linkResponse = await fetch('/api/stripe/link-subscription', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId })
+            })
+
+            if (linkResponse.ok) {
+              const linkData = await linkResponse.json()
+              console.log('✅ Successfully linked subscription:', linkData)
+            } else {
+              const errorData = await linkResponse.json()
+              console.error('❌ Failed to link subscription:', errorData)
+              // Continue anyway - user can still access the platform
+            }
+          } catch (linkError) {
+            console.error('❌ Error linking subscription:', linkError)
+            // Continue anyway - webhook might have already handled it
+          }
+        }
+
         // Store additional data in localStorage for backwards compatibility (will be cleaned up by auth context)
         const accountData = {
           email: formData.email,
@@ -168,14 +192,14 @@ function PaymentSuccessContent() {
           createdAt: new Date().toISOString(),
           userId: data.user.id
         }
-        
+
         localStorage.setItem('accountData', JSON.stringify(accountData))
         localStorage.setItem('pupName', formData.pupName)
         localStorage.setItem('userEmail', formData.email)
         localStorage.setItem('subscriptionActive', 'true')
         localStorage.setItem('paymentCompleted', 'true')
         localStorage.setItem('isAuthenticated', 'true')
-        
+
         // Redirect to personalized goals selection with pup name
         setTimeout(() => {
           router.push(`/onboarding/goals-web?email=${encodeURIComponent(formData.email)}&pup=${encodeURIComponent(formData.pupName)}`)
