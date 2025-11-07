@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -58,8 +59,15 @@ export async function POST(request: NextRequest) {
 
     console.log('📝 Retrieved subscription:', subscription.id)
 
+    // Use SERVICE ROLE client to bypass RLS for subscription insert
+    // RLS policy only allows service_role to insert subscriptions
+    const supabaseAdmin = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
     // Check if subscription already exists for this user
-    const { data: existingSub } = await supabase
+    const { data: existingSub } = await supabaseAdmin
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
@@ -84,17 +92,19 @@ export async function POST(request: NextRequest) {
       is_promotional: isPromotional || false
     }
 
+    console.log('💾 Attempting to save subscription for user:', user.id)
+
     let result
     if (existingSub) {
       console.log('Updating existing subscription')
-      result = await supabase
+      result = await supabaseAdmin
         .from('subscriptions')
         .update(subscriptionData)
         .eq('user_id', user.id)
         .select()
     } else {
       console.log('Creating new subscription')
-      result = await supabase
+      result = await supabaseAdmin
         .from('subscriptions')
         .insert(subscriptionData)
         .select()
@@ -102,6 +112,7 @@ export async function POST(request: NextRequest) {
 
     if (result.error) {
       console.error('❌ Error saving subscription:', result.error)
+      console.error('❌ Full error details:', JSON.stringify(result.error, null, 2))
       return NextResponse.json(
         { error: 'Failed to save subscription', details: result.error },
         { status: 500 }
@@ -109,6 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('✅ Successfully linked subscription to user:', user.id)
+    console.log('✅ Subscription record:', result.data?.[0])
 
     return NextResponse.json({
       success: true,
@@ -116,9 +128,9 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error linking subscription:', error)
+    console.error('❌ Error linking subscription:', error)
     return NextResponse.json(
-      { error: 'Failed to link subscription' },
+      { error: 'Failed to link subscription', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
