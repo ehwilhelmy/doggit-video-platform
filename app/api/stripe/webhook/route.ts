@@ -134,28 +134,27 @@ export async function POST(request: NextRequest) {
               from_subscription: subscription.id,
               phases: [
                 {
-                  // First phase: Current subscription at $1 for 1 month (already active)
-                  items: [{ 
+                  // First phase: Current subscription at $1 for 1 month
+                  // Use iterations only (not end_date) - Stripe will calculate the end automatically
+                  items: [{
                     price: firstPriceId || subscription.items.data[0].price.id,
-                    quantity: 1 
+                    quantity: 1
                   }],
-                  iterations: 1, // Only 1 billing cycle at $1
-                  start_date: subscription.current_period_start,
-                  end_date: subscription.current_period_end
+                  iterations: 1 // Only 1 billing cycle at $1
                 },
                 {
                   // Second phase: $10/month indefinitely
-                  items: [{ 
+                  // No iterations = continues indefinitely
+                  items: [{
                     price: recurringPriceId,
-                    quantity: 1 
-                  }],
-                  start_date: subscription.current_period_end
+                    quantity: 1
+                  }]
                 }
               ]
             })
-            console.log('Created subscription schedule for promotional pricing')
+            console.log('✅ Created subscription schedule for promotional pricing')
           } catch (scheduleError) {
-            console.error('Error creating subscription schedule:', scheduleError)
+            console.error('❌ Error creating subscription schedule:', scheduleError)
             // Continue anyway - subscription is still valid even if schedule fails
           }
         } else if (isPromotional && isTestWebhook) {
