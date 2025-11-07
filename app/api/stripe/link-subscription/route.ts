@@ -58,6 +58,9 @@ export async function POST(request: NextRequest) {
     )
 
     console.log('📝 Retrieved subscription:', subscription.id)
+    console.log('📝 Subscription status:', subscription.status)
+    console.log('📝 Current period start:', subscription.current_period_start)
+    console.log('📝 Current period end:', subscription.current_period_end)
 
     // Use SERVICE ROLE client to bypass RLS for subscription insert
     // RLS policy only allows service_role to insert subscriptions
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
     // Check metadata for promotional pricing info
     const isPromotional = session.metadata?.schedule_type === 'promotional'
@@ -83,8 +86,8 @@ export async function POST(request: NextRequest) {
       stripe_price_id: subscription.items.data[0].price.id,
       status: subscription.status as any,
       billing_interval: subscription.items.data[0].price.recurring?.interval as any,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: subscription.current_period_start ? new Date(subscription.current_period_start * 1000).toISOString() : null,
+      current_period_end: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
       cancel_at_period_end: subscription.cancel_at_period_end,
       canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
       trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
