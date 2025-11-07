@@ -33,19 +33,25 @@ function PaymentSuccessContent() {
         setIsLinkingSubscription(true)
 
         try {
+          console.log('🔗 Calling link-subscription with sessionId:', sessionId)
           const linkResponse = await fetch('/api/stripe/link-subscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId })
           })
 
+          const linkData = await linkResponse.json()
+          console.log('📦 Link-subscription response:', linkData)
+
           if (linkResponse.ok) {
-            console.log('✅ Subscription linked successfully')
+            console.log('✅ Subscription linked successfully:', linkData)
           } else {
-            console.error('❌ Failed to link subscription')
+            console.error('❌ Failed to link subscription:', linkResponse.status, linkData)
+            alert(`Failed to link subscription: ${linkData.error || 'Unknown error'}. Check console for details.`)
           }
         } catch (error) {
           console.error('❌ Error linking subscription:', error)
+          alert('Error linking subscription. Check console for details.')
         }
 
         // Redirect to dashboard with a flag indicating payment was just completed
