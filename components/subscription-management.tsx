@@ -45,14 +45,17 @@ export function SubscriptionManagement() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create customer portal session')
+        const errorData = await response.json()
+        console.error('API Error Response:', errorData)
+        throw new Error(errorData.error || errorData.stripeError || 'Failed to create customer portal session')
       }
 
       const { url } = await response.json()
       window.location.href = url
     } catch (error) {
       console.error('Error opening customer portal:', error)
-      alert('Unable to open subscription management. Please contact support@doggit.app')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      alert(`Unable to open subscription management.\n\nError: ${errorMessage}\n\nPlease contact support@doggit.app if this persists.`)
     }
   }
   
