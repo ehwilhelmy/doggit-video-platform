@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16'
+  apiVersion: '2025-07-30.basil'
 })
 
 export async function POST(req: NextRequest) {
@@ -117,8 +117,20 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Error creating customer portal session:', error)
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+
+    // Log Stripe-specific errors
+    if (error && typeof error === 'object' && 'type' in error) {
+      console.error('Stripe error type:', (error as any).type)
+      console.error('Stripe error code:', (error as any).code)
+    }
+
     return NextResponse.json(
-      { error: 'Failed to create customer portal session. Please try again.' },
+      {
+        error: 'Failed to create customer portal session. Please try again.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
