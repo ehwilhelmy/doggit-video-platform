@@ -17,14 +17,19 @@ export function SubscriptionManagement() {
   
   const checkSubscriptionType = async () => {
     if (!user) return
-    
+
     const supabase = createClient()
-    const { data: subscription } = await supabase
+    const { data: subscription, error } = await supabase
       .from('subscriptions')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, stripe_subscription_id, status')
       .eq('user_id', user.id)
       .single()
-    
+
+    console.log('🔍 Subscription Management - User:', user.email)
+    console.log('🔍 Subscription Management - Subscription data:', subscription)
+    console.log('🔍 Subscription Management - Error:', error)
+    console.log('🔍 Subscription Management - Has Stripe Customer:', !!subscription?.stripe_customer_id)
+
     // User has a Stripe customer ID if they paid through Stripe
     setHasStripeCustomer(!!subscription?.stripe_customer_id)
     setLoading(false)
@@ -40,14 +45,17 @@ export function SubscriptionManagement() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create customer portal session')
+        const errorData = await response.json()
+        console.error('API Error Response:', errorData)
+        throw new Error(errorData.error || errorData.stripeError || 'Failed to create customer portal session')
       }
 
       const { url } = await response.json()
       window.location.href = url
     } catch (error) {
       console.error('Error opening customer portal:', error)
-      alert('Unable to open subscription management. Please contact support@doggit.app')
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      alert(`Unable to open subscription management.\n\nError: ${errorMessage}\n\nPlease contact support@doggit.app if this persists.`)
     }
   }
   

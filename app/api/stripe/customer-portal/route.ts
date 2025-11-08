@@ -104,12 +104,31 @@ export async function POST(req: NextRequest) {
     console.log('Creating portal session for customer:', subscription.stripe_customer_id)
 
     // Create Stripe customer portal session
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: subscription.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://training.doggit.app'}/dashboard`,
-    })
+    let portalSession
+    try {
+      portalSession = await stripe.billingPortal.sessions.create({
+        customer: subscription.stripe_customer_id,
+        return_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://training.doggit.app'}/dashboard`,
+      })
+      console.log('Portal session created successfully')
+    } catch (stripeError: any) {
+      console.error('Stripe API error creating portal session:', stripeError)
+      console.error('Stripe error type:', stripeError.type)
+      console.error('Stripe error code:', stripeError.code)
+      console.error('Stripe error message:', stripeError.message)
 
-    console.log('Portal session created successfully')
+      // Check if it's a portal configuration error
+      if (stripeError.code === 'customer_portal_configuration_invalid' ||
+          stripeError.message?.includes('portal') ||
+          stripeError.message?.includes('configuration')) {
+        return NextResponse.json({
+          error: 'Customer Portal not configured in Stripe. Please configure it in Stripe Dashboard → Settings → Billing → Customer Portal',
+          stripeError: stripeError.message
+        }, { status: 500 })
+      }
+
+      throw stripeError
+    }
 
     return NextResponse.json({ 
       url: portalSession.url 
