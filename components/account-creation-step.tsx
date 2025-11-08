@@ -20,7 +20,8 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     puppyName: ""
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -44,7 +45,8 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
     try {
       if (isSignUp) {
         const { error } = await signUp(formData.email, formData.password, {
-          full_name: formData.name,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
           puppy_name: formData.puppyName
         })
         if (error) {
@@ -107,21 +109,40 @@ export function AccountCreationStep({ onSuccess, onBack }: AccountCreationStepPr
       <form onSubmit={handleSubmit} className="space-y-4">
         {isSignUp && (
           <>
-            <div>
-              <Label htmlFor="name" className="text-gray-400 text-sm">
-                Your name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={handleChange}
-                required={isSignUp}
-                disabled={isLoading}
-                className="mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName" className="text-gray-400 text-sm">
+                  First name
+                </Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required={isSignUp}
+                  disabled={isLoading}
+                  className="mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="lastName" className="text-gray-400 text-sm">
+                  Last name
+                </Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Last name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required={isSignUp}
+                  disabled={isLoading}
+                  className="mt-1 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+                />
+              </div>
             </div>
             
             <div>

@@ -69,9 +69,21 @@ export async function POST(request: NextRequest) {
         customerId = subscription.stripe_customer_id
         console.log('Found existing Stripe customer:', customerId)
       } else {
+        // Get user profile for name
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .single()
+
         // Create new Stripe customer
+        const customerName = profile?.first_name && profile?.last_name
+          ? `${profile.first_name} ${profile.last_name}`
+          : undefined
+
         const customer = await stripe.customers.create({
           email: user.email,
+          name: customerName,
           metadata: {
             supabase_user_id: user.id
           }
