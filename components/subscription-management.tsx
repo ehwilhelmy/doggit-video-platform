@@ -17,14 +17,19 @@ export function SubscriptionManagement() {
   
   const checkSubscriptionType = async () => {
     if (!user) return
-    
+
     const supabase = createClient()
-    const { data: subscription } = await supabase
+    const { data: subscription, error } = await supabase
       .from('subscriptions')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, stripe_subscription_id, status')
       .eq('user_id', user.id)
       .single()
-    
+
+    console.log('🔍 Subscription Management - User:', user.email)
+    console.log('🔍 Subscription Management - Subscription data:', subscription)
+    console.log('🔍 Subscription Management - Error:', error)
+    console.log('🔍 Subscription Management - Has Stripe Customer:', !!subscription?.stripe_customer_id)
+
     // User has a Stripe customer ID if they paid through Stripe
     setHasStripeCustomer(!!subscription?.stripe_customer_id)
     setLoading(false)
