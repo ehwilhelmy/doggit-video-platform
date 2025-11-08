@@ -21,7 +21,8 @@ export function AccountCreationModal({ open, onOpenChange, onSuccess }: AccountC
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     puppyName: ""
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -47,7 +48,8 @@ export function AccountCreationModal({ open, onOpenChange, onSuccess }: AccountC
       localStorage.setItem('checkout_pending', 'true')
       
       const { error } = await signUp(formData.email, formData.password, {
-        full_name: formData.name,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         puppy_name: formData.puppyName
       })
       
@@ -73,7 +75,7 @@ export function AccountCreationModal({ open, onOpenChange, onSuccess }: AccountC
   }
 
   const resetModal = () => {
-    setFormData({ email: "", password: "", name: "", puppyName: "" })
+    setFormData({ email: "", password: "", firstName: "", lastName: "", puppyName: "" })
     setError(null)
     setIsSuccess(false)
     setIsLoading(false)
@@ -116,23 +118,45 @@ export function AccountCreationModal({ open, onOpenChange, onSuccess }: AccountC
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="name" className="text-gray-400 text-sm">
-                    Your name
-                  </Label>
-                  <div className="relative mt-1">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Enter your name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      disabled={isLoading}
-                      className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName" className="text-gray-400 text-sm">
+                      First name
+                    </Label>
+                    <div className="relative mt-1">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <Input
+                        id="firstName"
+                        name="firstName"
+                        type="text"
+                        placeholder="First name"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                        disabled={isLoading}
+                        className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="lastName" className="text-gray-400 text-sm">
+                      Last name
+                    </Label>
+                    <div className="relative mt-1">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        placeholder="Last name"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                        disabled={isLoading}
+                        className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+                      />
+                    </div>
                   </div>
                 </div>
 
