@@ -59,18 +59,13 @@ export function SubscriptionManagement() {
     }
   }
   
-  
-  // Don't show anything for admin accounts
-  if (user?.email === 'erica@doggit.app' || user?.email === 'thor@doggit.app') {
-    return null
-  }
-  
+
   if (loading) {
     return null
   }
-  
-  // Only show subscription management for Stripe customers
-  // Manual users don't need unsubscribe option (added for a reason)
+
+  // Only show subscription management for users with Stripe subscriptions
+  // This applies to ALL users (including admins) who have a stripe_customer_id
   if (!hasStripeCustomer) {
     return null
   }
