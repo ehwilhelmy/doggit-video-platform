@@ -10,7 +10,8 @@ import { LogoMark } from "@/components/logo-mark"
 
 interface CustomerInfoStepProps {
   onSuccess?: (customerData: {
-    name: string
+    firstName: string
+    lastName: string
     email: string
     puppyName: string
   }) => void
@@ -20,7 +21,8 @@ interface CustomerInfoStepProps {
 export function CustomerInfoStep({ onSuccess, onBack }: CustomerInfoStepProps) {
   const [formData, setFormData] = useState({
     email: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     puppyName: ""
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -40,7 +42,7 @@ export function CustomerInfoStep({ onSuccess, onBack }: CustomerInfoStepProps) {
     setError(null)
 
     // Basic validation
-    if (!formData.name.trim() || !formData.email.trim() || !formData.puppyName.trim()) {
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.puppyName.trim()) {
       setError("Please fill in all fields")
       setIsLoading(false)
       return
@@ -77,23 +79,45 @@ export function CustomerInfoStep({ onSuccess, onBack }: CustomerInfoStepProps) {
 
       {/* Info Collection Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="name" className="text-gray-400 text-sm">
-            Your name
-          </Label>
-          <div className="relative mt-1">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              disabled={isLoading}
-              className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
-            />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="firstName" className="text-gray-400 text-sm">
+              First name
+            </Label>
+            <div className="relative mt-1">
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                placeholder="First name"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="lastName" className="text-gray-400 text-sm">
+              Last name
+            </Label>
+            <div className="relative mt-1">
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                placeholder="Last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder-gray-500 focus:border-queen-purple"
+              />
+            </div>
           </div>
         </div>
         
