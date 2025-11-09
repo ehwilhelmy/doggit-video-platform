@@ -562,7 +562,7 @@ function WatchPageContent() {
               )}
 
               {/* Center Play Button (only for non-Vimeo videos) */}
-              {!isPlaying && !vimeoVideos[videoId as keyof typeof vimeoVideos] && (
+              {!isPlaying && !video?.vimeo_id && (
                 <div className="absolute inset-0 flex items-center justify-center z-40">
                   <button
                     onClick={togglePlay}
@@ -574,8 +574,8 @@ function WatchPageContent() {
               )}
 
               {/* Video Controls Overlay (only for non-Vimeo videos) */}
-              {!vimeoVideos[videoId as keyof typeof vimeoVideos] && (
-                <div 
+              {!video?.vimeo_id && (
+                <div
                   className="absolute inset-0 z-30"
                   onMouseMove={resetControlsTimeout}
                   onClick={togglePlay}
@@ -583,7 +583,7 @@ function WatchPageContent() {
               )}
 
               {/* Bottom Controls (only for non-Vimeo videos) */}
-              {!vimeoVideos[videoId as keyof typeof vimeoVideos] && (
+              {!video?.vimeo_id && (
                 <div className={`absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 ${showControls || !isPlaying ? 'opacity-100' : 'opacity-0'}`}>
                 {/* Progress Bar */}
                 <div className="px-6 pb-4">
