@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VideoDuration } from "@/components/video-duration"
 import { VimeoDuration } from "@/components/vimeo-duration"
-import { 
-  PlayCircle, 
+import { getCachedVimeoThumbnail } from "@/utils/vimeo-thumbnail"
+import {
+  PlayCircle,
   Clock,
   Plus,
   ThumbsUp,
@@ -28,6 +29,7 @@ interface Video {
   videoUrl?: string
   video_url?: string
   vimeoId?: string
+  vimeo_id?: string  // Support both camelCase and snake_case
   description?: string
   free?: boolean
   tags?: string[]
@@ -51,8 +53,31 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
   const router = useRouter()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [thumbnailUrl, setThumbnailUrl] = useState(video.thumbnail_url || video.thumbnail || '')
   const videoRef = useRef<HTMLVideoElement>(null)
   const timeoutRef = useRef<NodeJS.Timeout>()
+
+  // Fetch Vimeo thumbnail if no thumbnail_url is provided
+  useEffect(() => {
+    const fetchVimeoThumbnail = async () => {
+      // If we have a thumbnail URL, use it
+      if (video.thumbnail_url || video.thumbnail) {
+        setThumbnailUrl(video.thumbnail_url || video.thumbnail || '')
+        return
+      }
+
+      // If we have a Vimeo ID, fetch the thumbnail from Vimeo
+      const vimeoId = video.vimeoId || video.vimeo_id
+      if (vimeoId) {
+        const vimeoThumb = await getCachedVimeoThumbnail(vimeoId)
+        if (vimeoThumb) {
+          setThumbnailUrl(vimeoThumb)
+        }
+      }
+    }
+
+    fetchVimeoThumbnail()
+  }, [video.vimeoId, video.vimeo_id, video.thumbnail_url, video.thumbnail])
 
   const handleMouseEnter = () => {
     timeoutRef.current = setTimeout(() => {
@@ -115,7 +140,7 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
       <div className="relative aspect-video bg-black overflow-hidden" style={{ margin: 0, padding: 0, display: 'block' }}>
           <VideoThumbnail
             videoUrl={video.videoUrl || video.video_url}
-            fallbackImage={video.thumbnail_url || video.thumbnail}
+            fallbackImage={thumbnailUrl}
             videoId={video.id}
             alt={video.title}
             className="w-full h-full object-cover block"
@@ -166,12 +191,12 @@ export function VideoPreviewCard({ video, onVideoClick, isSubscribed, compact = 
             <div>
               <h3 className="font-semibold text-foreground mb-1">{video.title}</h3>
             </div>
-            {video.vimeoId ? (
+            {(video.vimeoId || video.vimeo_id) ? (
               <VimeoDuration
-                vimeoId={video.vimeoId}
+                vimeoId={video.vimeoId || video.vimeo_id || ''}
                 fallbackDuration={video.duration}
                 showIcon={true}
-                className="text-gray-400"
+                className="text-xs text-muted-foreground"
               />
             ) : (
               <VideoDuration

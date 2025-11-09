@@ -15,6 +15,7 @@ import { VideoPreviewCard } from "@/components/video-preview-card"
 import { VideoThumbnail } from "@/components/video-thumbnail"
 import { VideoDuration } from "@/components/video-duration"
 import { SubscriptionManagement } from "@/components/subscription-management"
+import { getCachedVimeoThumbnail } from "@/utils/vimeo-thumbnail"
 import type { Profile, VideoProgress } from "@/types/database"
 import { 
   PlayCircle,
@@ -52,6 +53,7 @@ function DashboardContent() {
   const [isPersonalized, setIsPersonalized] = useState(false)
   const [videoProgress, setVideoProgress] = useState<Record<string, VideoProgress>>({})
   const [isAdmin, setIsAdmin] = useState(false)
+  const [heroThumbnail, setHeroThumbnail] = useState<string>('')
   const supabase = createClient()
 
 
@@ -192,47 +194,57 @@ function DashboardContent() {
     }
   }, [searchParams, user, isSubscribed, loading, subscriptionLoading])
 
-  // Load videos - use hardcoded data for now
+  // Load videos from database
   useEffect(() => {
-    setVideosLoading(true)
-    // Force hardcoded data instead of Supabase
-    setVideos([
-      {
-        id: "puppy-basics",
-        title: "PUPPY BASICS",
-        duration: "2:54",
-        thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/1%20Puppy%20Basics.png?v=3&t=1756419603",
-        instructor: "Jayme Nolan",
-        category: "Foundation",
-        video_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/videos/1%20Puppy%20Basics%20(version%203%20-%20Brian%20VO)-compressed.mp4",
-        description: "Master foundation puppy training fundamentals with proven techniques rooted in dog psychology.",
-        tags: ["Puppy"]
-      },
-      {
-        id: "potty-training",
-        title: "POTTY TRAINING",
-        duration: "2:14",
-        thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/2%20Potty%20Training.png", 
-        instructor: "Jayme Nolan",
-        category: "Training",
-        vimeoId: "1114967907",
-        description: "Essential techniques for successful house training and establishing good bathroom habits.",
-        tags: ["House Training"]
-      },
-      {
-        id: "leash-training",
-        title: "LEASH TRAINING", 
-        duration: "2:46",
-        thumbnail_url: "https://vbtucyswugifonwodopp.supabase.co/storage/v1/object/public/images/3%20Leash%20Training.png",
-        instructor: "Jayme Nolan",
-        category: "Walking",
-        vimeoId: "1114969488",
-        description: "Learn effective leash training techniques for enjoyable walks.",
-        tags: ["Leash"]
+    const fetchVideos = async () => {
+      setVideosLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('videos')
+          .select('*')
+          .order('is_featured', { ascending: false })
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Error fetching videos:', error)
+          return
+        }
+
+        setVideos(data || [])
+      } catch (error) {
+        console.error('Error fetching videos:', error)
+      } finally {
+        setVideosLoading(false)
       }
-    ])
-    setVideosLoading(false)
+    }
+
+    fetchVideos()
   }, [])
+
+  // Fetch hero video thumbnail from Vimeo if needed
+  useEffect(() => {
+    const fetchHeroThumbnail = async () => {
+      if (videos.length === 0) return
+
+      const heroVideo = videos[0]
+
+      // If we have a thumbnail_url, use it
+      if (heroVideo.thumbnail_url || heroVideo.thumbnail) {
+        setHeroThumbnail(heroVideo.thumbnail_url || heroVideo.thumbnail)
+        return
+      }
+
+      // If we have a vimeo_id, fetch from Vimeo
+      if (heroVideo.vimeo_id) {
+        const vimeoThumb = await getCachedVimeoThumbnail(heroVideo.vimeo_id)
+        if (vimeoThumb) {
+          setHeroThumbnail(vimeoThumb)
+        }
+      }
+    }
+
+    fetchHeroThumbnail()
+  }, [videos])
 
   const handleVideoClick = async (videoId: string) => {
     // Track that user started watching this video
@@ -416,7 +428,7 @@ function DashboardContent() {
           {videos.length > 0 && (
             <VideoThumbnail
               videoUrl={videos[0].video_url || videos[0].videoUrl}
-              fallbackImage={videos[0].thumbnail_url || videos[0].thumbnail}
+              fallbackImage={heroThumbnail}
               videoId={videos[0].id}
               alt={videos[0].title}
               className="w-full h-full object-cover bg-black"

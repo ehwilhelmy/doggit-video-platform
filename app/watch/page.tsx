@@ -11,6 +11,7 @@ import { VimeoPlayer } from "@/components/vimeo-player"
 import { ShareModal } from "@/components/share-modal"
 import { vimeoVideos } from "@/lib/vimeo-config"
 import { useAuth } from "@/contexts/auth-context"
+import { createClient } from "@/lib/supabase/client"
 import { 
   X, 
   Play, 
@@ -91,13 +92,42 @@ function WatchPageContent() {
   const searchParams = useSearchParams()
   const videoId = searchParams.get("v") || "puppy-basics"
   const from = searchParams.get("from") || "welcome"
-  
-  const video = useMemo(() => 
-    videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"],
-    [videoId]
-  )
+  const supabase = createClient()
+
+  const [video, setVideo] = useState<any>(null)
+  const [videoLoading, setVideoLoading] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
+
+  // Fetch video from database
+  useEffect(() => {
+    const fetchVideo = async () => {
+      setVideoLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('videos')
+          .select('*')
+          .eq('id', videoId)
+          .single()
+
+        if (error) {
+          console.error('Error fetching video:', error)
+          // Fallback to hardcoded data if database fetch fails
+          setVideo(videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"])
+        } else {
+          setVideo(data)
+        }
+      } catch (error) {
+        console.error('Error fetching video:', error)
+        // Fallback to hardcoded data
+        setVideo(videosData[videoId as keyof typeof videosData] || videosData["puppy-basics"])
+      } finally {
+        setVideoLoading(false)
+      }
+    }
+
+    fetchVideo()
+  }, [videoId])
   const [showControls, setShowControls] = useState(true)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(174) // Fallback to 2:54 (174 seconds)
@@ -429,6 +459,15 @@ function WatchPageContent() {
     }
   }, [])
 
+  // Show loading state while fetching video
+  if (videoLoading || !video) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-jade-purple/30 border-t-jade-purple rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -469,21 +508,21 @@ function WatchPageContent() {
               className="relative w-full h-full bg-black overflow-hidden"
               onMouseMove={resetControlsTimeout}
             >
-              {/* Use Vimeo player if video exists in vimeoVideos config, fallback to video element for others */}
-              {vimeoVideos[videoId as keyof typeof vimeoVideos] ? (
+              {/* Use Vimeo player if video has vimeo_id, fallback to video element for others */}
+              {video?.vimeo_id ? (
                 <VimeoPlayer
-                  videoId={vimeoVideos[videoId as keyof typeof vimeoVideos].id}
+                  videoId={video.vimeo_id}
                   title={video.title}
                   className="w-full h-full"
                 />
-              ) : (
+              ) : (video?.video_url || video?.videoUrl) ? (
                 <video
                   key={`video-${videoId}`}
                   ref={videoRef}
                   className="w-full h-full object-contain"
-                  src={video.videoUrl}
+                  src={video.video_url || video.videoUrl}
                   playsInline
-                  poster={video.thumbnail}
+                  poster={video.thumbnail_url || video.thumbnail}
                   crossOrigin="anonymous"
                   preload="metadata"
                   onLoadedMetadata={() => {
@@ -503,17 +542,17 @@ function WatchPageContent() {
                   }}
                   onError={(e) => {
                     console.error("Video error:", e)
-                    console.error("Video src:", video.videoUrl)
+                    console.error("Video src:", video.video_url || video.videoUrl)
                   }}
                 />
-              )}
+              ) : null}
 
               {/* Video Thumbnail Overlay (only show before first play and only for non-Vimeo videos) */}
-              {!isPlaying && currentTime === 0 && !vimeoVideos[videoId as keyof typeof vimeoVideos] && (
+              {!isPlaying && currentTime === 0 && !video?.vimeo_id && (
                 <div className="absolute inset-0 z-10">
                   <VideoThumbnail
-                    videoUrl={video.videoUrl}
-                    fallbackImage={video.thumbnail}
+                    videoUrl={video.video_url || video.videoUrl}
+                    fallbackImage={video.thumbnail_url || video.thumbnail}
                     videoId={videoId}
                     alt={video.title}
                     className="w-full h-full object-cover"

@@ -7,7 +7,11 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, FileVideo, Users, BarChart3, Eye, Clock, Shield } from "lucide-react"
+import { ArrowLeft, FileVideo, Users, BarChart3, Eye, Clock, Shield, Loader2, Trash2, Pencil } from "lucide-react"
+import { AddVideoModal } from "@/components/admin/add-video-modal"
+import { EditVideoModal } from "@/components/admin/edit-video-modal"
+import { VideoThumbnailPreview } from "@/components/admin/video-thumbnail-preview"
+import Link from "next/link"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -21,7 +25,7 @@ interface Video {
   category: string
   level: string
   thumbnail_url?: string
-  video_url?: string
+  vimeo_id?: string
   created_at: string
   is_featured: boolean
   view_count: number
@@ -32,50 +36,57 @@ export default function SimpleAdminPanel() {
   const { user, loading } = useAuth()
   const [isAdmin, setIsAdmin] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
-  const [videos] = useState<Video[]>([
-    {
-      id: "puppy-basics",
-      title: "Puppy Basics",
-      description: "Master essential puppy training fundamentals with proven techniques from expert trainer Jayme Nolan.",
-      instructor: "Jayme Nolan",
-      duration: "15:30",
-      category: "Puppy Training",
-      level: "Beginner",
-      thumbnail_url: "https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=800&h=600&fit=crop",
-      video_url: "https://drive.usercontent.google.com/download?id=1Cb0R2HcNtovUx0gSuF_L6KQeoLZZhaDk&export=download",
-      created_at: "2024-01-15T10:00:00Z",
-      is_featured: true,
-      view_count: 1250
-    },
-    {
-      id: "advanced-obedience",
-      title: "Advanced Obedience Commands",
-      description: "Take your dog's training to the next level with advanced obedience commands and techniques for better control and communication.",
-      instructor: "Mike Chen",
-      duration: "18:45",
-      category: "Obedience",
-      level: "Advanced",
-      thumbnail_url: "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=800&h=600&fit=crop",
-      created_at: "2024-01-10T14:30:00Z",
-      is_featured: false,
-      view_count: 890
-    },
-    {
-      id: "leash-training",
-      title: "Leash Training Techniques",
-      description: "Learn effective leash training techniques to make walks enjoyable for both you and your dog. End pulling and create positive walking experiences.",
-      instructor: "Emily Rodriguez",
-      duration: "15:20",
-      category: "Walking",
-      level: "Intermediate",
-      thumbnail_url: "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=800&h=600&fit=crop",
-      created_at: "2024-01-05T09:15:00Z",
-      is_featured: false,
-      view_count: 675
-    }
-  ])
+  const [videos, setVideos] = useState<Video[]>([])
+  const [isLoadingVideos, setIsLoadingVideos] = useState(true)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingVideo, setEditingVideo] = useState<Video | null>(null)
 
-  // Check admin status
+  const fetchVideos = async () => {
+    try {
+      setIsLoadingVideos(true)
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*')
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching videos:', error)
+        return
+      }
+
+      setVideos(data || [])
+    } catch (error) {
+      console.error('Error fetching videos:', error)
+    } finally {
+      setIsLoadingVideos(false)
+    }
+  }
+
+  const deleteVideo = async (videoId: string) => {
+    if (!confirm('Are you sure you want to delete this video?')) {
+      return
+    }
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('videos')
+        .delete()
+        .eq('id', videoId)
+
+      if (error) throw error
+
+      await fetchVideos()
+    } catch (error) {
+      console.error('Error deleting video:', error)
+      alert('Failed to delete video')
+    }
+  }
+
+  // Check admin status and fetch videos
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!user) {
@@ -98,6 +109,8 @@ export default function SimpleAdminPanel() {
         }
 
         setIsAdmin(true)
+        // Fetch videos after confirming admin status
+        await fetchVideos()
       } catch (error) {
         console.error('Error checking admin status:', error)
         router.push('/dashboard')
@@ -162,14 +175,18 @@ export default function SimpleAdminPanel() {
               <FileVideo className="h-4 w-4" />
               Videos
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <Users className="h-4 w-4" />
-              Users
-            </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </Button>
+            <Link href="/admin/users" className="w-full">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <Users className="h-4 w-4" />
+                Users
+              </Button>
+            </Link>
+            <Link href="/admin/analytics" className="w-full">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </Button>
+            </Link>
           </nav>
         </aside>
 
@@ -231,50 +248,92 @@ export default function SimpleAdminPanel() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Video Library</CardTitle>
-                <Button className="gap-2">
+                <Button className="gap-2 bg-jade-purple hover:bg-jade-purple/90" onClick={() => setShowAddModal(true)}>
                   <FileVideo className="h-4 w-4" />
                   Add Video
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {videos.map((video) => (
-                  <div key={video.id} className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                    <img 
-                      src={video.thumbnail_url} 
-                      alt={video.title}
-                      className="w-24 h-16 object-cover rounded"
-                    />
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{video.title}</h3>
-                        {video.is_featured && <Badge variant="secondary">Featured</Badge>}
+              {isLoadingVideos ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 text-jade-purple animate-spin" />
+                </div>
+              ) : videos.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <FileVideo className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No videos yet. Click "Add Video" to get started.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {videos.map((video) => (
+                    <div key={video.id} className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                      <VideoThumbnailPreview
+                        thumbnailUrl={video.thumbnail_url}
+                        vimeoId={video.vimeo_id}
+                        title={video.title}
+                      />
+
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold">{video.title}</h3>
+                          {video.is_featured && <Badge variant="secondary">Featured</Badge>}
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{video.instructor} • {video.duration}</p>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{video.category}</Badge>
+                          <Badge variant="outline">{video.level}</Badge>
+                          {video.vimeo_id && (
+                            <span className="text-xs text-gray-500">Vimeo: {video.vimeo_id}</span>
+                          )}
+                          <span className="text-xs text-gray-500">{video.view_count || 0} views</span>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{video.instructor} • {video.duration}</p>
+
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline">{video.category}</Badge>
-                        <Badge variant="outline">{video.level}</Badge>
-                        <span className="text-xs text-gray-500">{video.view_count} views</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingVideo(video)
+                            setShowEditModal(true)
+                          }}
+                          className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteVideo(video.id)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
-                        Edit
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </main>
       </div>
+
+      {/* Add Video Modal */}
+      <AddVideoModal
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+        onSuccess={fetchVideos}
+      />
+
+      {/* Edit Video Modal */}
+      <EditVideoModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        onSuccess={fetchVideos}
+        video={editingVideo}
+      />
     </div>
   )
 }

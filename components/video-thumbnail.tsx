@@ -64,12 +64,18 @@ export function VideoThumbnail({
 
   return (
     <div className="relative w-full h-full" style={{ margin: 0, padding: 0, display: 'block', lineHeight: 0 }}>
-      <img
-        src={thumbnailSrc}
-        alt={alt}
-        className={`${className} block`}
-        style={{ margin: 0, padding: 0, display: 'block', verticalAlign: 'top' }}
-      />
+      {thumbnailSrc ? (
+        <img
+          src={thumbnailSrc}
+          alt={alt}
+          className={`${className} block`}
+          style={{ margin: 0, padding: 0, display: 'block', verticalAlign: 'top' }}
+        />
+      ) : (
+        <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
       {isLoading && (
         <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
