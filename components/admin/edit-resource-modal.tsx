@@ -30,6 +30,7 @@ interface EditResourceModalProps {
 
 export function EditResourceModal({ open, onOpenChange, onSuccess, resource }: EditResourceModalProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetchingImage, setIsFetchingImage] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -53,6 +54,46 @@ export function EditResourceModal({ open, onOpenChange, onSuccess, resource }: E
       })
     }
   }, [resource])
+
+  // Fetch image and tags from URL when URL changes
+  const handleUrlChange = async (url: string) => {
+    setFormData({ ...formData, url })
+
+    // Only fetch if URL looks valid
+    if (url && url.startsWith('http')) {
+      setIsFetchingImage(true)
+      try {
+        const response = await fetch(`/api/fetch-og-image?url=${encodeURIComponent(url)}`)
+        if (response.ok) {
+          const data = await response.json()
+          const updates: any = {}
+
+          // Only update image_url if it's currently empty
+          if (data.imageUrl && !formData.image_url) {
+            updates.image_url = data.imageUrl
+          }
+
+          // Only update tags if they're currently empty
+          if (data.tags && data.tags.length > 0 && !formData.tags) {
+            updates.tags = data.tags.join(', ')
+          }
+
+          // Update published_date if found and field is empty
+          if (data.publishedDate && !formData.published_date) {
+            updates.published_date = data.publishedDate
+          }
+
+          if (Object.keys(updates).length > 0) {
+            setFormData(prev => ({ ...prev, ...updates }))
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching metadata:', error)
+      } finally {
+        setIsFetchingImage(false)
+      }
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -136,21 +177,23 @@ export function EditResourceModal({ open, onOpenChange, onSuccess, resource }: E
               id="url"
               type="url"
               value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              onChange={(e) => handleUrlChange(e.target.value)}
               placeholder="https://resources.doggit.app/..."
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="image_url">Image URL</Label>
+            <Label htmlFor="image_url">Image URL {isFetchingImage && <span className="text-xs text-gray-500">(fetching...)</span>}</Label>
             <Input
               id="image_url"
               type="url"
               value={formData.image_url}
               onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-              placeholder="https://..."
+              placeholder="https://... (auto-filled from article URL)"
+              disabled={isFetchingImage}
             />
+            <p className="text-xs text-gray-500 mt-1">Will be automatically fetched from the article URL if available</p>
           </div>
 
           <div>
@@ -161,6 +204,7 @@ export function EditResourceModal({ open, onOpenChange, onSuccess, resource }: E
               value={formData.published_date}
               onChange={(e) => setFormData({ ...formData, published_date: e.target.value })}
             />
+            <p className="text-xs text-gray-500 mt-1">Auto-filled from article or defaults to today</p>
           </div>
 
           <div>
@@ -171,7 +215,7 @@ export function EditResourceModal({ open, onOpenChange, onSuccess, resource }: E
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
               placeholder="Dog's Health, Puppy Guide, Tips & Tricks"
             />
-            <p className="text-xs text-gray-500 mt-1">Separate multiple tags with commas</p>
+            <p className="text-xs text-gray-500 mt-1">Auto-filled from article or enter manually (comma separated)</p>
           </div>
 
           <div className="flex items-center space-x-2">
