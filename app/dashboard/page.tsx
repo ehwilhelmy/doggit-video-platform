@@ -687,7 +687,7 @@ function DashboardContent() {
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {resources.map((resource) => (
-                  <article key={resource.id} className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
+                  <article key={resource.id} className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group flex flex-col">
                     {resource.image_url && (
                       <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                         <img
@@ -697,7 +697,7 @@ function DashboardContent() {
                         />
                       </div>
                     )}
-                    <div className="p-4">
+                    <div className="p-4 flex flex-col flex-1">
                       {resource.tags && resource.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
                           {resource.tags.map((tag: string, index: number) => (
@@ -718,7 +718,7 @@ function DashboardContent() {
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center text-queen-purple hover:text-queen-purple/80 text-sm font-medium"
+                        className="inline-flex items-center text-queen-purple hover:text-queen-purple/80 text-sm font-medium mt-auto"
                       >
                         Read Now
                         <ExternalLink className="w-3 h-3 ml-1" />
