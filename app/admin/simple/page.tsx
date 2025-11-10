@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, FileVideo, Users, BarChart3, Eye, Clock, Shield, Loader2, Trash2, Pencil } from "lucide-react"
+import { ArrowLeft, FileVideo, Users, BarChart3, Eye, Clock, Shield, Loader2, Trash2, Pencil, FileText } from "lucide-react"
 import { AddVideoModal } from "@/components/admin/add-video-modal"
 import { EditVideoModal } from "@/components/admin/edit-video-modal"
 import { VideoThumbnailPreview } from "@/components/admin/video-thumbnail-preview"
@@ -185,6 +185,12 @@ export default function SimpleAdminPanel() {
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Analytics
+              </Button>
+            </Link>
+            <Link href="/admin/resources" className="w-full">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <FileText className="h-4 w-4" />
+                Resources
               </Button>
             </Link>
           </nav>

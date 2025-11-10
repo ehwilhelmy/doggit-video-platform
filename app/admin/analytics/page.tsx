@@ -16,7 +16,8 @@ import {
   Eye,
   TrendingUp,
   Activity,
-  Loader2
+  Loader2,
+  FileText
 } from "lucide-react"
 import Link from "next/link"
 
@@ -194,6 +195,12 @@ export default function AnalyticsPage() {
               <BarChart3 className="h-4 w-4" />
               Analytics
             </Button>
+            <Link href="/admin/resources" className="w-full">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <FileText className="h-4 w-4" />
+                Resources
+              </Button>
+            </Link>
           </nav>
         </aside>
 

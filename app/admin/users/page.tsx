@@ -22,7 +22,8 @@ import {
   Loader2,
   ArrowLeft,
   FileVideo,
-  BarChart3
+  BarChart3,
+  FileText
 } from "lucide-react"
 import Link from "next/link"
 
@@ -220,6 +221,12 @@ export default function AdminUsersPage() {
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Analytics
+              </Button>
+            </Link>
+            <Link href="/admin/resources" className="w-full">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <FileText className="h-4 w-4" />
+                Resources
               </Button>
             </Link>
           </nav>

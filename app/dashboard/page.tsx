@@ -54,6 +54,8 @@ function DashboardContent() {
   const [videoProgress, setVideoProgress] = useState<Record<string, VideoProgress>>({})
   const [isAdmin, setIsAdmin] = useState(false)
   const [heroThumbnail, setHeroThumbnail] = useState<string>('')
+  const [resources, setResources] = useState<any[]>([])
+  const [resourcesLoading, setResourcesLoading] = useState(true)
   const supabase = createClient()
 
 
@@ -85,13 +87,13 @@ function DashboardContent() {
   // Fetch video progress from Supabase
   const fetchVideoProgress = async () => {
     if (!user) return
-    
+
     try {
       const { data: progress, error } = await supabase
         .from('video_progress')
         .select('*')
         .eq('user_id', user.id)
-      
+
       if (progress && !error) {
         const progressMap: Record<string, VideoProgress> = {}
         progress.forEach(p => {
@@ -101,6 +103,27 @@ function DashboardContent() {
       }
     } catch (error) {
       console.error('Error fetching video progress:', error)
+    }
+  }
+
+  // Fetch resources from Supabase
+  const fetchResources = async () => {
+    try {
+      setResourcesLoading(true)
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('is_published', true)
+        .order('published_date', { ascending: false })
+        .limit(3) // Only get top 3 most recent
+
+      if (data && !error) {
+        setResources(data)
+      }
+    } catch (error) {
+      console.error('Error fetching resources:', error)
+    } finally {
+      setResourcesLoading(false)
     }
   }
 
@@ -156,6 +179,7 @@ function DashboardContent() {
         // Fetch real profile from database
         fetchUserProfile()
         fetchVideoProgress()
+        fetchResources()
         
         const firstName = user.user_metadata?.firstName || ""
         const pupNameFromMeta = user.user_metadata?.pup_name || storedPupName
@@ -651,106 +675,59 @@ function DashboardContent() {
               <h2 className="text-2xl font-bold text-white mb-3">DOGG!T Resources</h2>
               <p className="text-gray-400">Expert insights and tips from our training professionals</p>
             </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Article 1 - Mythbusters */}
-              <article className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
-                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
-                  <img 
-                    src="https://resources.doggit.app/wp-content/uploads/2024/03/PuppiesInYard.jpg"
-                    alt="Mythbusters! True or false?"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <span className="text-xs bg-queen-purple text-white px-2 py-1 rounded">Dog's Health</span>
-                    <span className="text-xs bg-jade-purple text-white px-2 py-1 rounded">Puppy Guide</span>
-                    <span className="text-xs bg-nettle-green text-white px-2 py-1 rounded">Tips & Tricks</span>
-                  </div>
-                  <h3 className="font-semibold text-white mb-2 group-hover:text-queen-purple transition-colors">
-                    Mythbusters! True Or False?
-                  </h3>
-                  <div className="flex items-center text-gray-400 text-sm mb-3">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    March 21, 2024
-                  </div>
-                  <a 
-                    href="https://resources.doggit.app/mythbusters-true-or-false/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-queen-purple hover:text-queen-purple/80 text-sm font-medium"
-                  >
-                    Read Now
-                    <ExternalLink className="w-3 h-3 ml-1" />
-                  </a>
-                </div>
-              </article>
 
-              {/* Article 2 - Health Clearances */}
-              <article className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
-                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
-                  <img 
-                    src="https://resources.doggit.app/wp-content/uploads/2024/03/female-veterinarian-examining-parson-russell-terrier-dog-solated-on-white-SBI-305113415.jpg"
-                    alt="Health Clearances – What To Know And What To Look Out For"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <span className="text-xs bg-queen-purple text-white px-2 py-1 rounded">Dog's Health</span>
-                  </div>
-                  <h3 className="font-semibold text-white mb-2 group-hover:text-queen-purple transition-colors">
-                    Health Clearances – What To Know And What To Look Out For
-                  </h3>
-                  <div className="flex items-center text-gray-400 text-sm mb-3">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    March 21, 2024
-                  </div>
-                  <a 
-                    href="https://resources.doggit.app/health-clearances-what-to-know-and-what-to-look-out-for/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-queen-purple hover:text-queen-purple/80 text-sm font-medium"
-                  >
-                    Read Now
-                    <ExternalLink className="w-3 h-3 ml-1" />
-                  </a>
-                </div>
-              </article>
-
-              {/* Article 3 - Collar Types */}
-              <article className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
-                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
-                  <img 
-                    src="https://resources.doggit.app/wp-content/uploads/2024/03/collar_types.jpg"
-                    alt="Collar Types"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <span className="text-xs bg-jade-purple text-white px-2 py-1 rounded">Puppy Guide</span>
-                  </div>
-                  <h3 className="font-semibold text-white mb-2 group-hover:text-queen-purple transition-colors">
-                    Collar Types
-                  </h3>
-                  <div className="flex items-center text-gray-400 text-sm mb-3">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    March 21, 2024
-                  </div>
-                  <a 
-                    href="https://resources.doggit.app/collar-types/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-queen-purple hover:text-queen-purple/80 text-sm font-medium"
-                  >
-                    Read Now
-                    <ExternalLink className="w-3 h-3 ml-1" />
-                  </a>
-                </div>
-              </article>
-            </div>
+            {resourcesLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-12 h-12 border-4 border-jade-purple/30 border-t-jade-purple rounded-full animate-spin" />
+              </div>
+            ) : resources.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <p>No resources available yet.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {resources.map((resource) => (
+                  <article key={resource.id} className="bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-600 transition-colors group">
+                    {resource.image_url && (
+                      <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+                        <img
+                          src={resource.image_url}
+                          alt={resource.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      {resource.tags && resource.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {resource.tags.map((tag: string, index: number) => (
+                            <span key={index} className="text-xs bg-jade-purple text-white px-2 py-1 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <h3 className="font-semibold text-white mb-2 group-hover:text-queen-purple transition-colors">
+                        {resource.title}
+                      </h3>
+                      <div className="flex items-center text-gray-400 text-sm mb-3">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        {new Date(resource.published_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </div>
+                      <a
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-queen-purple hover:text-queen-purple/80 text-sm font-medium"
+                      >
+                        Read Now
+                        <ExternalLink className="w-3 h-3 ml-1" />
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
 
             {/* View All Link */}
             <div className="mt-8 text-center">
