@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, FileVideo, Users, BarChart3, Eye, Clock, Shield, Loader2, Trash2, Pencil, FileText } from "lucide-react"
+import { ArrowLeft, FileVideo, Users, BarChart3, Eye, Clock, Shield, Loader2, Trash2, Pencil, FileText, Menu, X } from "lucide-react"
 import { AddVideoModal } from "@/components/admin/add-video-modal"
 import { EditVideoModal } from "@/components/admin/edit-video-modal"
 import { VideoThumbnailPreview } from "@/components/admin/video-thumbnail-preview"
@@ -41,6 +41,7 @@ export default function SimpleAdminPanel() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingVideo, setEditingVideo] = useState<Video | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const fetchVideos = async () => {
     try {
@@ -142,11 +143,21 @@ export default function SimpleAdminPanel() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+          <div className="flex items-center gap-2 lg:gap-4">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              ) : (
+                <Menu className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              )}
+            </button>
             <button
               onClick={() => router.push('/dashboard')}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+              className="hidden lg:block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             </button>
@@ -154,12 +165,12 @@ export default function SimpleAdminPanel() {
               <div className="w-8 h-8 bg-jade-purple rounded-lg flex items-center justify-center">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">DOGGIT Admin</h1>
+              <h1 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white">DOGGIT Admin</h1>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-400">
               Admin Panel
             </span>
           </div>
@@ -167,28 +178,50 @@ export default function SimpleAdminPanel() {
       </header>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex relative">
         {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-[calc(100vh-73px)]">
+        <aside className={`
+          fixed lg:static inset-y-0 left-0 z-40
+          w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          mt-[73px] lg:mt-0 lg:min-h-[calc(100vh-73px)]
+        `}>
           <nav className="p-4 space-y-2">
-            <Button variant="ghost" className="w-full justify-start gap-2 bg-jade-purple/10 text-jade-purple">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 bg-jade-purple/10 text-jade-purple"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               <FileVideo className="h-4 w-4" />
               Videos
             </Button>
             <Link href="/admin/users" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <Users className="h-4 w-4" />
                 Users
               </Button>
             </Link>
             <Link href="/admin/analytics" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </Button>
             </Link>
             <Link href="/admin/resources" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <FileText className="h-4 w-4" />
                 Resources
               </Button>
@@ -196,8 +229,16 @@ export default function SimpleAdminPanel() {
           </nav>
         </aside>
 
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden mt-[73px]"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Content Area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 lg:p-6 w-full min-w-0">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card>
@@ -252,9 +293,9 @@ export default function SimpleAdminPanel() {
           {/* Videos Section */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <CardTitle>Video Library</CardTitle>
-                <Button className="gap-2 bg-jade-purple hover:bg-jade-purple/90" onClick={() => setShowAddModal(true)}>
+                <Button className="gap-2 bg-jade-purple hover:bg-jade-purple/90 w-full sm:w-auto" onClick={() => setShowAddModal(true)}>
                   <FileVideo className="h-4 w-4" />
                   Add Video
                 </Button>
@@ -273,20 +314,20 @@ export default function SimpleAdminPanel() {
               ) : (
                 <div className="space-y-4">
                   {videos.map((video) => (
-                    <div key={video.id} className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div key={video.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                       <VideoThumbnailPreview
                         thumbnailUrl={video.thumbnail_url}
                         vimeoId={video.vimeo_id}
                         title={video.title}
                       />
 
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h3 className="font-semibold">{video.title}</h3>
                           {video.is_featured && <Badge variant="secondary">Featured</Badge>}
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{video.instructor} • {video.duration}</p>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <Badge variant="outline">{video.category}</Badge>
                           <Badge variant="outline">{video.level}</Badge>
                           {video.vimeo_id && (
@@ -296,7 +337,7 @@ export default function SimpleAdminPanel() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -307,6 +348,7 @@ export default function SimpleAdminPanel() {
                           className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
                         >
                           <Pencil className="h-4 w-4" />
+                          <span className="ml-2 sm:hidden">Edit</span>
                         </Button>
                         <Button
                           variant="ghost"
@@ -315,6 +357,7 @@ export default function SimpleAdminPanel() {
                           className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="ml-2 sm:hidden">Delete</span>
                         </Button>
                       </div>
                     </div>

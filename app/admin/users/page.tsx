@@ -23,7 +23,9 @@ import {
   ArrowLeft,
   FileVideo,
   BarChart3,
-  FileText
+  FileText,
+  Menu,
+  X
 } from "lucide-react"
 import Link from "next/link"
 
@@ -52,6 +54,7 @@ export default function AdminUsersPage() {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Check admin access
   useEffect(() => {
@@ -178,11 +181,21 @@ export default function AdminUsersPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+          <div className="flex items-center gap-2 lg:gap-4">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              ) : (
+                <Menu className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              )}
+            </button>
             <button
               onClick={() => router.push('/admin/simple')}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+              className="hidden lg:block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             </button>
@@ -190,12 +203,12 @@ export default function AdminUsersPage() {
               <div className="w-8 h-8 bg-jade-purple rounded-lg flex items-center justify-center">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">DOGGIT Admin</h1>
+              <h1 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white">DOGGIT Admin</h1>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-400">
               User Management
             </span>
           </div>
@@ -203,28 +216,50 @@ export default function AdminUsersPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex relative">
         {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-[calc(100vh-73px)]">
+        <aside className={`
+          fixed lg:static inset-y-0 left-0 z-40
+          w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          mt-[73px] lg:mt-0 lg:min-h-[calc(100vh-73px)]
+        `}>
           <nav className="p-4 space-y-2">
             <Link href="/admin/simple" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <FileVideo className="h-4 w-4" />
                 Videos
               </Button>
             </Link>
-            <Button variant="ghost" className="w-full justify-start gap-2 bg-jade-purple/10 text-jade-purple">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 bg-jade-purple/10 text-jade-purple"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               <Users className="h-4 w-4" />
               Users
             </Button>
             <Link href="/admin/analytics" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </Button>
             </Link>
             <Link href="/admin/resources" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <FileText className="h-4 w-4" />
                 Resources
               </Button>
@@ -232,8 +267,16 @@ export default function AdminUsersPage() {
           </nav>
         </aside>
 
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden mt-[73px]"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Content Area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 lg:p-6 w-full min-w-0">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -288,49 +331,49 @@ export default function AdminUsersPage() {
         {/* Users Table */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <CardTitle>All Users</CardTitle>
               <div className="flex items-center gap-4">
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     placeholder="Search users..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 w-64"
+                    className="pl-9 w-full sm:w-64"
                   />
                 </div>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <table className="w-full min-w-[640px]">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 text-gray-600 dark:text-gray-300 font-medium">User</th>
-                    <th className="text-left py-3 px-4 text-gray-600 dark:text-gray-300 font-medium">Puppy</th>
-                    <th className="text-left py-3 px-4 text-gray-600 dark:text-gray-300 font-medium">Role</th>
-                    <th className="text-left py-3 px-4 text-gray-600 dark:text-gray-300 font-medium">Status</th>
-                    <th className="text-left py-3 px-4 text-gray-600 dark:text-gray-300 font-medium">Joined</th>
-                    <th className="text-left py-3 px-4 text-gray-600 dark:text-gray-300 font-medium">Actions</th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">User</th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Puppy</th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Role</th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Status</th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Joined</th>
+                    <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map((user) => (
                     <tr key={user.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-2 sm:px-4">
                         <div>
-                          <div className="font-medium text-gray-900 dark:text-white">
+                          <div className="font-medium text-sm text-gray-900 dark:text-white">
                             {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : 'No name'}
                           </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px] sm:max-w-none">{user.email}</div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-gray-900 dark:text-gray-300">
+                      <td className="py-3 px-2 sm:px-4 text-sm text-gray-900 dark:text-gray-300">
                         {user.puppy_name || '-'}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-2 sm:px-4">
                         <Badge
                           variant="outline"
                           className={user.role === 'admin' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-zinc-700 text-zinc-300 border-zinc-600'}
@@ -338,12 +381,12 @@ export default function AdminUsersPage() {
                           {user.role}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-2 sm:px-4">
                         {user.subscription ? (
                           <div className="flex flex-col gap-1">
                             <Badge
                               variant="outline"
-                              className={getStatusBadge(user.subscription.status)}
+                              className={`text-xs ${getStatusBadge(user.subscription.status)}`}
                             >
                               {user.subscription.status}
                             </Badge>
@@ -354,31 +397,31 @@ export default function AdminUsersPage() {
                             )}
                           </div>
                         ) : (
-                          <Badge variant="outline" className={getStatusBadge('inactive')}>
-                            No subscription
+                          <Badge variant="outline" className={`text-xs ${getStatusBadge('inactive')}`}>
+                            No sub
                           </Badge>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-gray-900 dark:text-gray-300">
+                      <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-900 dark:text-gray-300">
                         {new Date(user.created_at).toLocaleDateString()}
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
+                      <td className="py-3 px-2 sm:px-4">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => toggleAdminRole(user.id, user.role)}
-                            className={user.role === 'admin' ? 'text-yellow-500 hover:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-950' : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'}
+                            className={`text-xs sm:text-sm ${user.role === 'admin' ? 'text-yellow-500 hover:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-950' : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                           >
                             {user.role === 'admin' ? (
                               <>
-                                <UserX className="h-4 w-4 mr-1" />
-                                Remove Admin
+                                <UserX className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Remove Admin</span>
                               </>
                             ) : (
                               <>
-                                <UserCheck className="h-4 w-4 mr-1" />
-                                Make Admin
+                                <UserCheck className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Make Admin</span>
                               </>
                             )}
                           </Button>

@@ -17,7 +17,9 @@ import {
   TrendingUp,
   Activity,
   Loader2,
-  FileText
+  FileText,
+  Menu,
+  X
 } from "lucide-react"
 import Link from "next/link"
 
@@ -47,6 +49,7 @@ export default function AnalyticsPage() {
   const [isChecking, setIsChecking] = useState(true)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const fetchAnalytics = async () => {
     try {
@@ -150,11 +153,21 @@ export default function AnalyticsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+          <div className="flex items-center gap-2 lg:gap-4">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              ) : (
+                <Menu className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              )}
+            </button>
             <button
               onClick={() => router.push('/admin/simple')}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+              className="hidden lg:block p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             </button>
@@ -162,12 +175,12 @@ export default function AnalyticsPage() {
               <div className="w-8 h-8 bg-jade-purple rounded-lg flex items-center justify-center">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">DOGGIT Admin</h1>
+              <h1 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white">DOGGIT Admin</h1>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="hidden sm:inline text-sm text-gray-600 dark:text-gray-400">
               Analytics
             </span>
           </div>
@@ -175,28 +188,50 @@ export default function AnalyticsPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex relative">
         {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-[calc(100vh-73px)]">
+        <aside className={`
+          fixed lg:static inset-y-0 left-0 z-40
+          w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          mt-[73px] lg:mt-0 lg:min-h-[calc(100vh-73px)]
+        `}>
           <nav className="p-4 space-y-2">
             <Link href="/admin/simple" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <FileVideo className="h-4 w-4" />
                 Videos
               </Button>
             </Link>
             <Link href="/admin/users" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <Users className="h-4 w-4" />
                 Users
               </Button>
             </Link>
-            <Button variant="ghost" className="w-full justify-start gap-2 bg-jade-purple/10 text-jade-purple">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 bg-jade-purple/10 text-jade-purple"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               <BarChart3 className="h-4 w-4" />
               Analytics
             </Button>
             <Link href="/admin/resources" className="w-full">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <FileText className="h-4 w-4" />
                 Resources
               </Button>
@@ -204,8 +239,16 @@ export default function AnalyticsPage() {
           </nav>
         </aside>
 
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden mt-[73px]"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Content Area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 lg:p-6 w-full min-w-0">
           {isLoadingAnalytics || !analytics ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 text-jade-purple animate-spin" />
